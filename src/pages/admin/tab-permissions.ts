@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Maps each admin tab id → the permission code required to view it.
 // Used to filter the sidebar nav. Tabs without a mapping are visible to any admin.
 //

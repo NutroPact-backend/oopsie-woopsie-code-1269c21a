@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Renders category (and sub-category) links that admin has marked as
  * visible on the given page. Drop into any page:

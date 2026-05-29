@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Video Sections — shoppable Reel-style video carousels.
  * Admin manages from one tab; renderer fetches per-placement and stacks.

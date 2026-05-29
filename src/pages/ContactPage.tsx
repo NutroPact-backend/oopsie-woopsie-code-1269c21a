@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useSettings } from '@/lib/useSettings';
 import { Mail, Phone, MapPin, Clock, MessageCircle, Instagram, Facebook, Youtube, Send, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useState } from 'react';

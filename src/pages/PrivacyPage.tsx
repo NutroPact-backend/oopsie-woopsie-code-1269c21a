@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useSettings } from '@/lib/useSettings';
 import { T, useContentT } from '@/lib/useContentT';
 

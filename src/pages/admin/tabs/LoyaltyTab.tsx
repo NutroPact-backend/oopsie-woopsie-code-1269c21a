@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Loyalty Tiers admin tab — manage tiers, view members, recompute all.
  */

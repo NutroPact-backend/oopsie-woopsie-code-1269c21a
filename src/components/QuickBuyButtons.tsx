@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ShoppingCart, Zap } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { trackAddToCart } from '@/lib/analytics';

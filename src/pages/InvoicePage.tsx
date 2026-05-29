@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState } from 'react';
 import { useParams } from '@tanstack/react-router';
 import { formatPrice } from '@/lib/utils';

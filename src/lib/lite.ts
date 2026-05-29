@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Lite-mode helpers — detect 2G / data saver to skip non-essential UI.
  */

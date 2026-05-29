@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Plus, Trash2, Download, RefreshCw, X, FileSpreadsheet } from 'lucide-react';

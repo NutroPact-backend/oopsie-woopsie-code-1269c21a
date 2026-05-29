@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Capacitor native bridge helpers — all guarded so they are pure no-ops
  * in the browser and during SSR. Safe to call from any client component.

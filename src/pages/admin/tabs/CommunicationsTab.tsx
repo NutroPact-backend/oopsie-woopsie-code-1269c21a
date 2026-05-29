@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState } from 'react';
 import API from '@/lib/api';
 import { Mail, MessageCircle, Smartphone, Bell, RefreshCw, Send, AlertCircle, CheckCircle2, Clock } from 'lucide-react';

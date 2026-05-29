@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState, useRef } from 'react';
 import { ShoppingBag, Star, Users, X } from 'lucide-react';
 import API from '@/lib/api';

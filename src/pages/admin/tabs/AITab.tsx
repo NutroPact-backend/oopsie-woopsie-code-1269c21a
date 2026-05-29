@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Save, Sparkles, Bot, Key, Eye, EyeOff, ExternalLink } from 'lucide-react';

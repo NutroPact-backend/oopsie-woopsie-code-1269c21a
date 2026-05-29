@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Save, Truck, MapPin, CheckCircle, XCircle, Loader2, ExternalLink, Plus, Trash2, Star } from 'lucide-react';

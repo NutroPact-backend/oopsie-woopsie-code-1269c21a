@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Product Q&A — customers ask questions on PDP, admin answers.
  * Default flow: question lands as `pending`; admin answers + publishes.

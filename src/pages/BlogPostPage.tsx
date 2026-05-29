@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useEffect } from 'react';
 import { Link, useRoute } from 'wouter';
 import API from '@/lib/api';

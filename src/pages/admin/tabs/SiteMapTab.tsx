@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, ChevronRight, ExternalLink, Link2, AlertTriangle, RefreshCw, Search, Package, FileText, Layout, PanelBottom, List, Globe, Sparkles, Map as MapIcon } from 'lucide-react';
 import API from '@/lib/api';

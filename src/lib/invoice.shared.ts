@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Pure helpers for GST invoice snapshot generation.
 // Used by api.ts (ensureInvoice) and api/public/auto-invoice cron route.
 

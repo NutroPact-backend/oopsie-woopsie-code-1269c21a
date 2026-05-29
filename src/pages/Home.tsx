@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState, useRef } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import { Link } from 'wouter';

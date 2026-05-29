@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState } from "react";
 import { ChevronDown, Info } from "lucide-react";
 

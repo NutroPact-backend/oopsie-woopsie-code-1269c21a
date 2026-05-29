@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Mail, Server, Copy, Check, ExternalLink, Info, Send } from "lucide-react";

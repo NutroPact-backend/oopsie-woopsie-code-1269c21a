@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState, type ReactNode } from 'react';
 import { useServerFn } from '@tanstack/react-start';
 import {

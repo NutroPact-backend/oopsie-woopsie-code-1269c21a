@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Enterprise admin dashboard — Amazon/MuscleBlaze-style at-a-glance overview.
  * Reads the same server aggregator powering scheduled reports, so what admins

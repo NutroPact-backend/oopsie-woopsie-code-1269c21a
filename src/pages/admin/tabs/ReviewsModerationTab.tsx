@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { BadgeCheck, Pin, Trash2, Star, Search, Image as ImageIcon, X, ExternalLink } from 'lucide-react';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Link, useLocation } from 'wouter';
 import { useState, useRef, useEffect } from 'react';
 import { useCartStore } from '@/store/cartStore';

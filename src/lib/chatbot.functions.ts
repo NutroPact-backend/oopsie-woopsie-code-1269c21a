@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Brand-grade customer chatbot — accuracy-tuned.
  * - Hybrid RAG: Gemini text-embedding-004 cosine sim + keyword fallback

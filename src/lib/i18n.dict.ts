@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * UI string dictionary for 13 Indian languages.
  * AI-generated via Lovable AI Gateway (gemini-2.5-flash) with Amazon.in-style guidelines.

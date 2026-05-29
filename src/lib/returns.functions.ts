@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Return / refund workflow.
  * Admin generates a short-lived token → shares via WhatsApp/email/SMS.

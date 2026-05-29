@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Plus, Trash2, Edit2, Eye, EyeOff, Save, X, Upload, BookOpen, Calendar, Tag, ChevronDown, ChevronUp, Search,

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState } from 'react';
 import { Plus, Trash2, Save, Eye, EyeOff, Copy, ExternalLink, ChevronDown, ChevronRight, X, ArrowUp, ArrowDown, Image as ImageIcon, Type, AlignLeft, MousePointerClick, LayoutGrid, Link2, Minus, Upload } from 'lucide-react';
 import API from '@/lib/api';

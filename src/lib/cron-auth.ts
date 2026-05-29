@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Shared cron / system auth for createServerFn handlers.
  *

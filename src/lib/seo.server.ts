@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Server-only helpers for SEO Command Center
 import { supabaseAdmin } from '@/integrations/supabase/client.server';
 

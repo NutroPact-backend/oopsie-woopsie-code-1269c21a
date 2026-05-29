@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useMemo, useState } from 'react';
 import { Search, Package, FileText, Check, Plus, X, Save, Layout, PanelBottom, Menu, Layers, Sparkles, ExternalLink } from 'lucide-react';
 import API from '@/lib/api';

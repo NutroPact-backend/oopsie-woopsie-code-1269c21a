@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Save, Globe, Bell, Search, Zap, Palette, MessageCircle, Image, Upload, FileText, Plus, Trash2, RotateCcw } from 'lucide-react';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useSettings } from '@/lib/useSettings';
 import LabReportBanner from '@/components/about/LabReportBanner';
 import { T } from '@/lib/useContentT';

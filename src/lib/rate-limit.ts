@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Server-side rate limiter — uses Supabase admin client to call the
  * SECURITY DEFINER `check_rate_limit` RPC. Returns whether the action

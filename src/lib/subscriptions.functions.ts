@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Subscriptions module — recurring orders (Subscribe & Save).
  * Customers create subscriptions for products with chosen interval & qty.

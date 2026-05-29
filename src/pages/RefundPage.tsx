@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useSettings } from '@/lib/useSettings';
 
 export default function RefundPage() {

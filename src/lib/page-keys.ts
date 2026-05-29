@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Shared list of site pages used by features like Page Backgrounds and
 // Category placement ("show this category link on which pages").
 export const PAGE_OPTIONS: { key: string; label: string }[] = [

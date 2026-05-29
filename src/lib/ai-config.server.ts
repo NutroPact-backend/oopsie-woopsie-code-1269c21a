@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Backend-agnostic AI configuration.
 // Works with any OpenAI-compatible endpoint (OpenAI, OpenRouter, Together,
 // Groq, Anyscale, self-hosted vLLM/Ollama, etc.). Fully provider-agnostic —

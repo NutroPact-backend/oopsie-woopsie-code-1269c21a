@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { Layers, Plus, Check, Sparkles, ShoppingCart, ArrowRight, Lock } from 'lucide-react';

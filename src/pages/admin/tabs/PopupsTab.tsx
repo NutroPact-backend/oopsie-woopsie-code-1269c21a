@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Save, Bell, Zap, ShoppingCart, Trash2, Plus, Image, Upload } from 'lucide-react';

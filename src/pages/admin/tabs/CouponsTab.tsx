@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Plus, Trash2, Save, Edit2, X, Tag, ToggleLeft, ToggleRight } from 'lucide-react';

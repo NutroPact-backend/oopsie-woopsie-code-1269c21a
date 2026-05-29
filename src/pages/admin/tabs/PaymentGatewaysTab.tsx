@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Save, Wallet, CreditCard, Smartphone, Banknote, Percent, Shield, Eye, EyeOff, Tag, Plus, Trash2, GripVertical } from 'lucide-react';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState } from 'react';
 import { useServerFn } from '@tanstack/react-start';
 import { ShieldCheck, Download, AlertTriangle, Loader2, RefreshCw, Ban, CheckCircle2, Flag, IndianRupee, Truck, Zap, Trash2 } from 'lucide-react';

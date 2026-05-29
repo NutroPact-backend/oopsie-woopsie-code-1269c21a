@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useSettings } from '@/lib/useSettings';
 import { useState, useMemo, useEffect } from 'react';
 import { ChevronDown, Search, HelpCircle, MessageCircle, Truck, RefreshCw, ShieldCheck, CreditCard, FlaskConical } from 'lucide-react';

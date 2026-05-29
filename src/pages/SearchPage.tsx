@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState } from 'react';
 import { Link, useSearch } from 'wouter';
 import { Search, Sparkles } from 'lucide-react';

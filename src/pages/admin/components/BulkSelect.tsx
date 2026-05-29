@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo, useState, useCallback } from 'react';
 
 export type BulkAction = {

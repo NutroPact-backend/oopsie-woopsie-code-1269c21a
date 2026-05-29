@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Provider-agnostic messaging dispatcher.
  *

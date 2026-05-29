@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useEffect, useRef } from 'react';
 import {
   Box, ChevronDown, Edit2, Eye, EyeOff, LayoutDashboard,

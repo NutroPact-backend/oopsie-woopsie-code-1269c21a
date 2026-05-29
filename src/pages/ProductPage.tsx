@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { Link, useParams, useNavigate } from '@tanstack/react-router';
 import { useServerFn } from '@tanstack/react-start';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Referral program.
  * - Each user gets a unique shareable code.

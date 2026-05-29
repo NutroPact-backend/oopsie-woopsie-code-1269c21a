@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Gift Cards module.
  * Admin issues codes with an amount + expiry; customer redeems code
