@@ -219,8 +219,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         { name: "twitter:description", content: "Premium nutrition and supplements crafted for performance and wellness." },
         // OG image — uses brand cfg.og_default_image when set, else /og-image.png from public/.
         // No hardcoded Lovable preview URL → fully portable to any domain.
-        { property: "og:image", content: cfg.og_default_image || "/og-image.png" },
-        { name: "twitter:image", content: cfg.og_default_image || "/og-image.png" },
+        { property: "og:image", content: cfg.og_default_image || "/og-image.jpg" },
+        { name: "twitter:image", content: cfg.og_default_image || "/og-image.jpg" },
       ],
       links: [
         { rel: "stylesheet", href: appCss },
