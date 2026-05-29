@@ -105,7 +105,7 @@ function ProductMini({ product }: { product: any }) {
       <button
         onClick={(e) => { e.stopPropagation(); addToCart({ id: product._id || product.id, name: product.name, price, image: product.images?.[0], quantity: 1 } as any); }}
         className="w-full text-[11px] font-black bg-gray-900 text-white py-1.5 rounded-lg hover:bg-gray-800 transition flex items-center justify-center gap-1">
-        <ShoppingCart size={12} /> {t("cta.add_to_cart", undefined).toUpperCase()}
+        <ShoppingCart size={12} /> {t("cta.add_to_cart").toUpperCase()}
       </button>
     </div>
   );
@@ -172,7 +172,7 @@ function ReelCard({ v, product, onOpen }: { v: VideoItem; product: any; onOpen: 
         </div>
         {v.views !== undefined && v.views !== "" && (
           <div className="absolute top-2 right-2 bg-black/60 backdrop-blur text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-            {formatViews(v.views)} {t("video.views", undefined)}
+            {formatViews(v.views)} {t("video.views")}
           </div>
         )}
       </div>
