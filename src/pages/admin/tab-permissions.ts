@@ -27,6 +27,7 @@ export const TAB_PERMISSIONS: Record<string, string> = {
   payments: "payments.edit",
   wallet: "wallet.view",
   users: "users.view",
+  customer360: "users.view",
   reviewmod: "reviewmod.edit",
   reviews: "reviews.edit",
   contact: "contact.view",

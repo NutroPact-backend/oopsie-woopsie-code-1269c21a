@@ -9,6 +9,7 @@ import {
   Copy, MoreVertical, ExternalLink, Check, Sparkles, ShieldCheck, Activity
 } from 'lucide-react';
 import UsersTab from './tabs/UsersTab';
+import Customer360Tab from './tabs/Customer360Tab';
 import { useSimpleUpload } from '@/lib/useSimpleUpload';
 import axios from 'axios';
 import { formatPrice, calculateDiscount } from '@/lib/utils';
@@ -99,7 +100,7 @@ AdminAPI.interceptors.request.use(config => {
   return config;
 });
 
-type Tab = 'dashboard' | 'analytics' | 'products' | 'productauth' | 'categories' | 'brands' | 'flavors' | 'sizes' | 'bulkimport' | 'inventory' | 'accounting' | 'orders' | 'abandoned' | 'subscriptions' | 'campaigns' | 'giftcards' | 'chatbot' | 'loyalty' | 'referrals' | 'wholesale' | 'productqa' | 'settings' | 'site' | 'about' | 'navigation' | 'homepage' | 'footer' | 'coupons' | 'offers' | 'notifications' | 'communications' | 'messaging' | 'mailsystem' | 'popups' | 'dimensions' | 'blog' | 'faq' | 'reviews' | 'reviewmod' | 'contact' | 'ai' | 'shipping' | 'automation' | 'reconciliation' | 'returns' | 'ordermodify' | 'users' | 'pages' | 'sitemap' | 'payments' | 'wallet' | 'security' | 'marketing' | 'seocommand' | 'seodebug' | 'auditlog' | 'support' | 'backup' | 'roas' | 'bulkorders' | 'experiments' | 'health' | 'superadmin' | 'backgrounds' | 'whatsapp_channels' | 'urgency' | 'quick_checkout' | 'variants_pro' | 'verification' | 'growth_boosters' | 'videosections';
+type Tab = 'dashboard' | 'analytics' | 'products' | 'productauth' | 'categories' | 'brands' | 'flavors' | 'sizes' | 'bulkimport' | 'inventory' | 'accounting' | 'orders' | 'abandoned' | 'subscriptions' | 'campaigns' | 'giftcards' | 'chatbot' | 'loyalty' | 'referrals' | 'wholesale' | 'productqa' | 'settings' | 'site' | 'about' | 'navigation' | 'homepage' | 'footer' | 'coupons' | 'offers' | 'notifications' | 'communications' | 'messaging' | 'mailsystem' | 'popups' | 'dimensions' | 'blog' | 'faq' | 'reviews' | 'reviewmod' | 'contact' | 'ai' | 'shipping' | 'automation' | 'reconciliation' | 'returns' | 'ordermodify' | 'users' | 'customer360' | 'pages' | 'sitemap' | 'payments' | 'wallet' | 'security' | 'marketing' | 'seocommand' | 'seodebug' | 'auditlog' | 'support' | 'backup' | 'roas' | 'bulkorders' | 'experiments' | 'health' | 'superadmin' | 'backgrounds' | 'whatsapp_channels' | 'urgency' | 'quick_checkout' | 'variants_pro' | 'verification' | 'growth_boosters' | 'videosections';
 type ModalTab = 'details' | 'reviews';
 type ProductSubTab = 'basic' | 'variants' | 'media' | 'content' | 'benefits' | 'shipping' | 'seo' | 'pixels';
 
@@ -1846,6 +1847,7 @@ export default function AdminPage() {
       id: 'customers', label: 'Customers & Support',
       items: [
         { id: 'users', icon: <Users size={16} />, label: 'Users & Auth', desc: 'Accounts, roles, sign-in settings' },
+        { id: 'customer360', icon: <Activity size={16} />, label: 'Customer 360°', desc: 'Section-wise live activity timeline per customer — every page, cart, checkout, order, refund, review & chat' },
         { id: 'reviewmod', icon: <MessageSquare size={16} />, label: 'Reviews Moderation', desc: 'Approve / pin / delete customer reviews + photos' },
         { id: 'reviews', icon: <Star size={16} />, label: 'Global Testimonials', desc: 'Curated reviews on homepage' },
         { id: 'productqa', icon: <MessageCircle size={16} />, label: 'Product Q&A', desc: 'Customer questions on PDP — moderate & answer' },
@@ -2014,6 +2016,7 @@ export default function AdminPage() {
 
 
             {tab === 'users'        && <UsersTab />}
+            {tab === 'customer360'  && <Customer360Tab />}
             {tab === 'pages'        && <PagesTab />}
            {tab === 'sitemap'      && <SiteMapTab />}
            {tab === 'payments'     && <PaymentGatewaysTab />}
