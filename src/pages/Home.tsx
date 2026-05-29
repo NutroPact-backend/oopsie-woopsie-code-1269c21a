@@ -369,7 +369,7 @@ function TestimonialsMarquee({ sec, testimonials }: { sec: any; testimonials: an
                     <p className="text-yellow-500 text-xs">{'★'.repeat(t.rating || 5)}</p>
                   </div>
                 </div>
-                <p className="text-gray-600 text-xs leading-relaxed line-clamp-3">{t.comment}</p>
+                <p className="text-gray-600 text-xs leading-relaxed line-clamp-3"><T>{t.comment}</T></p>
               </div>
             ))}
           </div>
