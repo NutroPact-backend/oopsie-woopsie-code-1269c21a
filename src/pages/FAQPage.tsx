@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { ChevronDown, Search, HelpCircle, MessageCircle, Truck, RefreshCw, ShieldCheck, CreditCard, FlaskConical } from 'lucide-react';
 import { Link } from 'wouter';
 import API from '@/lib/api';
+import { T } from '@/lib/useContentT';
 
 const DEFAULT_FAQS = [
   {
@@ -133,8 +134,8 @@ export default function FAQPage() {
         <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
           <HelpCircle size={28} className="text-orange-500" />
         </div>
-        <h1 className="text-4xl font-black text-gray-900 mb-3">How can we help?</h1>
-        <p className="text-gray-500 text-lg max-w-lg mx-auto">Quick answers to the questions we hear most often.</p>
+        <h1 className="text-4xl font-black text-gray-900 mb-3"><T>How can we help?</T></h1>
+        <p className="text-gray-500 text-lg max-w-lg mx-auto"><T>Quick answers to the questions we hear most often.</T></p>
       </div>
 
       {/* Search */}
@@ -146,7 +147,7 @@ export default function FAQPage() {
           placeholder="Search your question..."
           className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-gray-200 bg-white shadow-sm focus:outline-none focus:border-orange-400 text-sm"
         />
-        {search && <button onClick={() => setSearch('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold hover:text-gray-600">Clear</button>}
+        {search && <button onClick={() => setSearch('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold hover:text-gray-600"><T>Clear</T></button>}
       </div>
 
       {/* Category tabs */}
@@ -157,7 +158,7 @@ export default function FAQPage() {
             {cat !== 'All' && ICON_MAP[DEFAULT_FAQS.find(g => g.category === cat)?.icon || ''] && (
               <span className="opacity-80">{ICON_MAP[DEFAULT_FAQS.find(g => g.category === cat)?.icon || '']}</span>
             )}
-            {cat}
+            <T>{cat}</T>
           </button>
         ))}
       </div>
@@ -165,7 +166,7 @@ export default function FAQPage() {
       {/* Results count when searching */}
       {search && (
         <p className="text-center text-sm text-gray-400 mb-6">
-          {filtered.length === 0 ? 'No results found' : `${filtered.length} result${filtered.length !== 1 ? 's' : ''} for "${search}"`}
+          {filtered.length === 0 ? <T>No results found</T> : <T>{`${filtered.length} result${filtered.length !== 1 ? 's' : ''} for "${search}"`}</T>}
         </p>
       )}
 
@@ -173,9 +174,9 @@ export default function FAQPage() {
       {Object.keys(grouped).length === 0 ? (
         <div className="text-center py-16">
           <Search size={40} className="mx-auto text-gray-200 mb-4" />
-          <p className="text-gray-500 font-bold text-lg">No matching questions</p>
-          <p className="text-gray-400 text-sm mt-1">Try different keywords or browse all categories</p>
-          <button onClick={() => { setSearch(''); setActiveCategory('All'); }} className="mt-4 px-4 py-2 bg-orange-100 text-orange-700 font-bold rounded-xl text-sm hover:bg-orange-200 transition">Clear filters</button>
+          <p className="text-gray-500 font-bold text-lg"><T>No matching questions</T></p>
+          <p className="text-gray-400 text-sm mt-1"><T>Try different keywords or browse all categories</T></p>
+          <button onClick={() => { setSearch(''); setActiveCategory('All'); }} className="mt-4 px-4 py-2 bg-orange-100 text-orange-700 font-bold rounded-xl text-sm hover:bg-orange-200 transition"><T>Clear filters</T></button>
         </div>
       ) : (
         <div className="space-y-10">
@@ -190,7 +191,7 @@ export default function FAQPage() {
                         {ICON_MAP[groupDef.icon]}
                       </div>
                     )}
-                    <h2 className="text-lg font-black text-gray-800">{category}</h2>
+                    <h2 className="text-lg font-black text-gray-800"><T>{category}</T></h2>
                     <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-bold">{items.length}</span>
                   </div>
                 )}
@@ -200,12 +201,12 @@ export default function FAQPage() {
                       <button
                         onClick={() => setOpen(open === item.id ? null : item.id)}
                         className="w-full flex justify-between items-center px-6 py-4 text-left hover:bg-gray-50 transition">
-                        <span className={`font-semibold text-sm leading-relaxed pr-4 ${open === item.id ? 'text-orange-600' : 'text-gray-800'}`}>{item.q}</span>
+                        <span className={`font-semibold text-sm leading-relaxed pr-4 ${open === item.id ? 'text-orange-600' : 'text-gray-800'}`}><T>{item.q}</T></span>
                         <ChevronDown size={18} className={`flex-shrink-0 text-gray-400 transition-transform duration-300 ${open === item.id ? 'rotate-180 text-orange-500' : ''}`} />
                       </button>
                       <div className={`overflow-hidden transition-all duration-300 ${open === item.id ? 'max-h-96' : 'max-h-0'}`}>
                         <div className="px-6 pb-5 text-gray-600 text-sm leading-relaxed border-t border-orange-100 pt-4 bg-orange-50/30">
-                          {item.a}
+                          <T>{item.a}</T>
                         </div>
                       </div>
                     </div>
@@ -222,10 +223,10 @@ export default function FAQPage() {
         <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
           <MessageCircle size={24} className="text-orange-400" />
         </div>
-        <h3 className="text-2xl font-black mb-2">Still have questions?</h3>
-        <p className="text-gray-400 mb-6 max-w-sm mx-auto">Our team typically responds within 2 hours on business days.</p>
+        <h3 className="text-2xl font-black mb-2"><T>Still have questions?</T></h3>
+        <p className="text-gray-400 mb-6 max-w-sm mx-auto"><T>Our team typically responds within 2 hours on business days.</T></p>
         <Link href={`${base}/contact`}>
-          <button className="bg-orange-500 text-white px-8 py-3.5 rounded-xl font-black hover:bg-orange-600 transition text-sm">Contact Support</button>
+          <button className="bg-orange-500 text-white px-8 py-3.5 rounded-xl font-black hover:bg-orange-600 transition text-sm"><T>Contact Support</T></button>
         </Link>
       </div>
     </div>

@@ -9,6 +9,7 @@ import { useCategories } from '@/hooks/useCategories';
 import { useServerFn } from '@tanstack/react-start';
 import { getGrowthBoosters } from '@/lib/growthBoosters.functions';
 import API from '@/lib/api';
+import { T } from '@/lib/useContentT';
 
 interface Product {
   _id: string;
@@ -69,8 +70,8 @@ function ProductCard({ product }: { product: Product }) {
             : <div className="w-full h-full flex items-center justify-center text-4xl font-black text-gray-200">NP</div>}
         </div>
         <div className="p-4 pb-2">
-          <p className="text-xs text-gray-400 font-medium mb-1">{product.category}</p>
-          <h3 className="font-bold text-gray-900 leading-tight line-clamp-2 min-h-[2.5rem]">{product.name}</h3>
+          <p className="text-xs text-gray-400 font-medium mb-1"><T>{product.category}</T></p>
+          <h3 className="font-bold text-gray-900 leading-tight line-clamp-2 min-h-[2.5rem]"><T>{product.name}</T></h3>
           <div className="flex items-center gap-1.5 mt-2">
             <span className="text-yellow-500 text-xs">{'★'.repeat(Math.round(product.ratings || 0))}</span>
             <span className="text-xs text-gray-400">({product.numReviews || 0})</span>
@@ -87,12 +88,12 @@ function ProductCard({ product }: { product: Product }) {
         <button onClick={quickAdd} disabled={oos}
           aria-label="Add to cart"
           className="flex-1 h-9 inline-flex items-center justify-center gap-1.5 rounded-xl border-2 border-gray-900 text-gray-900 text-xs font-black hover:bg-gray-900 hover:text-white transition disabled:opacity-40 disabled:cursor-not-allowed">
-          <ShoppingCart size={13} /> Add
+          <ShoppingCart size={13} /> <T>Add</T>
         </button>
         <button onClick={buyNow} disabled={oos}
           aria-label="Buy now"
           className="flex-1 h-9 inline-flex items-center justify-center gap-1.5 rounded-xl bg-orange-500 text-white text-xs font-black hover:bg-orange-600 transition disabled:opacity-40 disabled:cursor-not-allowed">
-          <Zap size={13} /> Buy
+          <Zap size={13} /> <T>Buy</T>
         </button>
       </div>
     </div>
@@ -148,28 +149,28 @@ export default function ProductsPage() {
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-black text-gray-900 mb-2">
-          {activeCat ? activeCat.toUpperCase() : 'ALL SUPPLEMENTS'}
+          {activeCat ? <T>{activeCat.toUpperCase()}</T> : <T>ALL SUPPLEMENTS</T>}
         </h1>
         {activeCat && (activeCatRow?.description || categoryDescriptions[activeCat]) && (
-          <p className="text-gray-500 max-w-2xl">{activeCatRow?.description || categoryDescriptions[activeCat]}</p>
+          <p className="text-gray-500 max-w-2xl"><T>{activeCatRow?.description || categoryDescriptions[activeCat]}</T></p>
         )}
       </div>
 
       <div className="flex flex-wrap gap-2 mb-6">
         <button onClick={() => setActiveCat('')}
           className={`px-4 py-2 rounded-full text-sm font-semibold border transition ${!activeCat ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'}`}>
-          All
+          <T>All</T>
         </button>
         {CATEGORIES.map(cat => (
           <button key={cat} onClick={() => setActiveCat(cat)}
             className={`px-4 py-2 rounded-full text-sm font-semibold border transition ${activeCat === cat ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'}`}>
-            {cat}
+            <T>{cat}</T>
           </button>
         ))}
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <p className="text-gray-500 text-sm">{loading ? 'Loading...' : `${filteredProducts.length} product${filteredProducts.length !== 1 ? 's' : ''} found`}</p>
+        <p className="text-gray-500 text-sm">{loading ? <T>Loading...</T> : <><T>{`${filteredProducts.length} product${filteredProducts.length !== 1 ? 's' : ''} found`}</T></>}</p>
         <div className="flex flex-wrap items-center gap-2">
           {ratingFilterEnabled && (
             <select value={minRating} onChange={e => setMinRating(Number(e.target.value))}
@@ -194,10 +195,10 @@ export default function ProductsPage() {
       ) : filteredProducts.length === 0 ? (
         <div className="text-center py-24">
           <p className="text-5xl mb-4">📦</p>
-          <p className="text-xl font-bold text-gray-600">No products found</p>
-          <p className="text-gray-400 mt-2">Try a different category or rating filter</p>
+          <p className="text-xl font-bold text-gray-600"><T>No products found</T></p>
+          <p className="text-gray-400 mt-2"><T>Try a different category or rating filter</T></p>
           <button onClick={() => { setActiveCat(''); setMinRating(0); }} className="mt-6 bg-orange-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-orange-600 transition">
-            View All Products
+            <T>View All Products</T>
           </button>
         </div>
       ) : (
@@ -207,7 +208,7 @@ export default function ProductsPage() {
       )}
 
       <section className="mt-16 bg-gray-50 rounded-2xl p-8 text-center">
-        <h2 className="text-xl font-black mb-2">Why Choose NutroPact?</h2>
+        <h2 className="text-xl font-black mb-2"><T>Why Choose NutroPact?</T></h2>
         <div className="grid sm:grid-cols-4 gap-6 mt-6">
           {[
             { icon: '🧪', title: 'Lab Tested', desc: 'Every batch tested for purity' },
@@ -217,8 +218,8 @@ export default function ProductsPage() {
           ].map((item, i) => (
             <div key={i} className="text-center">
               <p className="text-3xl mb-2">{item.icon}</p>
-              <p className="font-bold text-gray-900">{item.title}</p>
-              <p className="text-sm text-gray-500 mt-1">{item.desc}</p>
+              <p className="font-bold text-gray-900"><T>{item.title}</T></p>
+              <p className="text-sm text-gray-500 mt-1"><T>{item.desc}</T></p>
             </div>
           ))}
         </div>

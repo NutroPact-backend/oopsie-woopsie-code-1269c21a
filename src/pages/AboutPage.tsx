@@ -1,5 +1,6 @@
 import { useSettings } from '@/lib/useSettings';
 import LabReportBanner from '@/components/about/LabReportBanner';
+import { T } from '@/lib/useContentT';
 
 
 
@@ -96,13 +97,13 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-12 pb-16 sm:pt-20 sm:pb-24 grid lg:grid-cols-2 gap-10 items-center">
           <div>
             <p className="text-xs sm:text-sm font-bold tracking-[0.25em] text-orange-500 mb-4">
-              {p.kicker}
+              <T>{p.kicker}</T>
             </p>
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black leading-[1.05] tracking-tight">
-              {p.title}
+              <T>{p.title}</T>
             </h1>
             <p className="mt-5 text-base sm:text-lg text-gray-600 leading-relaxed max-w-xl">
-              {p.subtitle}
+              <T>{p.subtitle}</T>
             </p>
             {badges.length > 0 && (
               <div className="mt-6 flex flex-wrap gap-2">
@@ -112,7 +113,7 @@ export default function AboutPage() {
                     className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-semibold text-gray-700"
                   >
                     <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
-                    {b}
+                    <T>{b}</T>
                   </span>
                 ))}
               </div>
@@ -132,7 +133,7 @@ export default function AboutPage() {
               </div>
               <div className="absolute -bottom-5 -left-5 hidden sm:block rounded-2xl bg-white shadow-lg border border-gray-100 px-5 py-3">
                 <p className="text-2xl font-black text-orange-500 leading-none">{stats[0]?.value}</p>
-                <p className="text-xs text-gray-500 font-medium mt-1">{stats[0]?.label}</p>
+                <p className="text-xs text-gray-500 font-medium mt-1"><T>{stats[0]?.label}</T></p>
               </div>
             </div>
           )}
@@ -151,7 +152,7 @@ export default function AboutPage() {
             <div key={i} className="text-center sm:text-left">
               <p className="text-3xl sm:text-4xl font-black tracking-tight text-gray-900">{s.value}</p>
               <p className="text-xs sm:text-sm font-medium text-gray-500 mt-1 uppercase tracking-wider">
-                {s.label}
+                <T>{s.label}</T>
               </p>
             </div>
           ))}
@@ -161,14 +162,14 @@ export default function AboutPage() {
       {/* MISSION + VISION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 grid md:grid-cols-2 gap-6">
         <div className="rounded-3xl border border-gray-100 p-8 sm:p-10 bg-white hover:shadow-sm transition">
-          <p className="text-xs font-bold tracking-[0.2em] text-orange-500 mb-3">01 — MISSION</p>
-          <h2 className="text-2xl sm:text-3xl font-black tracking-tight">{p.missionTitle}</h2>
-          <p className="mt-4 text-gray-600 leading-relaxed">{p.missionText}</p>
+          <p className="text-xs font-bold tracking-[0.2em] text-orange-500 mb-3"><T>01 — MISSION</T></p>
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight"><T>{p.missionTitle}</T></h2>
+          <p className="mt-4 text-gray-600 leading-relaxed"><T>{p.missionText}</T></p>
         </div>
         <div className="rounded-3xl border border-gray-100 p-8 sm:p-10 bg-gray-900 text-white">
-          <p className="text-xs font-bold tracking-[0.2em] text-orange-400 mb-3">02 — VISION</p>
-          <h2 className="text-2xl sm:text-3xl font-black tracking-tight">{p.visionTitle}</h2>
-          <p className="mt-4 text-gray-300 leading-relaxed">{p.visionText}</p>
+          <p className="text-xs font-bold tracking-[0.2em] text-orange-400 mb-3"><T>02 — VISION</T></p>
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight"><T>{p.visionTitle}</T></h2>
+          <p className="mt-4 text-gray-300 leading-relaxed"><T>{p.visionText}</T></p>
         </div>
       </section>
 
@@ -181,10 +182,10 @@ export default function AboutPage() {
           >
             <div>
               <p className="text-xs font-bold tracking-[0.2em] text-orange-500 mb-3">
-                CHAPTER {String(i + 1).padStart(2, '0')}
+                <T>CHAPTER</T> {String(i + 1).padStart(2, '0')}
               </p>
-              <h3 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight">{b.heading}</h3>
-              <p className="mt-5 text-gray-600 leading-relaxed text-base sm:text-lg">{b.text}</p>
+              <h3 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight"><T>{b.heading}</T></h3>
+              <p className="mt-5 text-gray-600 leading-relaxed text-base sm:text-lg"><T>{b.text}</T></p>
             </div>
             {b.image && (
               <div className="aspect-[4/3] w-full overflow-hidden rounded-3xl bg-gray-100">
@@ -206,9 +207,9 @@ export default function AboutPage() {
       <section className="bg-gray-50 border-y border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
           <div className="max-w-2xl mb-12">
-            <p className="text-xs font-bold tracking-[0.2em] text-orange-500 mb-3">WHAT WE STAND FOR</p>
+            <p className="text-xs font-bold tracking-[0.2em] text-orange-500 mb-3"><T>WHAT WE STAND FOR</T></p>
             <h2 className="text-3xl sm:text-4xl font-black tracking-tight">
-              Six promises on every tub we ship.
+              <T>Six promises on every tub we ship.</T>
             </h2>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -218,8 +219,8 @@ export default function AboutPage() {
                 className="rounded-2xl bg-white border border-gray-100 p-6 hover:border-orange-200 hover:shadow-sm transition"
               >
                 <div className="text-3xl mb-3">{pl.icon}</div>
-                <h4 className="font-black text-lg tracking-tight">{pl.title}</h4>
-                <p className="mt-2 text-sm text-gray-600 leading-relaxed">{pl.text}</p>
+                <h4 className="font-black text-lg tracking-tight"><T>{pl.title}</T></h4>
+                <p className="mt-2 text-sm text-gray-600 leading-relaxed"><T>{pl.text}</T></p>
               </div>
             ))}
           </div>
@@ -229,9 +230,9 @@ export default function AboutPage() {
       {/* CERTS */}
       {certs.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
-          <p className="text-xs font-bold tracking-[0.2em] text-orange-500 mb-3 text-center">QUALITY</p>
+          <p className="text-xs font-bold tracking-[0.2em] text-orange-500 mb-3 text-center"><T>QUALITY</T></p>
           <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-center mb-10">
-            {p.certsTitle}
+            <T>{p.certsTitle}</T>
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
             {certs.map((c, i) => (
@@ -253,7 +254,7 @@ export default function AboutPage() {
                     ✓
                   </div>
                 )}
-                <p className="mt-2 text-xs font-bold text-gray-600 tracking-wider uppercase">{c.label}</p>
+                <p className="mt-2 text-xs font-bold text-gray-600 tracking-wider uppercase"><T>{c.label}</T></p>
               </div>
             ))}
           </div>
@@ -278,14 +279,14 @@ export default function AboutPage() {
             )}
             <div>
               <p className="text-xs font-bold tracking-[0.2em] text-orange-400 mb-3">
-                A NOTE FROM OUR FOUNDER
+                <T>A NOTE FROM OUR FOUNDER</T>
               </p>
               <blockquote className="text-xl sm:text-2xl lg:text-3xl font-medium leading-snug">
-                {p.founderQuote}
+                <T>{p.founderQuote}</T>
               </blockquote>
               <div className="mt-6">
                 <p className="font-black tracking-tight">{p.founderName}</p>
-                <p className="text-sm text-gray-400">{p.founderRole}</p>
+                <p className="text-sm text-gray-400"><T>{p.founderRole}</T></p>
               </div>
             </div>
           </div>
@@ -296,14 +297,14 @@ export default function AboutPage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
         <div className="rounded-3xl bg-gradient-to-br from-orange-500 to-orange-600 text-white p-8 sm:p-14 text-center shadow-[0_30px_60px_-30px_rgba(249,115,22,0.5)]">
           <h2 className="text-2xl sm:text-4xl font-black tracking-tight max-w-2xl mx-auto">
-            {p.ctaTitle}
+            <T>{p.ctaTitle}</T>
           </h2>
-          <p className="mt-3 text-orange-50 max-w-xl mx-auto">{p.ctaText}</p>
+          <p className="mt-3 text-orange-50 max-w-xl mx-auto"><T>{p.ctaText}</T></p>
           <a
             href={p.ctaLink || '/products'}
             className="mt-8 inline-flex items-center gap-2 rounded-full bg-white text-orange-600 px-7 py-3.5 font-bold text-sm sm:text-base hover:bg-gray-50 transition"
           >
-            {p.ctaButton} →
+            <T>{p.ctaButton}</T> →
           </a>
         </div>
       </section>

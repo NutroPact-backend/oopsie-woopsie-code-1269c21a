@@ -7,6 +7,7 @@ import { useSEO } from '@/lib/useSEO';
 import { isLiteMode } from '@/lib/lite';
 import QuickBuyButtons from '@/components/QuickBuyButtons';
 import VideoSections from '@/components/video-sections/VideoSections';
+import { T } from '@/lib/useContentT';
 
 const RHYTHMS = [
   { duration: 6,   delay: 0   },
@@ -111,13 +112,13 @@ function HeroSlider({ sec }: { sec: any }) {
             ) : null}
             {slide.text?.text && (
               <div className="hp-hero-text" style={{ left: `${slide.textX || 20}px`, bottom: `${slide.textY || 20}px` }}>
-                <p style={ts(slide.text)}>{slide.text.text}</p>
+                <p style={ts(slide.text)}><T>{slide.text.text}</T></p>
               </div>
             )}
             {(slide.btnText || slide.btnText2) && (
               <div className="hp-hero-btns">
-                {slide.btnText && <Link href={slide.btnLink || '/products'} className="hp-btn-primary">{slide.btnText}</Link>}
-                {slide.btnText2 && <Link href={slide.btnLink2 || '/products'} className="hp-btn-secondary">{slide.btnText2}</Link>}
+                {slide.btnText && <Link href={slide.btnLink || '/products'} className="hp-btn-primary"><T>{slide.btnText}</T></Link>}
+                {slide.btnText2 && <Link href={slide.btnLink2 || '/products'} className="hp-btn-secondary"><T>{slide.btnText2}</T></Link>}
               </div>
             )}
           </div>
@@ -156,8 +157,8 @@ function GoalTiles({ sec }: { sec: any }) {
   return (
     <SectionWrap sec={sec}>
       <div className="max-w-7xl mx-auto px-4 text-center">
-        {sec.heading?.text && <h2 style={ts(sec.heading)}>{sec.heading.text}</h2>}
-        {sec.subheading?.text && <p style={ts(sec.subheading)}>{sec.subheading.text}</p>}
+        {sec.heading?.text && <h2 style={ts(sec.heading)}><T>{sec.heading.text}</T></h2>}
+        {sec.subheading?.text && <p style={ts(sec.subheading)}><T>{sec.subheading.text}</T></p>}
         <div className="goal-grid" style={{ '--goal-gap': `${gap}px` } as any}>
           {tiles.map((tile: any, i: number) => {
             const r = RHYTHMS[i % RHYTHMS.length];
@@ -212,7 +213,7 @@ function GoalTiles({ sec }: { sec: any }) {
                       color:         tile.topText.color || '#fff',
                       textTransform: (tile.topText.transform || 'uppercase') as any,
                     }}>
-                    {tile.topText.text}
+                    <T>{tile.topText.text}</T>
                   </div>
                 )}
                 <div className="tile-overlay" />
@@ -221,7 +222,7 @@ function GoalTiles({ sec }: { sec: any }) {
                     fontSize:   `${tile.bottomText?.desktopSize || 14}px`,
                     fontWeight: tile.bottomText?.weight || '700',
                   }}>
-                  {tile.bottomText?.text || ''}
+                  <T>{tile.bottomText?.text || ''}</T>
                 </div>
               </a>
             );
@@ -252,9 +253,9 @@ function ImageBanner({ sec }: { sec: any }) {
         </div>
       ) : (
         <div className="max-w-3xl mx-auto px-4 text-center">
-          {(sec.heading?.text || sec.title) && <h2 style={ts(sec.heading || { text: sec.title, desktopSize: sec.titleSize, weight: sec.titleWeight, color: sec.titleColor })}>{sec.heading?.text || sec.title}</h2>}
-          {(sec.subheading?.text || sec.subtitle) && <p style={ts(sec.subheading || { text: sec.subtitle, desktopSize: sec.subtitleSize, color: sec.subtitleColor })}>{sec.subheading?.text || sec.subtitle}</p>}
-          {sec.btnText && <Link href={sec.btnLink || '/products'} className="hp-btn-primary inline-block mt-4">{sec.btnText}</Link>}
+          {(sec.heading?.text || sec.title) && <h2 style={ts(sec.heading || { text: sec.title, desktopSize: sec.titleSize, weight: sec.titleWeight, color: sec.titleColor })}><T>{sec.heading?.text || sec.title}</T></h2>}
+          {(sec.subheading?.text || sec.subtitle) && <p style={ts(sec.subheading || { text: sec.subtitle, desktopSize: sec.subtitleSize, color: sec.subtitleColor })}><T>{sec.subheading?.text || sec.subtitle}</T></p>}
+          {sec.btnText && <Link href={sec.btnLink || '/products'} className="hp-btn-primary inline-block mt-4"><T>{sec.btnText}</T></Link>}
         </div>
       )}
     </SectionWrap>
@@ -265,10 +266,10 @@ function TextSection({ sec }: { sec: any }) {
   return (
     <SectionWrap sec={sec}>
       <div className="max-w-3xl mx-auto px-4 text-center">
-        {(sec.heading?.text || sec.title) && <h2 style={ts(sec.heading || { text: sec.title, desktopSize: sec.titleSize, weight: sec.titleWeight, color: sec.titleColor || sec.textColor })}>{sec.heading?.text || sec.title}</h2>}
-        {(sec.subheading?.text || sec.subtitle) && <p style={ts(sec.subheading || { text: sec.subtitle, desktopSize: sec.subtitleSize, color: sec.subtitleColor || sec.textColor })}>{sec.subheading?.text || sec.subtitle}</p>}
+        {(sec.heading?.text || sec.title) && <h2 style={ts(sec.heading || { text: sec.title, desktopSize: sec.titleSize, weight: sec.titleWeight, color: sec.titleColor || sec.textColor })}><T>{sec.heading?.text || sec.title}</T></h2>}
+        {(sec.subheading?.text || sec.subtitle) && <p style={ts(sec.subheading || { text: sec.subtitle, desktopSize: sec.subtitleSize, color: sec.subtitleColor || sec.textColor })}><T>{sec.subheading?.text || sec.subtitle}</T></p>}
         {(sec.textContent || sec.content) && <div className="mt-4 text-base leading-relaxed" dangerouslySetInnerHTML={{ __html: sec.textContent || sec.content }} />}
-        {sec.btnText && <Link href={sec.btnLink || '/products'} className="hp-btn-primary inline-block mt-6">{sec.btnText}</Link>}
+        {sec.btnText && <Link href={sec.btnLink || '/products'} className="hp-btn-primary inline-block mt-6"><T>{sec.btnText}</T></Link>}
       </div>
     </SectionWrap>
   );
@@ -285,7 +286,7 @@ function Trustbar({ sec }: { sec: any }) {
           <span key={i} className="flex items-center gap-2"
             style={{ fontSize: `${tb.textSize || 14}px`, fontWeight: tb.textWeight || '600' }}>
             {item.icon && <span style={{ fontSize: `${tb.iconSize || 24}px` }}>{item.icon}</span>}
-            {item.text}
+            <T>{item.text}</T>
           </span>
         ))}
       </div>
@@ -302,8 +303,8 @@ function FeaturedProducts({ sec, products }: { sec: any; products: any[] }) {
   return (
     <SectionWrap sec={sec}>
       <div className="max-w-7xl mx-auto px-4">
-        {sec.heading?.text && <h2 style={ts(sec.heading)}>{sec.heading.text}</h2>}
-        {sec.subheading?.text && <p style={ts(sec.subheading)}>{sec.subheading.text}</p>}
+        {sec.heading?.text && <h2 style={ts(sec.heading)}><T>{sec.heading.text}</T></h2>}
+        {sec.subheading?.text && <p style={ts(sec.subheading)}><T>{sec.subheading.text}</T></p>}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 md:gap-5 mt-6 md:mt-8">
           {shown.map((p: any) => (
             <Link key={p._id} href={`/products/${p.slug}`}
@@ -322,7 +323,7 @@ function FeaturedProducts({ sec, products }: { sec: any; products: any[] }) {
                 )}
               </div>
               <div className="p-4">
-                <h3 className="font-bold text-gray-800 text-sm line-clamp-2 group-hover:text-orange-500 transition">{p.name}</h3>
+                <h3 className="font-bold text-gray-800 text-sm line-clamp-2 group-hover:text-orange-500 transition"><T>{p.name}</T></h3>
                 <div className="flex items-center gap-2 mt-2">
                   <span className="font-black text-gray-900">{formatPrice(p.price)}</span>
                   {p.comparePrice > p.price && <span className="text-gray-400 line-through text-sm">{formatPrice(p.comparePrice)}</span>}
@@ -348,8 +349,8 @@ function TestimonialsMarquee({ sec, testimonials }: { sec: any; testimonials: an
       <div className="max-w-full">
         {sec.heading?.text && (
           <div className="max-w-7xl mx-auto px-4">
-            <h2 style={{ ...ts(sec.heading), textAlign: 'center' }}>{sec.heading.text}</h2>
-            {sec.subheading?.text && <p style={{ ...ts(sec.subheading), textAlign: 'center' }}>{sec.subheading.text}</p>}
+            <h2 style={{ ...ts(sec.heading), textAlign: 'center' }}><T>{sec.heading.text}</T></h2>
+            {sec.subheading?.text && <p style={{ ...ts(sec.subheading), textAlign: 'center' }}><T>{sec.subheading.text}</T></p>}
           </div>
         )}
         <div className="marquee-outer mt-8">
@@ -368,7 +369,7 @@ function TestimonialsMarquee({ sec, testimonials }: { sec: any; testimonials: an
                     <p className="text-yellow-500 text-xs">{'★'.repeat(t.rating || 5)}</p>
                   </div>
                 </div>
-                <p className="text-gray-600 text-xs leading-relaxed line-clamp-3">{t.comment}</p>
+                <p className="text-gray-600 text-xs leading-relaxed line-clamp-3"><T>{t.comment}</T></p>
               </div>
             ))}
           </div>
