@@ -364,6 +364,25 @@ function Card({ title, subtitle, children, className = '' }: { title: string; su
 
 function RankList({ items }: { items: { name: string; value: number; sub?: string }[] }) {
   if (!items.length) return <p className="text-sm text-gray-400">No data yet.</p>;
+  const max = Math.max(1, ...items.map(i => i.value));
+  return (
+    <div className="space-y-3">
+      {items.map((it, i) => (
+        <div key={i}>
+          <div className="flex items-center justify-between text-sm mb-1">
+            <span className="font-semibold truncate flex-1 mr-2">{i + 1}. {it.name}</span>
+            <span className="font-bold text-green-700 shrink-0">{fmtINR(it.value)}</span>
+          </div>
+          <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-400 to-orange-500 h-full" style={{ width: `${(it.value / max) * 100}%` }} />
+          </div>
+          {it.sub && <p className="text-xs text-gray-400 mt-0.5">{it.sub}</p>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /* ─────────────────── Sub-components ─────────────────── */
 
 function LiveCard({ icon, label, value, accent }: { icon: React.ReactNode; label: string; value: string; accent: string }) {
@@ -384,24 +403,6 @@ function DeviceStat({ icon, label, value }: { icon: React.ReactNode; label: stri
       <div className="w-9 h-9 bg-white rounded-lg flex items-center justify-center mx-auto text-gray-600 mb-1">{icon}</div>
       <p className="text-2xl font-black">{value}</p>
       <p className="text-xs text-gray-500">{label}</p>
-    </div>
-  );
-}
-
-  return (
-    <div className="space-y-3">
-      {items.map((it, i) => (
-        <div key={i}>
-          <div className="flex items-center justify-between text-sm mb-1">
-            <span className="font-semibold truncate flex-1 mr-2">{i + 1}. {it.name}</span>
-            <span className="font-bold text-green-700 shrink-0">{fmtINR(it.value)}</span>
-          </div>
-          <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
-            <div className="bg-gradient-to-r from-orange-400 to-orange-500 h-full" style={{ width: `${(it.value / max) * 100}%` }} />
-          </div>
-          {it.sub && <p className="text-xs text-gray-400 mt-0.5">{it.sub}</p>}
-        </div>
-      ))}
     </div>
   );
 }
