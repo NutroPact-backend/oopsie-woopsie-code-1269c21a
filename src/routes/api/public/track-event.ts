@@ -23,7 +23,7 @@ export const Route = createFileRoute("/api/public/track-event")({
           const parsed = Schema.safeParse(raw);
           if (!parsed.success) return new Response("bad", { status: 400 });
           const country = request.headers.get("cf-ipcountry") || null;
-          await supabaseAdmin.from("site_events").insert({
+          await (supabaseAdmin.from("site_events" as any) as any).insert({
             ...parsed.data,
             country,
           });

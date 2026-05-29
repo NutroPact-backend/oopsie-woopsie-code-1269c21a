@@ -53,6 +53,7 @@ import { Route as ApiShippingTestRouteImport } from './routes/api/shipping.test'
 import { Route as ApiPublicVerifyProductRouteImport } from './routes/api/public/verify-product'
 import { Route as ApiPublicTrustBadgeRouteImport } from './routes/api/public/trust-badge'
 import { Route as ApiPublicTrackVisitRouteImport } from './routes/api/public/track-visit'
+import { Route as ApiPublicTrackEventRouteImport } from './routes/api/public/track-event'
 import { Route as ApiPublicSyncTrackingRouteImport } from './routes/api/public/sync-tracking'
 import { Route as ApiPublicPincodeCheckRouteImport } from './routes/api/public/pincode-check'
 import { Route as ApiPublicDispatchMessagesRouteImport } from './routes/api/public/dispatch-messages'
@@ -289,6 +290,11 @@ const ApiPublicTrackVisitRoute = ApiPublicTrackVisitRouteImport.update({
   path: '/api/public/track-visit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicTrackEventRoute = ApiPublicTrackEventRouteImport.update({
+  id: '/api/public/track-event',
+  path: '/api/public/track-event',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicSyncTrackingRoute = ApiPublicSyncTrackingRouteImport.update({
   id: '/api/public/sync-tracking',
   path: '/api/public/sync-tracking',
@@ -417,6 +423,7 @@ export interface FileRoutesByFullPath {
   '/api/public/dispatch-messages': typeof ApiPublicDispatchMessagesRoute
   '/api/public/pincode-check': typeof ApiPublicPincodeCheckRoute
   '/api/public/sync-tracking': typeof ApiPublicSyncTrackingRoute
+  '/api/public/track-event': typeof ApiPublicTrackEventRoute
   '/api/public/track-visit': typeof ApiPublicTrackVisitRoute
   '/api/public/trust-badge': typeof ApiPublicTrustBadgeRoute
   '/api/public/verify-product': typeof ApiPublicVerifyProductRoute
@@ -477,6 +484,7 @@ export interface FileRoutesByTo {
   '/api/public/dispatch-messages': typeof ApiPublicDispatchMessagesRoute
   '/api/public/pincode-check': typeof ApiPublicPincodeCheckRoute
   '/api/public/sync-tracking': typeof ApiPublicSyncTrackingRoute
+  '/api/public/track-event': typeof ApiPublicTrackEventRoute
   '/api/public/track-visit': typeof ApiPublicTrackVisitRoute
   '/api/public/trust-badge': typeof ApiPublicTrustBadgeRoute
   '/api/public/verify-product': typeof ApiPublicVerifyProductRoute
@@ -539,6 +547,7 @@ export interface FileRoutesById {
   '/api/public/dispatch-messages': typeof ApiPublicDispatchMessagesRoute
   '/api/public/pincode-check': typeof ApiPublicPincodeCheckRoute
   '/api/public/sync-tracking': typeof ApiPublicSyncTrackingRoute
+  '/api/public/track-event': typeof ApiPublicTrackEventRoute
   '/api/public/track-visit': typeof ApiPublicTrackVisitRoute
   '/api/public/trust-badge': typeof ApiPublicTrustBadgeRoute
   '/api/public/verify-product': typeof ApiPublicVerifyProductRoute
@@ -602,6 +611,7 @@ export interface FileRouteTypes {
     | '/api/public/dispatch-messages'
     | '/api/public/pincode-check'
     | '/api/public/sync-tracking'
+    | '/api/public/track-event'
     | '/api/public/track-visit'
     | '/api/public/trust-badge'
     | '/api/public/verify-product'
@@ -662,6 +672,7 @@ export interface FileRouteTypes {
     | '/api/public/dispatch-messages'
     | '/api/public/pincode-check'
     | '/api/public/sync-tracking'
+    | '/api/public/track-event'
     | '/api/public/track-visit'
     | '/api/public/trust-badge'
     | '/api/public/verify-product'
@@ -723,6 +734,7 @@ export interface FileRouteTypes {
     | '/api/public/dispatch-messages'
     | '/api/public/pincode-check'
     | '/api/public/sync-tracking'
+    | '/api/public/track-event'
     | '/api/public/track-visit'
     | '/api/public/trust-badge'
     | '/api/public/verify-product'
@@ -777,6 +789,7 @@ export interface RootRouteChildren {
   ApiPublicDispatchMessagesRoute: typeof ApiPublicDispatchMessagesRoute
   ApiPublicPincodeCheckRoute: typeof ApiPublicPincodeCheckRoute
   ApiPublicSyncTrackingRoute: typeof ApiPublicSyncTrackingRoute
+  ApiPublicTrackEventRoute: typeof ApiPublicTrackEventRoute
   ApiPublicTrackVisitRoute: typeof ApiPublicTrackVisitRoute
   ApiPublicTrustBadgeRoute: typeof ApiPublicTrustBadgeRoute
   ApiPublicVerifyProductRoute: typeof ApiPublicVerifyProductRoute
@@ -1101,6 +1114,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicTrackVisitRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/track-event': {
+      id: '/api/public/track-event'
+      path: '/api/public/track-event'
+      fullPath: '/api/public/track-event'
+      preLoaderRoute: typeof ApiPublicTrackEventRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/sync-tracking': {
       id: '/api/public/sync-tracking'
       path: '/api/public/sync-tracking'
@@ -1303,6 +1323,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicDispatchMessagesRoute: ApiPublicDispatchMessagesRoute,
   ApiPublicPincodeCheckRoute: ApiPublicPincodeCheckRoute,
   ApiPublicSyncTrackingRoute: ApiPublicSyncTrackingRoute,
+  ApiPublicTrackEventRoute: ApiPublicTrackEventRoute,
   ApiPublicTrackVisitRoute: ApiPublicTrackVisitRoute,
   ApiPublicTrustBadgeRoute: ApiPublicTrustBadgeRoute,
   ApiPublicVerifyProductRoute: ApiPublicVerifyProductRoute,
