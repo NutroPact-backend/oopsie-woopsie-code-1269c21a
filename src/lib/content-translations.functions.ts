@@ -15,6 +15,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+// Cast to `any` because generated Database types lag the new
+// `content_translations` table until the migration is applied.
+const db: any = supabaseAdmin;
 import { isLocale, type LocaleCode } from "./locales";
 import { getAIConfig } from "./ai-config.server";
 
@@ -109,7 +112,7 @@ export const getContentTranslations = createServerFn({ method: "POST" })
     // 1) Bulk-read existing cache rows for this batch
     const ids = Array.from(new Set(data.items.map((it) => it.entityId)));
     const types = Array.from(new Set(data.items.map((it) => it.entityType)));
-    const { data: rows } = await supabaseAdmin
+    const { data: rows } = await db
       .from("content_translations")
       .select("entity_type, entity_id, field, source_hash, translated")
       .in("entity_type", types)
@@ -150,7 +153,7 @@ export const getContentTranslations = createServerFn({ method: "POST" })
             translated: translated[i] || it.source,
             updated_at: new Date().toISOString(),
           }));
-          await supabaseAdmin.from("content_translations")
+          await db.from("content_translations")
             .upsert(upserts, { onConflict: "entity_type,entity_id,field,locale" });
           for (let i = 0; i < misses.length; i++) {
             const it = misses[i];
