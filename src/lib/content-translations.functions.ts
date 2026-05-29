@@ -19,19 +19,13 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 // `content_translations` table until the migration is applied.
 const db: any = supabaseAdmin;
 import { isLocale, type LocaleCode } from "./locales";
-import { getAIConfig } from "./ai-config.server";
+import { translateStrings } from "./translation-provider.server";
 
 function djb2(str: string): string {
   let h = 5381;
   for (let i = 0; i < str.length; i++) h = ((h << 5) + h) + str.charCodeAt(i);
   return (h >>> 0).toString(36);
 }
-
-const LANG_NAME: Record<LocaleCode, string> = {
-  en: "English", hi: "Hindi", ta: "Tamil", te: "Telugu", kn: "Kannada",
-  ml: "Malayalam", bn: "Bengali", mr: "Marathi", gu: "Gujarati", pa: "Punjabi",
-  ur: "Urdu", or: "Odia", as: "Assamese",
-};
 
 const ItemSchema = z.object({
   entityType: z.string().min(1).max(64),
@@ -43,47 +37,7 @@ const ItemSchema = z.object({
 type Item = z.infer<typeof ItemSchema>;
 
 async function translateBatch(items: Item[], locale: LocaleCode): Promise<string[] | null> {
-  const ai = getAIConfig();
-  if (!ai) return null;
-  const langName = LANG_NAME[locale];
-  const numbered = items.map((it, i) => `${i + 1}. ${it.source}`).join("\n");
-
-  const prompt = `You are a professional Indian e-commerce UI localiser.
-Translate each numbered UI string from English to ${langName}.
-
-STRICT RULES:
-1. NATIVE SCRIPT only — no Latin/romanised text.
-2. Tone: short, natural, like Amazon.in / Flipkart UI. Formal "you".
-3. Keep in Latin/Arabic: digits 0-9, brand names, trademarks, units (g, mg, kg, ml, L, %, cm), URLs, emails, "COD", "UPI", "WhatsApp", "PIN".
-4. Sentence-case (not Title Case). Preserve original punctuation style.
-5. Do NOT invent facts, do NOT add disclaimers, do NOT translate proper nouns.
-6. Keep length similar to source — UI strings, not paragraphs.
-
-Strings to translate:
-${numbered}
-
-Reply ONLY as compact minified JSON, no markdown, no commentary, format:
-{"t":["translation1","translation2",...]}`;
-
-  const res = await fetch(ai.url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${ai.key}` },
-    body: JSON.stringify({
-      model: ai.model("google/gemini-2.5-flash"),
-      messages: [{ role: "user", content: prompt }],
-    }),
-  });
-  if (!res.ok) return null;
-  const j: any = await res.json();
-  const txt: string = j?.choices?.[0]?.message?.content || "";
-  const m = txt.match(/\{[\s\S]*\}/);
-  if (!m) return null;
-  try {
-    const parsed = JSON.parse(m[0]);
-    const arr = Array.isArray(parsed.t) ? parsed.t : null;
-    if (!arr || arr.length !== items.length) return null;
-    return arr.map((s: any) => String(s || "").slice(0, 4000));
-  } catch { return null; }
+  return translateStrings(items.map((it) => it.source), locale);
 }
 
 /**
