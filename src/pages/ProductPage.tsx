@@ -1344,6 +1344,8 @@ export default function ProductPage() {
         </div>
       )}
 
+      <VideoSections placement="product" id={product._id || product.id} />
+
       <StickyATCBar product={product} price={price} selectedFlavor={selectedFlavor} selectedSize={selectedSize} onAdd={addToCart} onBuy={buyNow} added={added} stock={stock} />
     </div>
   );
