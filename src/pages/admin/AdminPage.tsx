@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import UsersTab from './tabs/UsersTab';
 import Customer360Tab from './tabs/Customer360Tab';
+import LiveOrderToaster from '@/components/admin/LiveOrderToaster';
 import { useSimpleUpload } from '@/lib/useSimpleUpload';
 import axios from 'axios';
 import { formatPrice, calculateDiscount } from '@/lib/utils';
