@@ -25,7 +25,9 @@ export type Database = {
           item_count: number | null
           items: Json | null
           last_activity_at: string | null
+          notify_count: number | null
           recovered_at: string | null
+          recovery_token: string | null
           status: string | null
           subtotal: number | null
           updated_at: string
@@ -41,7 +43,9 @@ export type Database = {
           item_count?: number | null
           items?: Json | null
           last_activity_at?: string | null
+          notify_count?: number | null
           recovered_at?: string | null
+          recovery_token?: string | null
           status?: string | null
           subtotal?: number | null
           updated_at?: string
@@ -57,7 +61,9 @@ export type Database = {
           item_count?: number | null
           items?: Json | null
           last_activity_at?: string | null
+          notify_count?: number | null
           recovered_at?: string | null
+          recovery_token?: string | null
           status?: string | null
           subtotal?: number | null
           updated_at?: string
@@ -194,6 +200,60 @@ export type Database = {
           key?: string
           updated_at?: string
           value?: string | null
+        }
+        Relationships: []
+      }
+      analytics_events: {
+        Row: {
+          channel: string | null
+          created_at: string
+          data: Json | null
+          event_name: string
+          event_type: string | null
+          id: string
+          properties: Json | null
+          referrer: string | null
+          session_id: string | null
+          updated_at: string
+          url: string | null
+          user_id: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+        }
+        Insert: {
+          channel?: string | null
+          created_at?: string
+          data?: Json | null
+          event_name: string
+          event_type?: string | null
+          id?: string
+          properties?: Json | null
+          referrer?: string | null
+          session_id?: string | null
+          updated_at?: string
+          url?: string | null
+          user_id?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Update: {
+          channel?: string | null
+          created_at?: string
+          data?: Json | null
+          event_name?: string
+          event_type?: string | null
+          id?: string
+          properties?: Json | null
+          referrer?: string | null
+          session_id?: string | null
+          updated_at?: string
+          url?: string | null
+          user_id?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
         }
         Relationships: []
       }
@@ -339,6 +399,7 @@ export type Database = {
           is_published: boolean | null
           meta_description: string | null
           meta_title: string | null
+          published: boolean | null
           published_at: string | null
           slug: string | null
           tags: string[] | null
@@ -357,6 +418,7 @@ export type Database = {
           is_published?: boolean | null
           meta_description?: string | null
           meta_title?: string | null
+          published?: boolean | null
           published_at?: string | null
           slug?: string | null
           tags?: string[] | null
@@ -375,6 +437,7 @@ export type Database = {
           is_published?: boolean | null
           meta_description?: string | null
           meta_title?: string | null
+          published?: boolean | null
           published_at?: string | null
           slug?: string | null
           tags?: string[] | null
@@ -799,55 +862,73 @@ export type Database = {
       }
       coupons: {
         Row: {
+          active: boolean | null
           code: string
           created_at: string
           data: Json | null
           description: string | null
           discount_type: string | null
           discount_value: number | null
+          expires_at: string | null
           id: string
           is_active: boolean | null
+          is_public: boolean | null
+          label: string | null
           max_discount: number | null
           min_order_value: number | null
+          type: string | null
           updated_at: string
           usage_limit: number | null
           used_count: number | null
           valid_from: string | null
           valid_until: string | null
+          value: number | null
         }
         Insert: {
+          active?: boolean | null
           code: string
           created_at?: string
           data?: Json | null
           description?: string | null
           discount_type?: string | null
           discount_value?: number | null
+          expires_at?: string | null
           id?: string
           is_active?: boolean | null
+          is_public?: boolean | null
+          label?: string | null
           max_discount?: number | null
           min_order_value?: number | null
+          type?: string | null
           updated_at?: string
           usage_limit?: number | null
           used_count?: number | null
           valid_from?: string | null
           valid_until?: string | null
+          value?: number | null
         }
         Update: {
+          active?: boolean | null
           code?: string
           created_at?: string
           data?: Json | null
           description?: string | null
           discount_type?: string | null
           discount_value?: number | null
+          expires_at?: string | null
           id?: string
           is_active?: boolean | null
+          is_public?: boolean | null
+          label?: string | null
           max_discount?: number | null
           min_order_value?: number | null
+          type?: string | null
           updated_at?: string
           usage_limit?: number | null
           used_count?: number | null
           valid_from?: string | null
           valid_until?: string | null
+          value?: number | null
         }
         Relationships: []
       }
@@ -965,12 +1046,88 @@ export type Database = {
         }
         Relationships: []
       }
+      experiment_assignments: {
+        Row: {
+          created_at: string
+          data: Json | null
+          experiment_id: string | null
+          experiment_key: string | null
+          id: string
+          session_id: string | null
+          user_id: string | null
+          variant: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json | null
+          experiment_id?: string | null
+          experiment_key?: string | null
+          id?: string
+          session_id?: string | null
+          user_id?: string | null
+          variant?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json | null
+          experiment_id?: string | null
+          experiment_key?: string | null
+          id?: string
+          session_id?: string | null
+          user_id?: string | null
+          variant?: string | null
+        }
+        Relationships: []
+      }
+      experiments: {
+        Row: {
+          active: boolean | null
+          created_at: string
+          data: Json | null
+          description: string | null
+          ends_at: string | null
+          id: string
+          key: string
+          name: string | null
+          starts_at: string | null
+          updated_at: string
+          variants: Json | null
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string
+          data?: Json | null
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          key: string
+          name?: string | null
+          starts_at?: string | null
+          updated_at?: string
+          variants?: Json | null
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string
+          data?: Json | null
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          key?: string
+          name?: string | null
+          starts_at?: string | null
+          updated_at?: string
+          variants?: Json | null
+        }
+        Relationships: []
+      }
       faqs: {
         Row: {
           answer: string | null
           category: string | null
           created_at: string
           data: Json | null
+          enabled: boolean | null
           id: string
           is_active: boolean | null
           question: string | null
@@ -982,6 +1139,7 @@ export type Database = {
           category?: string | null
           created_at?: string
           data?: Json | null
+          enabled?: boolean | null
           id?: string
           is_active?: boolean | null
           question?: string | null
@@ -993,6 +1151,7 @@ export type Database = {
           category?: string | null
           created_at?: string
           data?: Json | null
+          enabled?: boolean | null
           id?: string
           is_active?: boolean | null
           question?: string | null
@@ -1261,10 +1420,12 @@ export type Database = {
       }
       homepage_config: {
         Row: {
+          config: Json | null
           created_at: string
           data: Json | null
           id: string
           is_active: boolean | null
+          key: string | null
           payload: Json | null
           section_key: string | null
           sort_order: number | null
@@ -1273,10 +1434,12 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          config?: Json | null
           created_at?: string
           data?: Json | null
           id?: string
           is_active?: boolean | null
+          key?: string | null
           payload?: Json | null
           section_key?: string | null
           sort_order?: number | null
@@ -1285,10 +1448,12 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          config?: Json | null
           created_at?: string
           data?: Json | null
           id?: string
           is_active?: boolean | null
+          key?: string | null
           payload?: Json | null
           section_key?: string | null
           sort_order?: number | null
@@ -1303,11 +1468,13 @@ export type Database = {
           amount: number | null
           created_at: string
           data: Json | null
+          emailed_at: string | null
           file_url: string | null
           id: string
           invoice_number: string | null
           issued_at: string | null
           order_id: string | null
+          order_number: string | null
           tax: number | null
           updated_at: string
           user_id: string | null
@@ -1316,11 +1483,13 @@ export type Database = {
           amount?: number | null
           created_at?: string
           data?: Json | null
+          emailed_at?: string | null
           file_url?: string | null
           id?: string
           invoice_number?: string | null
           issued_at?: string | null
           order_id?: string | null
+          order_number?: string | null
           tax?: number | null
           updated_at?: string
           user_id?: string | null
@@ -1329,11 +1498,13 @@ export type Database = {
           amount?: number | null
           created_at?: string
           data?: Json | null
+          emailed_at?: string | null
           file_url?: string | null
           id?: string
           invoice_number?: string | null
           issued_at?: string | null
           order_id?: string | null
+          order_number?: string | null
           tax?: number | null
           updated_at?: string
           user_id?: string | null
@@ -1447,11 +1618,13 @@ export type Database = {
       }
       marketing_events: {
         Row: {
+          channel: string | null
           created_at: string
           data: Json | null
           event_name: string | null
           event_type: string | null
           id: string
+          order_number: string | null
           properties: Json | null
           referrer: string | null
           session_id: string | null
@@ -1461,13 +1634,16 @@ export type Database = {
           utm_campaign: string | null
           utm_medium: string | null
           utm_source: string | null
+          value: number | null
         }
         Insert: {
+          channel?: string | null
           created_at?: string
           data?: Json | null
           event_name?: string | null
           event_type?: string | null
           id?: string
+          order_number?: string | null
           properties?: Json | null
           referrer?: string | null
           session_id?: string | null
@@ -1477,13 +1653,16 @@ export type Database = {
           utm_campaign?: string | null
           utm_medium?: string | null
           utm_source?: string | null
+          value?: number | null
         }
         Update: {
+          channel?: string | null
           created_at?: string
           data?: Json | null
           event_name?: string | null
           event_type?: string | null
           id?: string
+          order_number?: string | null
           properties?: Json | null
           referrer?: string | null
           session_id?: string | null
@@ -1493,6 +1672,7 @@ export type Database = {
           utm_campaign?: string | null
           utm_medium?: string | null
           utm_source?: string | null
+          value?: number | null
         }
         Relationships: []
       }
@@ -1610,6 +1790,8 @@ export type Database = {
       offers: {
         Row: {
           active: boolean | null
+          applies_to_flavors: string[] | null
+          applies_to_sizes: string[] | null
           badge_label: string | null
           banner_url: string | null
           category_ids: string[] | null
@@ -1619,23 +1801,35 @@ export type Database = {
           description: string | null
           discount_type: string | null
           discount_value: number | null
+          expires_at: string | null
+          free_product_name: string | null
           id: string
           image_url: string | null
           is_active: boolean | null
           link_url: string | null
+          max_order_value: number | null
           min_amount: number | null
+          min_order_value: number | null
           offer_type: string | null
+          priority: number | null
           product_ids: string[] | null
+          scope_type: string | null
+          scope_values: Json | null
           sort_order: number | null
+          starts_at: string | null
           subtitle: string | null
           terms: string | null
           title: string
+          type: string | null
           updated_at: string
           valid_from: string | null
           valid_until: string | null
+          value: number | null
         }
         Insert: {
           active?: boolean | null
+          applies_to_flavors?: string[] | null
+          applies_to_sizes?: string[] | null
           badge_label?: string | null
           banner_url?: string | null
           category_ids?: string[] | null
@@ -1645,23 +1839,35 @@ export type Database = {
           description?: string | null
           discount_type?: string | null
           discount_value?: number | null
+          expires_at?: string | null
+          free_product_name?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean | null
           link_url?: string | null
+          max_order_value?: number | null
           min_amount?: number | null
+          min_order_value?: number | null
           offer_type?: string | null
+          priority?: number | null
           product_ids?: string[] | null
+          scope_type?: string | null
+          scope_values?: Json | null
           sort_order?: number | null
+          starts_at?: string | null
           subtitle?: string | null
           terms?: string | null
           title: string
+          type?: string | null
           updated_at?: string
           valid_from?: string | null
           valid_until?: string | null
+          value?: number | null
         }
         Update: {
           active?: boolean | null
+          applies_to_flavors?: string[] | null
+          applies_to_sizes?: string[] | null
           badge_label?: string | null
           banner_url?: string | null
           category_ids?: string[] | null
@@ -1671,20 +1877,30 @@ export type Database = {
           description?: string | null
           discount_type?: string | null
           discount_value?: number | null
+          expires_at?: string | null
+          free_product_name?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean | null
           link_url?: string | null
+          max_order_value?: number | null
           min_amount?: number | null
+          min_order_value?: number | null
           offer_type?: string | null
+          priority?: number | null
           product_ids?: string[] | null
+          scope_type?: string | null
+          scope_values?: Json | null
           sort_order?: number | null
+          starts_at?: string | null
           subtitle?: string | null
           terms?: string | null
           title?: string
+          type?: string | null
           updated_at?: string
           valid_from?: string | null
           valid_until?: string | null
+          value?: number | null
         }
         Relationships: []
       }
@@ -1729,35 +1945,47 @@ export type Database = {
       }
       order_tracking: {
         Row: {
+          awb_number: string | null
+          courier: string | null
           created_at: string
           data: Json | null
           id: string
           location: string | null
           message: string | null
           order_id: string
+          order_number: string | null
           status: string | null
+          status_history: Json | null
           tracked_at: string | null
           updated_at: string
         }
         Insert: {
+          awb_number?: string | null
+          courier?: string | null
           created_at?: string
           data?: Json | null
           id?: string
           location?: string | null
           message?: string | null
           order_id: string
+          order_number?: string | null
           status?: string | null
+          status_history?: Json | null
           tracked_at?: string | null
           updated_at?: string
         }
         Update: {
+          awb_number?: string | null
+          courier?: string | null
           created_at?: string
           data?: Json | null
           id?: string
           location?: string | null
           message?: string | null
           order_id?: string
+          order_number?: string | null
           status?: string | null
+          status_history?: Json | null
           tracked_at?: string | null
           updated_at?: string
         }
@@ -1780,6 +2008,7 @@ export type Database = {
           items: Json | null
           notes: string | null
           order_number: string | null
+          order_status: string | null
           payment_id: string | null
           payment_method: string | null
           payment_status: string | null
@@ -1810,6 +2039,7 @@ export type Database = {
           items?: Json | null
           notes?: string | null
           order_number?: string | null
+          order_status?: string | null
           payment_id?: string | null
           payment_method?: string | null
           payment_status?: string | null
@@ -1840,6 +2070,7 @@ export type Database = {
           items?: Json | null
           notes?: string | null
           order_number?: string | null
+          order_status?: string | null
           payment_id?: string | null
           payment_method?: string | null
           payment_status?: string | null
@@ -1948,6 +2179,9 @@ export type Database = {
           discount_value: number | null
           id: string
           is_active: boolean | null
+          link: string | null
+          logo: string | null
+          max_cashback: number | null
           max_discount: number | null
           min_amount: number | null
           payment_methods: string[] | null
@@ -1972,6 +2206,9 @@ export type Database = {
           discount_value?: number | null
           id?: string
           is_active?: boolean | null
+          link?: string | null
+          logo?: string | null
+          max_cashback?: number | null
           max_discount?: number | null
           min_amount?: number | null
           payment_methods?: string[] | null
@@ -1996,6 +2233,9 @@ export type Database = {
           discount_value?: number | null
           id?: string
           is_active?: boolean | null
+          link?: string | null
+          logo?: string | null
+          max_cashback?: number | null
           max_discount?: number | null
           min_amount?: number | null
           payment_methods?: string[] | null
@@ -2996,8 +3236,10 @@ export type Database = {
           id: string
           last_name: string | null
           marketing_opt_in: boolean | null
+          name: string | null
           phone: string | null
           preferences: Json | null
+          referral_code: string | null
           updated_at: string
           user_id: string
         }
@@ -3015,8 +3257,10 @@ export type Database = {
           id?: string
           last_name?: string | null
           marketing_opt_in?: boolean | null
+          name?: string | null
           phone?: string | null
           preferences?: Json | null
+          referral_code?: string | null
           updated_at?: string
           user_id: string
         }
@@ -3034,8 +3278,10 @@ export type Database = {
           id?: string
           last_name?: string | null
           marketing_opt_in?: boolean | null
+          name?: string | null
           phone?: string | null
           preferences?: Json | null
+          referral_code?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -3085,42 +3331,66 @@ export type Database = {
       }
       purchases: {
         Row: {
+          cgst: number | null
           created_at: string
           data: Json | null
           id: string
+          igst: number | null
           invoice_date: string | null
           invoice_number: string | null
           notes: string | null
+          purchase_number: string | null
+          sgst: number | null
           status: string | null
+          supplier_gstin: string | null
+          supplier_name: string | null
+          supplier_state_code: string | null
           tax: number | null
+          taxable_amount: number | null
           total: number | null
           updated_at: string
           vendor_gstin: string | null
           vendor_name: string | null
         }
         Insert: {
+          cgst?: number | null
           created_at?: string
           data?: Json | null
           id?: string
+          igst?: number | null
           invoice_date?: string | null
           invoice_number?: string | null
           notes?: string | null
+          purchase_number?: string | null
+          sgst?: number | null
           status?: string | null
+          supplier_gstin?: string | null
+          supplier_name?: string | null
+          supplier_state_code?: string | null
           tax?: number | null
+          taxable_amount?: number | null
           total?: number | null
           updated_at?: string
           vendor_gstin?: string | null
           vendor_name?: string | null
         }
         Update: {
+          cgst?: number | null
           created_at?: string
           data?: Json | null
           id?: string
+          igst?: number | null
           invoice_date?: string | null
           invoice_number?: string | null
           notes?: string | null
+          purchase_number?: string | null
+          sgst?: number | null
           status?: string | null
+          supplier_gstin?: string | null
+          supplier_name?: string | null
+          supplier_state_code?: string | null
           tax?: number | null
+          taxable_amount?: number | null
           total?: number | null
           updated_at?: string
           vendor_gstin?: string | null
@@ -3322,6 +3592,7 @@ export type Database = {
           items: Json | null
           notes: string | null
           order_id: string
+          order_number: string | null
           pickup_address: Json | null
           pickup_date: string | null
           reason: string | null
@@ -3338,6 +3609,7 @@ export type Database = {
           items?: Json | null
           notes?: string | null
           order_id: string
+          order_number?: string | null
           pickup_address?: Json | null
           pickup_date?: string | null
           reason?: string | null
@@ -3354,6 +3626,7 @@ export type Database = {
           items?: Json | null
           notes?: string | null
           order_id?: string
+          order_number?: string | null
           pickup_address?: Json | null
           pickup_date?: string | null
           reason?: string | null
@@ -3943,6 +4216,7 @@ export type Database = {
           description: string | null
           id: string
           key: string
+          settings: Json | null
           updated_at: string
           value: Json | null
         }
@@ -3953,6 +4227,7 @@ export type Database = {
           description?: string | null
           id?: string
           key: string
+          settings?: Json | null
           updated_at?: string
           value?: Json | null
         }
@@ -3963,6 +4238,7 @@ export type Database = {
           description?: string | null
           id?: string
           key?: string
+          settings?: Json | null
           updated_at?: string
           value?: Json | null
         }
@@ -4145,6 +4421,54 @@ export type Database = {
         }
         Relationships: []
       }
+      testimonials: {
+        Row: {
+          comment: string | null
+          created_at: string
+          data: Json | null
+          id: string
+          is_approved: boolean | null
+          is_featured: boolean | null
+          rating: number | null
+          show_on_home: boolean | null
+          show_on_testimonials: boolean | null
+          title: string | null
+          updated_at: string
+          user_avatar: string | null
+          user_name: string | null
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          data?: Json | null
+          id?: string
+          is_approved?: boolean | null
+          is_featured?: boolean | null
+          rating?: number | null
+          show_on_home?: boolean | null
+          show_on_testimonials?: boolean | null
+          title?: string | null
+          updated_at?: string
+          user_avatar?: string | null
+          user_name?: string | null
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          data?: Json | null
+          id?: string
+          is_approved?: boolean | null
+          is_featured?: boolean | null
+          rating?: number | null
+          show_on_home?: boolean | null
+          show_on_testimonials?: boolean | null
+          title?: string | null
+          updated_at?: string
+          user_avatar?: string | null
+          user_name?: string | null
+        }
+        Relationships: []
+      }
       urgency_widgets: {
         Row: {
           active: boolean | null
@@ -4152,7 +4476,9 @@ export type Database = {
           config: Json | null
           created_at: string
           data: Json | null
+          exclude_product_ids: string[] | null
           id: string
+          include_product_ids: string[] | null
           is_active: boolean | null
           label_template: string | null
           message_template: string | null
@@ -4161,6 +4487,7 @@ export type Database = {
           sort_order: number | null
           updated_at: string
           widget_type: string | null
+          window_hours: number | null
         }
         Insert: {
           active?: boolean | null
@@ -4168,7 +4495,9 @@ export type Database = {
           config?: Json | null
           created_at?: string
           data?: Json | null
+          exclude_product_ids?: string[] | null
           id?: string
+          include_product_ids?: string[] | null
           is_active?: boolean | null
           label_template?: string | null
           message_template?: string | null
@@ -4177,6 +4506,7 @@ export type Database = {
           sort_order?: number | null
           updated_at?: string
           widget_type?: string | null
+          window_hours?: number | null
         }
         Update: {
           active?: boolean | null
@@ -4184,7 +4514,9 @@ export type Database = {
           config?: Json | null
           created_at?: string
           data?: Json | null
+          exclude_product_ids?: string[] | null
           id?: string
+          include_product_ids?: string[] | null
           is_active?: boolean | null
           label_template?: string | null
           message_template?: string | null
@@ -4193,6 +4525,7 @@ export type Database = {
           sort_order?: number | null
           updated_at?: string
           widget_type?: string | null
+          window_hours?: number | null
         }
         Relationships: []
       }
