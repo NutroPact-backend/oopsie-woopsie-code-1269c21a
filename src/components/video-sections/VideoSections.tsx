@@ -5,6 +5,7 @@ import { formatPrice } from "@/lib/utils";
 import API from "@/lib/api";
 import { useCartStore } from "@/store/cartStore";
 import { useT } from "@/lib/i18n";
+import { useContentTBatch } from "@/lib/useContentT";
 
 type VideoItem = {
   id: string;
@@ -276,10 +277,36 @@ export default function VideoSections({ placement, id }: { placement: Placement;
   }, [sections]);
   const products = useProducts(productIds);
 
+  // Build a translation batch for every heading/subheading the admin authored.
+  const tItems = useMemo(() => {
+    const items: { entityType: string; entityId: string; field: string; source: string }[] = [];
+    (sections || []).forEach((s) => {
+      if (s.heading) items.push({ entityType: "video_section", entityId: s.id, field: "heading", source: s.heading });
+      if (s.subheading) items.push({ entityType: "video_section", entityId: s.id, field: "subheading", source: s.subheading });
+      (s.videos || []).forEach((v) => {
+        if (v.title) items.push({ entityType: "video_section_item", entityId: v.id || `${s.id}-${v.src}`, field: "title", source: v.title });
+      });
+    });
+    return items;
+  }, [sections]);
+  const ct = useContentTBatch(tItems);
+
   if (!sections || !sections.length) return null;
+
+  // Render each section with locale-aware heading/subheading.
+  const localized = sections.map((s) => ({
+    ...s,
+    heading: ct("video_section", s.id, "heading") || s.heading,
+    subheading: s.subheading ? (ct("video_section", s.id, "subheading") || s.subheading) : s.subheading,
+    videos: s.videos.map((v) => ({
+      ...v,
+      title: v.title ? (ct("video_section_item", v.id || `${s.id}-${v.src}`, "title") || v.title) : v.title,
+    })),
+  }));
+
   return (
     <>
-      {sections.map((s) => {
+      {localized.map((s) => {
         if (!s.videos || !s.videos.length) return null;
         if (s.layout === "grid") return <GridLayout key={s.id} section={s} products={products} />;
         if (s.layout === "single-feature") return <FeatureLayout key={s.id} section={s} products={products} />;
