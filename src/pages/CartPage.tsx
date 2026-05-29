@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import API from '@/lib/api';
 import QuickCheckoutBar from '@/components/cart/QuickCheckoutBar';
 import EmptyCartUpsell from '@/components/cart/EmptyCartUpsell';
+import { T } from '@/lib/useContentT';
 
 const FREE_SHIPPING_THRESHOLD = 999;
 const SHIPPING_FEE = 99;
@@ -374,10 +375,10 @@ export default function CartPage() {
     <div className="max-w-7xl mx-auto px-4 py-6 sm:py-10 pb-32 md:pb-10">
       <div className="flex items-end justify-between mb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight">Your Cart</h1>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight"><T>Your Cart</T></h1>
           <p className="text-sm text-gray-500 mt-0.5">{count()} item{count() !== 1 ? 's' : ''} • Review before checkout</p>
         </div>
-        <button onClick={clearCart} className="text-xs text-gray-400 hover:text-red-500 font-semibold hidden sm:inline">Clear cart</button>
+        <button onClick={clearCart} className="text-xs text-gray-400 hover:text-red-500 font-semibold hidden sm:inline"><T>Clear cart</T></button>
       </div>
 
       {recovered && (
