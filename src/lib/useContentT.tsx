@@ -166,9 +166,12 @@ export function useAutoT(text: string): string {
     if (autoCache[k]) { setOut(autoCache[k]); return; }
     // Skip very long strings — use useContentT(...) with a stable entityId
     // instead so the cache row is keyed by entity, not by hashed text.
-    if (text.length > 200) {
+    // Cap at 1000 chars to cover FAQ answers, blog excerpts, banner copy,
+    // page sections. For long-form content (blog body, full page content)
+    // wrap with useContentT(entity, id, field, source) directly.
+    if (text.length > 1000) {
       if (typeof window !== "undefined" && import.meta.env?.DEV) {
-        console.warn(`[useAutoT] string >200 chars not translated; use useContentT with a stable entityId. First 80 chars: "${text.slice(0, 80)}..."`);
+        console.warn(`[useAutoT] string >1000 chars not translated; use useContentT with a stable entityId. First 80 chars: "${text.slice(0, 80)}..."`);
       }
       return;
     }
