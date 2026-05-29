@@ -1,10 +1,10 @@
 # Project Memory
 
 ## Core
-Admin gate: `np_admin_token` (header `x-admin-token`). Any new admin tab registered in `src/pages/admin/AdminPage.tsx` auto-inherits this gate — no extra role wiring needed.
-i18n RULE (mandatory for every new customer-facing UI): import `useT` from `@/lib/i18n` and wrap ALL visible strings via `t("key")`. Add new keys to the `en` dict in `src/lib/i18n.dict.ts`. Reuse existing keys like `cta.add_to_cart`, `cta.buy_now`, `nav.*` before inventing new ones. Admin-only screens may stay English.
-Translation fallback chain: current locale → en → literal key. Adding a key only to `en` is safe; run `scripts/gen-i18n-dict.ts` later to auto-fill 12 Indian locales.
+Admin gate: `np_admin_token` header. Any new admin tab in `src/pages/admin/AdminPage.tsx` auto-inherits this gate.
+i18n RULE — every new customer-facing string MUST be translatable. Three options: `<T>English</T>` (auto-AI, easiest), `useT("key")` (curated dict), or `useContentTBatch(...)` for admin DB content. NEVER ship a hardcoded English JSX string. See mem://features/i18n.
+Translation fallback chain: locale cache → en dict / source → literal. Safe to ship with only source set.
 Never add a Lovable runtime dependency.
 
 ## Memories
-- [i18n workflow](mem://features/i18n) — useT hook, dict location, keys to reuse, regen script
+- [i18n workflow](mem://features/i18n) — `<T>`, useT, useContentT — which to use, how to wire admin DB content
