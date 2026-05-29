@@ -125,7 +125,7 @@ function CategoryPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <VideoSections placement="category" id={cat?.id || cat?._id || slug} />
+      <VideoSections placement="category" id={(cat as any)?.id || (cat as any)?._id || slug} />
       {/* Hero */}
       {cat && (
         <section className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-orange-50 to-amber-50 mb-8 p-6 sm:p-10">
