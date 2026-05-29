@@ -4,6 +4,7 @@ import { requireAdmin } from "./users.functions";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { LOCALE_CODES, type LocaleCode, isLocale } from "./locales";
+import { getAIConfig } from "./ai-config.server";
 
 // ───────── helpers ─────────
 function djb2(str: string): string {
@@ -113,8 +114,8 @@ async function fetchProduct(id: string) {
 async function translateOne(prod: any, locale: LocaleCode, model: string): Promise<{
   name: string; description: string; benefits: string; usage: string;
 } | null> {
-  const key = process.env.LOVABLE_API_KEY;
-  if (!key) throw new Error("AI key missing");
+  const ai = getAIConfig();
+  if (!ai) throw new Error("AI key missing");
   const langName = LANG_NAME[locale];
 
   const prompt = `You are a professional Indian e-commerce localiser writing copy for Amazon.in-quality product pages.
@@ -147,11 +148,11 @@ Source product:
 Reply ONLY as compact minified JSON, no markdown, no commentary:
 {"name":"…","description":"…","benefits":"…","usage":"…"}`;
 
-  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+  const res = await fetch(ai.url, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${ai.key}` },
     body: JSON.stringify({
-      model,
+      model: ai.model(model),
       messages: [{ role: "user", content: prompt }],
     }),
   });
