@@ -192,7 +192,7 @@ function UserTimeline({ user }: { user: UserSummary }) {
       const all: Row[] = [];
 
       // 1) site_events — primary stream
-      const q1 = supabase.from("site_events")
+      const q1 = (supabase as any).from("site_events")
         .select("id, event_type, product_name, path, value, quantity, meta, created_at, user_id, session_id")
         .order("created_at", { ascending: false })
         .limit(500);
@@ -214,7 +214,7 @@ function UserTimeline({ user }: { user: UserSummary }) {
 
       if (user.user_id) {
         // 2) wallet transactions
-        const w = await supabase.from("wallet_transactions")
+        const w = await (supabase as any).from("wallet_transactions")
           .select("id, amount, type, description, created_at")
           .eq("user_id", user.user_id).order("created_at", { ascending: false }).limit(50);
         for (const r of (w.data as any[] || [])) {
@@ -224,7 +224,7 @@ function UserTimeline({ user }: { user: UserSummary }) {
           });
         }
         // 3) user notifications
-        const n = await supabase.from("user_notifications")
+        const n = await (supabase as any).from("user_notifications")
           .select("id, title, body, kind, created_at")
           .eq("user_id", user.user_id).order("created_at", { ascending: false }).limit(50);
         for (const r of (n.data as any[] || [])) {
@@ -234,7 +234,7 @@ function UserTimeline({ user }: { user: UserSummary }) {
           });
         }
         // 4) return requests
-        const ret = await supabase.from("return_requests")
+        const ret = await (supabase as any).from("return_requests")
           .select("id, order_number, status, reason, created_at")
           .eq("user_id", user.user_id).order("created_at", { ascending: false }).limit(20);
         for (const r of (ret.data as any[] || [])) {
@@ -244,7 +244,7 @@ function UserTimeline({ user }: { user: UserSummary }) {
           });
         }
         // 5) product questions
-        const qa = await supabase.from("product_questions")
+        const qa = await (supabase as any).from("product_questions")
           .select("id, question, status, created_at")
           .eq("user_id", user.user_id).order("created_at", { ascending: false }).limit(20);
         for (const r of (qa.data as any[] || [])) {
@@ -254,7 +254,7 @@ function UserTimeline({ user }: { user: UserSummary }) {
           });
         }
         // 6) referrals sent
-        const ref = await supabase.from("referral_events")
+        const ref = await (supabase as any).from("referral_events")
           .select("id, event, reward_amount, created_at")
           .eq("user_id", user.user_id).order("created_at", { ascending: false }).limit(20);
         for (const r of (ref.data as any[] || [])) {
@@ -264,7 +264,7 @@ function UserTimeline({ user }: { user: UserSummary }) {
           });
         }
         // 7) subscriptions
-        const sub = await supabase.from("subscriptions")
+        const sub = await (supabase as any).from("subscriptions")
           .select("id, status, plan_name, next_charge_at, created_at")
           .eq("user_id", user.user_id).order("created_at", { ascending: false }).limit(10);
         for (const r of (sub.data as any[] || [])) {
@@ -275,7 +275,7 @@ function UserTimeline({ user }: { user: UserSummary }) {
           });
         }
         // 8) abandoned carts
-        const ab = await supabase.from("abandoned_carts")
+        const ab = await (supabase as any).from("abandoned_carts")
           .select("id, total, items_count, recovered, created_at")
           .eq("user_id", user.user_id).order("created_at", { ascending: false }).limit(10);
         for (const r of (ab.data as any[] || [])) {
