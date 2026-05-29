@@ -1,12 +1,12 @@
 // Backend-agnostic AI configuration.
-// Works with EITHER Lovable AI Gateway (default in Lovable env) OR any
-// OpenAI-compatible endpoint (OpenAI, Together, Groq, OpenRouter, self-host).
+// Works with any OpenAI-compatible endpoint (OpenAI, OpenRouter, Together,
+// Groq, Anyscale, self-hosted vLLM/Ollama, etc.). Fully provider-agnostic —
+// no Lovable dependency.
 //
 // Resolution order (server-only env):
 //   1. If AI_BASE_URL + AI_API_KEY are set → use them (fully custom).
 //   2. Else if OPENAI_API_KEY is set → use OpenAI directly.
-//   3. Else if LOVABLE_API_KEY is set → use Lovable AI Gateway.
-//   4. Else → null (caller must handle "AI unavailable").
+//   3. Else → null (caller must handle "AI unavailable" gracefully).
 
 export type AIConfig = {
   url: string;
@@ -36,21 +36,12 @@ export function getAIConfig(): AIConfig | null {
       key: openaiKey,
       model: (logical) => {
         if (customModel) return customModel;
-        // map Lovable logical names → OpenAI equivalents
+        // Map generic logical model names → OpenAI equivalents.
         if (logical.startsWith("google/gemini-2.5-pro")) return "gpt-4o";
         if (logical.startsWith("google/gemini")) return "gpt-4o-mini";
         if (logical.startsWith("openai/")) return logical.slice("openai/".length);
         return "gpt-4o-mini";
       },
-    };
-  }
-
-  const lovableKey = process.env.LOVABLE_API_KEY;
-  if (lovableKey) {
-    return {
-      url: "https://ai.gateway.lovable.dev/v1/chat/completions",
-      key: lovableKey,
-      model: (logical) => customModel || logical,
     };
   }
 
