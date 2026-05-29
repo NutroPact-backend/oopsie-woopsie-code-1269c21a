@@ -95,10 +95,35 @@ bun dev
 Sirf **backend host** badla. Cost: ₹0 (Supabase free tier — 500MB DB, 1GB storage,
 2M edge invocations/month, unlimited auth users).
 
-## Future automation (Phase 3 — pending)
+## Phase 3 — Automation (already shipped)
 
-Ye baad mein aayega — pg_cron jobs for abandoned cart reminders, daily sales
-digest emails, low-stock alerts, realtime order toasts. Bolne pe add karunga.
+Migration `20260529191610_phase3_automation.sql` ye sab activate karta hai:
+
+| Job | Schedule | Kaam |
+|-----|----------|------|
+| `abandoned_cart_reminders` | har 30 min | 1h+ idle carts pe email + WhatsApp queue |
+| `daily_sales_digest`       | daily 09:00 UTC | har admin ko kal ka revenue/orders/AOV inapp |
+| `low_stock_alerts`         | har 6 ghante | stock ≤ 10 ho to admins ko alert |
+
+**Realtime** (admin dashboard auto-subscribes):
+- Live order toast — koi customer purchase kare → admin screen pe ₹amount toast pop ho jaye
+- Daily digest toast — auto fire when cron inserts the row
+
+**Audit log helper**: koi bhi admin action `logAdminAction("user.ban", { target_user, details })`
+call kar sakta hai (RPC `log_admin_action`) — auto `actor_user_id` + `actor_email` set, RLS-safe.
+
+### Cron jobs check
+```sql
+select jobname, schedule, active from cron.job;
+-- manual run:
+select public.cron_queue_abandoned_cart_reminders();
+select public.cron_daily_sales_digest();
+select public.cron_low_stock_alerts();
+```
+
+### Realtime check
+Admin dashboard kholo → kisi tab pe `insert into site_events (session_id, event_type, value)
+values ('test', 'purchase', 999);` chala → ₹999 ka toast aana chahiye instantly.
 
 ## Issues?
 
