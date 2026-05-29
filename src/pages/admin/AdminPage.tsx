@@ -2015,6 +2015,7 @@ export default function AdminPage() {
 
 
             {tab === 'users'        && <UsersTab />}
+            {tab === 'customer360'  && <Customer360Tab />}
             {tab === 'pages'        && <PagesTab />}
            {tab === 'sitemap'      && <SiteMapTab />}
            {tab === 'payments'     && <PaymentGatewaysTab />}
