@@ -11,6 +11,7 @@
  */
 import { getAIConfig } from "./ai-config.server";
 import type { LocaleCode } from "./locales";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const LANG_NAME: Record<LocaleCode, string> = {
   en: "English", hi: "Hindi", ta: "Tamil", te: "Telugu", kn: "Kannada",
@@ -20,10 +21,22 @@ const LANG_NAME: Record<LocaleCode, string> = {
 
 export type TranslationProvider = "google" | "ai" | "none";
 
-export function getActiveProvider(): TranslationProvider {
-  if (process.env.GOOGLE_TRANSLATE_API_KEY) return "google";
-  if (getAIConfig()) return "ai";
-  return "none";
+/**
+ * Resolve GOOGLE_TRANSLATE_API_KEY from app_secrets table first (admin can
+ * paste/rotate it from the Admin → Messaging → API Keys panel), then fall
+ * back to process.env for parity with other secrets.
+ */
+async function getGoogleKey(): Promise<string | null> {
+  try {
+    const { data } = await supabaseAdmin
+      .from("app_secrets")
+      .select("value")
+      .eq("key", "GOOGLE_TRANSLATE_API_KEY")
+      .maybeSingle();
+    const v = (data as any)?.value;
+    if (v && typeof v === "string" && v.trim()) return v.trim();
+  } catch { /* table missing or RLS — fall through */ }
+  return process.env.GOOGLE_TRANSLATE_API_KEY || null;
 }
 
 /**
@@ -38,9 +51,9 @@ export async function translateStrings(
   if (!sources.length) return [];
   if (locale === "en") return sources;
 
-  const provider = getActiveProvider();
-  if (provider === "google") return translateWithGoogle(sources, locale);
-  if (provider === "ai") return translateWithAI(sources, locale);
+  const googleKey = await getGoogleKey();
+  if (googleKey) return translateWithGoogle(sources, locale, googleKey);
+  if (getAIConfig()) return translateWithAI(sources, locale);
   return null;
 }
 
@@ -51,8 +64,8 @@ export async function translateStrings(
 async function translateWithGoogle(
   sources: string[],
   locale: LocaleCode,
+  key: string,
 ): Promise<string[] | null> {
-  const key = process.env.GOOGLE_TRANSLATE_API_KEY!;
   // Use POST with form body to avoid URL length limits.
   const body = new URLSearchParams();
   body.set("key", key);
