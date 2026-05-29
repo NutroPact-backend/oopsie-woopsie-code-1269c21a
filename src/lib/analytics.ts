@@ -7,6 +7,8 @@
 //   VITE_SNAPCHAT_PIXEL_ID — Snapchat Pixel ID
 // Per-product pixels are configured in the admin → product → Pixels tab.
 
+import { trackSiteEvent } from "./track-event";
+
 declare global {
   interface Window {
     gtag: (...args: any[]) => void;
@@ -266,6 +268,13 @@ export function trackViewItem(product: TrackProduct) {
     product.pixels?.snapchatPixelId,
     product,
   );
+  trackSiteEvent("view_item", {
+    product_id: product.id,
+    product_name: product.name,
+    value: product.price,
+    quantity: product.quantity || 1,
+    meta: { category: product.category },
+  });
 }
 
 // ─── AddToCart ───────────────────────────────────────────────────────────────
@@ -329,6 +338,13 @@ export function trackAddToCart(product: TrackProduct) {
     product.pixels?.snapchatPixelId,
     product,
   );
+  trackSiteEvent("add_to_cart", {
+    product_id: product.id,
+    product_name: product.name,
+    value: product.price,
+    quantity: product.quantity || 1,
+    meta: { category: product.category },
+  });
 }
 
 // ─── Checkout ────────────────────────────────────────────────────────────────
@@ -347,6 +363,7 @@ export function trackBeginCheckout(value: number, items: TrackProduct[]) {
   if (TIKTOK_PIXEL_ID && window.ttq) {
     window.ttq.track('InitiateCheckout', { value, currency: 'INR' });
   }
+  trackSiteEvent("begin_checkout", { value, quantity: items.length });
 }
 
 // ─── Purchase ────────────────────────────────────────────────────────────────
@@ -370,6 +387,7 @@ export function trackPurchase(orderId: string, value: number, items: TrackProduc
   if (SNAPCHAT_PIXEL_ID && window.snaptr) {
     window.snaptr('track', 'PURCHASE', { price: value, currency: 'INR', transaction_id: orderId });
   }
+  trackSiteEvent("purchase", { value, quantity: items.length, meta: { order_id: orderId } });
 
   // Fire per-product pixels (deduplicated by pixel ID)
   const firedFb = new Set<string>(FB_PIXEL_ID ? [FB_PIXEL_ID] : []);
@@ -412,6 +430,7 @@ export function trackSearch(term: string) {
   if (GA_ID && window.gtag) window.gtag('event', 'search', { search_term: term });
   if (FB_PIXEL_ID && window.fbq) window.fbq('track', 'Search', { search_string: term });
   if (TIKTOK_PIXEL_ID && window.ttq) window.ttq.track('Search', { query: term });
+  trackSiteEvent("search", { meta: { term } });
 }
 
 export function trackLead(value?: number) {

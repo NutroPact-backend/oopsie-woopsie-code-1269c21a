@@ -326,6 +326,10 @@ function VisitTracker() {
   useEffect(() => {
     if (pathname.startsWith("/admin")) return;
     import("@/lib/track-visit").then(({ trackVisit }) => trackVisit()).catch(() => {});
+    import("@/lib/track-event").then(({ trackSiteEvent, startHeartbeat }) => {
+      trackSiteEvent("page_view");
+      startHeartbeat();
+    }).catch(() => {});
   }, [pathname]);
   return null;
 }

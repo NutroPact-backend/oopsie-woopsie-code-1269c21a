@@ -8,9 +8,10 @@ import {
   TrendingUp, TrendingDown, ShoppingBag, IndianRupee, Users, Package,
   AlertCircle, Truck, CheckCircle2, Clock, Download, RefreshCw, ArrowRight,
   Smartphone, Monitor, Tablet, Repeat, UserPlus, Globe, Activity,
+  Heart, Eye, ShoppingCart, Search as SearchIcon, Radio, Timer,
 } from 'lucide-react';
 
-import { getDashboardOverview } from '@/lib/reports.functions';
+import { getDashboardOverview, getDashboardLive } from '@/lib/reports.functions';
 import { downloadBlob, toCSV, toXLS, fmtINR, fmtPct, delta } from '@/lib/reports.shared';
 import { TabHelp } from './_TabHelp';
 
@@ -23,23 +24,40 @@ const RANGES = [
 ];
 
 type Overview = Awaited<ReturnType<typeof getDashboardOverview>>;
+type LiveData = Awaited<ReturnType<typeof getDashboardLive>>;
 
 export default function DashboardTab() {
   const [days, setDays] = useState(30);
   const [data, setData] = useState<Overview | null>(null);
+  const [live, setLive] = useState<LiveData | null>(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState('');
+  const [eventFilter, setEventFilter] = useState('');
 
   const load = async () => {
     setLoading(true); setErr('');
     try {
-      const res = await getDashboardOverview({ data: { days } });
+      const [res, liveRes] = await Promise.all([
+        getDashboardOverview({ data: { days } }),
+        getDashboardLive({ data: { days: Math.min(days, 30), eventLimit: 300 } }).catch(() => null),
+      ]);
       setData(res as Overview);
+      setLive(liveRes as LiveData | null);
     } catch (e: any) { setErr(e?.message || 'Failed to load'); }
     finally { setLoading(false); }
   };
 
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [days]);
+
+  // Refresh live counters every 30s in the background.
+  useEffect(() => {
+    const t = setInterval(() => {
+      getDashboardLive({ data: { days: Math.min(days, 30), eventLimit: 300 } })
+        .then((r) => setLive(r as LiveData))
+        .catch(() => {});
+    }, 30_000);
+    return () => clearInterval(t);
+  }, [days]);
 
   const maxRev = useMemo(
     () => Math.max(1, ...(data?.series ?? []).map(s => Math.max(s.rev, s.prevRev))),
@@ -58,11 +76,44 @@ export default function DashboardTab() {
   };
   const printPDF = () => window.print();
 
+  const exportEventsXLS = () => {
+    if (!live) return;
+    const rows = live.recent.map((e) => ({
+      Time: new Date(e.created_at).toLocaleString('en-IN'),
+      Event: e.event_type,
+      Session: e.session_id,
+      Product: e.product_name || '',
+      ProductId: e.product_id || '',
+      Path: e.path || '',
+      Value: e.value ?? '',
+      Qty: e.quantity ?? '',
+      Device: e.device || '',
+      Country: e.country || '',
+    }));
+    downloadBlob(toXLS('Site Events', rows), `events-${days}d.xls`, 'application/vnd.ms-excel');
+  };
+  const exportEventsCSV = () => {
+    if (!live) return;
+    downloadBlob(toCSV(live.recent as any[]), `events-${days}d.csv`, 'text/csv');
+  };
+
   if (loading && !data) return <DashSkeleton />;
   if (err) return <div className="p-6 text-red-600 bg-red-50 rounded-2xl">{err}</div>;
   if (!data) return null;
 
   const k = data.kpis;
+  const filteredEvents = live
+    ? live.recent.filter((e) => {
+        if (!eventFilter) return true;
+        const q = eventFilter.toLowerCase();
+        return (
+          (e.event_type || '').toLowerCase().includes(q) ||
+          (e.product_name || '').toLowerCase().includes(q) ||
+          (e.path || '').toLowerCase().includes(q) ||
+          (e.session_id || '').toLowerCase().includes(q)
+        );
+      })
+    : [];
 
   return (
     <div className="space-y-6">
@@ -108,6 +159,62 @@ export default function DashboardTab() {
           <LiveCard icon={<IndianRupee size={18} />} label="Aaj ki revenue" value={fmtINR(data.today.revenue)} accent="from-green-500 to-emerald-500" />
           <LiveCard icon={<Users size={18} />} label="Aaj k visitors" value={data.today.sessions.toLocaleString('en-IN')} accent="from-blue-500 to-cyan-500" />
         </div>
+      )}
+
+      {/* ── LIVE NOW (last 5 min) ── */}
+      {live && (
+        <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-5 text-white shadow-md">
+          <div className="flex items-start justify-between flex-wrap gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 bg-white/20 rounded-xl flex items-center justify-center">
+                <Radio size={20} className="animate-pulse" />
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-wider opacity-90">Live · last 5 min</p>
+                <p className="text-3xl font-black">{live.live.activeSessions} <span className="text-base font-normal opacity-90">active visitors</span></p>
+                <p className="text-xs opacity-80 mt-0.5">{live.live.hits} events</p>
+              </div>
+            </div>
+            <div className="flex-1 min-w-[260px]">
+              <p className="text-xs uppercase tracking-wider opacity-90 mb-1">Top pages right now</p>
+              {live.live.paths.length === 0 ? (
+                <p className="text-xs opacity-80">Koi active visitor nahi.</p>
+              ) : (
+                <ul className="space-y-0.5 text-xs">
+                  {live.live.paths.slice(0, 5).map((p) => (
+                    <li key={p.path} className="flex justify-between gap-2">
+                      <span className="truncate">{p.path}</span>
+                      <span className="font-bold shrink-0">{p.hits}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── BEHAVIOUR KPIs ── */}
+      {live && (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <KpiCard icon={<Eye size={20} className="text-indigo-600" />} bg="bg-indigo-50"
+            label="Product views" value={live.totals.viewItems.toLocaleString('en-IN')} sub={`${live.totals.pageViews} page views`} />
+          <KpiCard icon={<ShoppingCart size={20} className="text-orange-600" />} bg="bg-orange-50"
+            label="Add to cart" value={live.totals.addToCarts.toLocaleString('en-IN')}
+            sub={live.totals.viewItems ? `${((live.totals.addToCarts / live.totals.viewItems) * 100).toFixed(1)}% ATC rate` : '—'} />
+          <KpiCard icon={<Heart size={20} className="text-pink-600" />} bg="bg-pink-50"
+            label="Wishlist adds" value={live.totals.wishlistAdds.toLocaleString('en-IN')}
+            sub={`${live.totals.searches} searches`} />
+          <KpiCard icon={<Timer size={20} className="text-cyan-600" />} bg="bg-cyan-50"
+            label="Avg time on site" value={formatDur(live.avgDurationSec)} sub="Per session" />
+        </div>
+      )}
+
+      {/* ── BEHAVIOUR FUNNEL ── */}
+      {live && (
+        <Card title="Behaviour funnel" subtitle={`Last ${Math.min(days, 30)} days · unique sessions per step`}>
+          <BehaviourFunnel steps={live.funnel} />
+        </Card>
       )}
 
       {/* Actionables strip */}
@@ -310,6 +417,89 @@ export default function DashboardTab() {
         </Card>
       </div>
 
+      {/* ── Most viewed / most ATC products ── */}
+      {live && (
+        <div className="grid lg:grid-cols-2 gap-4">
+          <Card title="Most viewed products" subtitle="Tracked from product page views">
+            {live.topViewed.length === 0 ? (
+              <p className="text-sm text-gray-400">No views yet. Tracking starts on first visit.</p>
+            ) : (
+              <ul className="space-y-2 text-sm">
+                {live.topViewed.map((p, i) => (
+                  <li key={p.id} className="flex items-center justify-between gap-2">
+                    <span className="truncate flex-1"><span className="text-gray-400 mr-1">{i + 1}.</span>{p.name}</span>
+                    <span className="text-xs text-gray-500 shrink-0">{p.uniqueSessions} ppl</span>
+                    <span className="font-bold text-indigo-600 shrink-0 w-12 text-right">{p.views}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Card>
+          <Card title="Most added to cart" subtitle="Units added in this window">
+            {live.topAtc.length === 0 ? (
+              <p className="text-sm text-gray-400">No add-to-cart events yet.</p>
+            ) : (
+              <ul className="space-y-2 text-sm">
+                {live.topAtc.map((p, i) => (
+                  <li key={p.id} className="flex items-center justify-between gap-2">
+                    <span className="truncate flex-1"><span className="text-gray-400 mr-1">{i + 1}.</span>{p.name}</span>
+                    <span className="font-bold text-orange-600 shrink-0 w-12 text-right">{p.adds}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Card>
+        </div>
+      )}
+
+      {/* ── Recent events stream + export ── */}
+      {live && (
+        <Card title="Recent events" subtitle={`${filteredEvents.length} of ${live.recent.length} events`}>
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <input
+              value={eventFilter}
+              onChange={(e) => setEventFilter(e.target.value)}
+              placeholder="Filter event / product / path / session…"
+              className="flex-1 min-w-[200px] px-3 py-2 border rounded-lg text-sm"
+            />
+            <button onClick={exportEventsCSV} className="px-3 py-2 bg-white border rounded-xl text-xs font-bold hover:bg-gray-50 flex items-center gap-1">
+              <Download size={13} /> CSV
+            </button>
+            <button onClick={exportEventsXLS} className="px-3 py-2 bg-white border rounded-xl text-xs font-bold hover:bg-gray-50 flex items-center gap-1">
+              <Download size={13} /> Excel
+            </button>
+          </div>
+          <div className="overflow-x-auto max-h-[420px] overflow-y-auto border rounded-xl">
+            <table className="w-full text-xs">
+              <thead className="bg-gray-50 sticky top-0">
+                <tr className="text-left text-gray-500">
+                  <th className="px-3 py-2 font-bold">Time</th>
+                  <th className="px-3 py-2 font-bold">Event</th>
+                  <th className="px-3 py-2 font-bold">Session</th>
+                  <th className="px-3 py-2 font-bold">Product / Path</th>
+                  <th className="px-3 py-2 font-bold text-right">Value</th>
+                  <th className="px-3 py-2 font-bold">Device</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredEvents.length === 0 ? (
+                  <tr><td colSpan={6} className="text-center text-gray-400 py-6">Koi events nahi.</td></tr>
+                ) : filteredEvents.map((e) => (
+                  <tr key={e.id} className="border-t hover:bg-gray-50">
+                    <td className="px-3 py-1.5 whitespace-nowrap text-gray-500">{new Date(e.created_at).toLocaleTimeString('en-IN')}</td>
+                    <td className="px-3 py-1.5"><span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${eventBadge(e.event_type)}`}>{e.event_type}</span></td>
+                    <td className="px-3 py-1.5 font-mono text-gray-400 truncate max-w-[80px]">{e.session_id.slice(0, 8)}</td>
+                    <td className="px-3 py-1.5 truncate max-w-[260px]">{e.product_name || e.path || '—'}</td>
+                    <td className="px-3 py-1.5 text-right text-green-700 font-semibold">{e.value ? fmtINR(Number(e.value)) : ''}</td>
+                    <td className="px-3 py-1.5 text-gray-400">{e.device || ''}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
+
     </div>
   );
 }
@@ -461,6 +651,63 @@ function HeatStrip({ data }: { data: { key: string; v: number }[] }) {
       })}
     </div>
   );
+}
+
+function BehaviourFunnel({ steps }: { steps: { step: string; value: number }[] }) {
+  const max = Math.max(1, ...steps.map(s => s.value));
+  const top = steps[0]?.value || 1;
+  return (
+    <div className="space-y-2">
+      {steps.map((s, i) => {
+        const pct = (s.value / max) * 100;
+        const conv = top ? (s.value / top) * 100 : 0;
+        const dropFromPrev = i > 0 && steps[i - 1].value > 0
+          ? ((steps[i - 1].value - s.value) / steps[i - 1].value) * 100
+          : 0;
+        return (
+          <div key={s.step}>
+            <div className="flex items-center justify-between text-xs mb-1">
+              <span className="font-semibold">{i + 1}. {s.step}</span>
+              <span className="text-gray-500">
+                <span className="font-bold text-gray-900">{s.value.toLocaleString('en-IN')}</span>
+                {' · '}{conv.toFixed(1)}% of top
+                {i > 0 && dropFromPrev > 0 && <span className="text-red-500 ml-2">↓{dropFromPrev.toFixed(1)}%</span>}
+              </span>
+            </div>
+            <div className="w-full bg-gray-100 rounded-lg h-6 overflow-hidden">
+              <div
+                className="bg-gradient-to-r from-emerald-400 to-teal-500 h-full flex items-center justify-end pr-2 text-[10px] font-bold text-white"
+                style={{ width: `${Math.max(pct, 4)}%` }}
+              >
+                {s.value > 0 ? s.value.toLocaleString('en-IN') : ''}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function eventBadge(t: string) {
+  if (t === 'purchase')       return 'bg-green-100 text-green-700';
+  if (t === 'begin_checkout') return 'bg-amber-100 text-amber-700';
+  if (t === 'add_to_cart')    return 'bg-orange-100 text-orange-700';
+  if (t === 'wishlist_add')   return 'bg-pink-100 text-pink-700';
+  if (t === 'view_item')      return 'bg-indigo-100 text-indigo-700';
+  if (t === 'search')         return 'bg-blue-100 text-blue-700';
+  if (t === 'page_view')      return 'bg-gray-100 text-gray-600';
+  if (t === 'heartbeat')      return 'bg-cyan-50 text-cyan-600';
+  return 'bg-gray-100 text-gray-600';
+}
+
+function formatDur(sec: number) {
+  if (sec < 60) return `${sec}s`;
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  if (m < 60) return `${m}m ${s}s`;
+  const h = Math.floor(m / 60);
+  return `${h}h ${m % 60}m`;
 }
 
 function statusBadge(s: string) {

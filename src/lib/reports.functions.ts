@@ -626,3 +626,139 @@ export const sendReportNow = createServerFn({ method: "POST" })
     if (!recipients.length) throw new Error("No recipients");
     return runReport({ recipients, days, subId, trigger: "manual", formats: data.formats });
   });
+
+// ───────────── Live behaviour, funnel, event stream ─────────────
+//
+// Reads from public.site_events (anon-insert beacon table). Returns the
+// data needed by the new Live / Funnel / Events sections on the admin
+// Dashboard, plus a downloadable raw event list.
+
+export const getDashboardLive = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator(
+    z.object({
+      days:       z.number().int().min(1).max(90).default(7),
+      eventLimit: z.number().int().min(50).max(2000).default(300),
+    }).parse,
+  )
+  .handler(async ({ data }) => {
+    const now = Date.now();
+    const since      = new Date(now - data.days * DAY_MS).toISOString();
+    const liveSince  = new Date(now - 5 * 60_000).toISOString();
+
+    const sbe: any = supabaseAdmin.from("site_events" as any);
+    const [winRes, liveRes, recentRes] = await Promise.all([
+      sbe.select("session_id,event_type,product_id,product_name,value,quantity,device,created_at")
+         .gte("created_at", since).limit(50_000),
+      sbe.select("session_id,event_type,path,device,created_at")
+         .gte("created_at", liveSince).limit(2000),
+      sbe.select("id,session_id,event_type,product_id,product_name,path,value,quantity,device,country,created_at")
+         .gte("created_at", since)
+         .order("created_at", { ascending: false })
+         .limit(data.eventLimit),
+    ]);
+
+    const win:    any[] = winRes.data    ?? [];
+    const live:   any[] = liveRes.data   ?? [];
+    const recent: any[] = recentRes.data ?? [];
+
+    // ── Counts by type
+    const count = (t: string) => win.filter(e => e.event_type === t).length;
+    const sessionsOf = (t: string) =>
+      new Set(win.filter(e => e.event_type === t).map(e => e.session_id)).size;
+
+    const totals = {
+      pageViews:      count("page_view"),
+      viewItems:      count("view_item"),
+      addToCarts:     count("add_to_cart"),
+      wishlistAdds:   count("wishlist_add"),
+      beginCheckouts: count("begin_checkout"),
+      purchases:      count("purchase"),
+      searches:       count("search"),
+    };
+
+    // ── Funnel (unique sessions per step)
+    const funnel = [
+      { step: "Visitors",       value: new Set(win.map(e => e.session_id)).size },
+      { step: "Product Views",  value: sessionsOf("view_item") },
+      { step: "Add to Cart",    value: sessionsOf("add_to_cart") },
+      { step: "Checkout",       value: sessionsOf("begin_checkout") },
+      { step: "Purchase",       value: sessionsOf("purchase") },
+    ];
+
+    // ── Avg session duration (seconds): last - first event per session
+    const span: Record<string, { min: number; max: number }> = {};
+    for (const e of win) {
+      const t = new Date(e.created_at).getTime();
+      const s = span[e.session_id];
+      if (!s) span[e.session_id] = { min: t, max: t };
+      else { if (t < s.min) s.min = t; if (t > s.max) s.max = t; }
+    }
+    const durations = Object.values(span).map(s => (s.max - s.min) / 1000);
+    const avgDuration = durations.length
+      ? durations.reduce((a, b) => a + b, 0) / durations.length
+      : 0;
+
+    // ── Most viewed products (view_item events)
+    const prodView: Record<string, { id: string; name: string; views: number; sessions: Set<string> }> = {};
+    for (const e of win) {
+      if (e.event_type !== "view_item" || !e.product_id) continue;
+      const k = e.product_id;
+      if (!prodView[k]) prodView[k] = { id: k, name: e.product_name || k, views: 0, sessions: new Set() };
+      prodView[k].views += 1;
+      prodView[k].sessions.add(e.session_id);
+    }
+    const topViewed = Object.values(prodView)
+      .map(p => ({ id: p.id, name: p.name, views: p.views, uniqueSessions: p.sessions.size }))
+      .sort((a, b) => b.views - a.views)
+      .slice(0, 10);
+
+    // ── Most added-to-cart products
+    const prodAtc: Record<string, { id: string; name: string; adds: number }> = {};
+    for (const e of win) {
+      if (e.event_type !== "add_to_cart" || !e.product_id) continue;
+      const k = e.product_id;
+      if (!prodAtc[k]) prodAtc[k] = { id: k, name: e.product_name || k, adds: 0 };
+      prodAtc[k].adds += (e.quantity || 1);
+    }
+    const topAtc = Object.values(prodAtc).sort((a, b) => b.adds - a.adds).slice(0, 10);
+
+    // ── Live (last 5 min): unique sessions + per-path
+    const liveSessions = new Set(live.map(e => e.session_id));
+    const livePathMap: Record<string, number> = {};
+    for (const e of live) {
+      const p = e.path || "/";
+      livePathMap[p] = (livePathMap[p] || 0) + 1;
+    }
+    const livePaths = Object.entries(livePathMap)
+      .map(([path, hits]) => ({ path, hits }))
+      .sort((a, b) => b.hits - a.hits)
+      .slice(0, 8);
+
+    return {
+      period: { days: data.days, from: since, to: new Date(now).toISOString() },
+      totals,
+      funnel,
+      avgDurationSec: Math.round(avgDuration),
+      topViewed,
+      topAtc,
+      live: {
+        activeSessions: liveSessions.size,
+        hits: live.length,
+        paths: livePaths,
+      },
+      recent: recent.map((e: any) => ({
+        id: e.id,
+        session_id: e.session_id,
+        event_type: e.event_type,
+        product_id: e.product_id,
+        product_name: e.product_name,
+        path: e.path,
+        value: e.value,
+        quantity: e.quantity,
+        device: e.device,
+        country: e.country,
+        created_at: e.created_at,
+      })),
+    };
+  });
