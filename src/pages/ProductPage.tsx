@@ -766,9 +766,11 @@ export default function ProductPage() {
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {images.map((img: string, i: number) => (
                   <button key={i} onClick={() => { setSelectedImage(i); setShowVideo(false); }}
+                    aria-label={`View product image ${i + 1}`}
+                    aria-current={!showVideo && selectedImage === i ? 'true' : undefined}
                     className={`shrink-0 w-16 h-16 rounded-2xl overflow-hidden border-2 transition ${!showVideo && selectedImage === i ? 'border-gray-900 shadow-md' : 'border-gray-100 hover:border-gray-300'}`}>
                     <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                      <img src={img} alt="" className="w-full h-full object-contain p-1.5" loading="lazy"  decoding="async"/>
+                      <img src={img} alt={`${product?.name || 'Product'} thumbnail ${i + 1}`} className="w-full h-full object-contain p-1.5" loading="lazy"  decoding="async"/>
                     </div>
                   </button>
                 ))}
