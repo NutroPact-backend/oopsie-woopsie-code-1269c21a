@@ -42,7 +42,7 @@ const SUPABASE_ORIGIN = (() => {
 // Canonical production origin — used for absolute og/twitter images and
 // JSON-LD URLs so social crawlers and search engines resolve them on every
 // preview/production domain.
-const SITE_ORIGIN = "https://oopsie-woopsie-code.lovable.app";
+const SITE_ORIGIN = "https://www.nutropact.com";
 const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/og-image.jpg`;
 
 function NotFoundComponent() {
