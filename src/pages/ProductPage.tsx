@@ -195,7 +195,7 @@ function Lightbox({ images, startIndex, onClose }: { images: string[]; startInde
         <button onClick={e => { e.stopPropagation(); prev(); }} aria-label="Previous image" className="absolute left-4 text-white bg-white/10 rounded-full p-2 hover:bg-white/20"><ChevronLeft size={22} /></button>
         <button onClick={e => { e.stopPropagation(); next(); }} aria-label="Next image" className="absolute right-14 text-white bg-white/10 rounded-full p-2 hover:bg-white/20"><ChevronRight size={22} /></button>
       </>}
-      <img src={images[idx]} alt="" loading="lazy" decoding="async" className="max-h-[85vh] max-w-[85vw] object-contain" onClick={e => e.stopPropagation()} />
+      <img src={images[idx]} alt={`Product image ${idx + 1}`} loading="lazy" decoding="async" className="max-h-[85vh] max-w-[85vw] object-contain" onClick={e => e.stopPropagation()} />
       {images.length > 1 && (
         <div className="absolute bottom-4 flex gap-2">
           {images.map((_, i) => <button key={i} onClick={e => { e.stopPropagation(); setIdx(i); }} aria-label={`Go to image ${i + 1}`} aria-current={i === idx ? 'true' : undefined} className={`w-2 h-2 rounded-full ${i === idx ? 'bg-white' : 'bg-white/40'}`} />)}
@@ -706,7 +706,7 @@ export default function ProductPage() {
         {bs.map((b: any, i: number) => {
           const img = (window.innerWidth < 768 && b.mobileImage) ? b.mobileImage : b.image;
           if (!img) return null;
-          const inner = <img src={img} alt="banner" className="w-full rounded-2xl object-cover max-h-52 md:max-h-72" loading="lazy"  decoding="async"/>;
+          const inner = <img src={img} alt={`${product?.name || 'Product'} promotional banner`} className="w-full rounded-2xl object-cover max-h-52 md:max-h-72" loading="lazy"  decoding="async"/>;
           return b.link ? (
             <a key={i} href={b.link} className="block">{inner}</a>
           ) : (
@@ -766,9 +766,11 @@ export default function ProductPage() {
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {images.map((img: string, i: number) => (
                   <button key={i} onClick={() => { setSelectedImage(i); setShowVideo(false); }}
+                    aria-label={`View product image ${i + 1}`}
+                    aria-current={!showVideo && selectedImage === i ? 'true' : undefined}
                     className={`shrink-0 w-16 h-16 rounded-2xl overflow-hidden border-2 transition ${!showVideo && selectedImage === i ? 'border-gray-900 shadow-md' : 'border-gray-100 hover:border-gray-300'}`}>
                     <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                      <img src={img} alt="" className="w-full h-full object-contain p-1.5" loading="lazy"  decoding="async"/>
+                      <img src={img} alt={`${product?.name || 'Product'} thumbnail ${i + 1}`} className="w-full h-full object-contain p-1.5" loading="lazy"  decoding="async"/>
                     </div>
                   </button>
                 ))}

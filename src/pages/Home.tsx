@@ -99,7 +99,7 @@ function HeroSlider({ sec }: { sec: any }) {
                 {slide.mobileImage && <source media="(max-width: 768px)" srcSet={slide.mobileImage} />}
                 <img
                   src={slide.image}
-                  alt=""
+                  alt={slide.headline || slide.title || `NutroPact hero slide ${i + 1}`}
                   className="hp-hero-media"
                   loading={i === 0 ? 'eager' : 'lazy'}
                   decoding="async"

@@ -29,7 +29,7 @@ export const Route = createFileRoute("/products/$slug")({
       { property: "og:type", content: "product" },
       { property: "og:url", content: url },
     ];
-    const ogImage = image || "/og-image.jpg";
+    const ogImage = image || "https://www.nutropact.com/og-image.jpg";
     meta.push({ property: "og:image", content: ogImage });
     meta.push({ property: "og:image:alt", content: `${name} — NutroPact` });
     meta.push({ name: "twitter:image", content: ogImage });

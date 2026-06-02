@@ -28,7 +28,7 @@ export const Route = createFileRoute("/blog/$slug")({
       { property: "og:type", content: "article" },
       { property: "og:url", content: url },
     ];
-    const ogImage = post?.image || "/og-image.jpg";
+    const ogImage = post?.image || "https://www.nutropact.com/og-image.jpg";
     meta.push({ property: "og:image", content: ogImage });
     meta.push({ property: "og:image:alt", content: post?.title || "NutroPact Blog" });
     meta.push({ name: "twitter:image", content: ogImage });
