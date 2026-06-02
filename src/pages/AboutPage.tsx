@@ -12,9 +12,9 @@ type Cert = { image: string; label: string };
 
 const DEFAULTS = {
   kicker: 'OUR STORY',
-  title: 'Built for athletes who refuse to compromise.',
+  title: 'Our Story — NutroPact',
   subtitle:
-    'NutroPact is a homegrown nutrition company crafting lab-tested, transparent supplements — engineered in India, trusted by athletes across the country.',
+    'Built for athletes who refuse to compromise. NutroPact is a homegrown nutrition company crafting lab-tested, transparent supplements — engineered in India, trusted by athletes across the country.',
   heroImage:
     'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1600&q=70',
   badges: ['FSSAI Approved', 'Made in India', 'Lab Tested', 'No Banned Substances'],
