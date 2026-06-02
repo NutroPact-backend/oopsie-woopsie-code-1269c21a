@@ -2,7 +2,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { supabaseAdmin } from '@/integrations/supabase/client.server';
 
-const BASE_URL = 'https://oopsie-woopsie-code.lovable.app';
+const BASE_URL = 'https://www.nutropact.com';
 
 const STATIC_PATHS = [
   '/', '/products', '/combo', '/about', '/contact', '/blog', '/faq',
