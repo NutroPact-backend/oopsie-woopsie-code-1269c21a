@@ -83,6 +83,12 @@ function withSecurityHeaders(response: Response, request: Request): Response {
   headers.set("X-XSS-Protection", "0"); // modern browsers ignore; explicit off prevents legacy bug
 
   if (isHtml) {
+    // Prevent caching of HTML by browsers/proxies — HTML may contain
+    // user-scoped data or session tokens. Static assets (js/css/img) are
+    // unaffected and keep their default long-cache headers.
+    headers.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
+    headers.set("Pragma", "no-cache");
+
     const supabaseUrl =
       (import.meta as any).env?.VITE_SUPABASE_URL ||
       (globalThis as any).process?.env?.SUPABASE_URL ||
