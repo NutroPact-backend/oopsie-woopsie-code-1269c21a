@@ -2,6 +2,8 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { supabaseAdmin } from '@/integrations/supabase/client.server';
 
+const BASE_URL = 'https://oopsie-woopsie-code.lovable.app';
+
 const STATIC_PATHS = [
   '/', '/products', '/combo', '/about', '/contact', '/blog', '/faq',
   '/shipping', '/refund', '/privacy', '/terms', '/testimonials', '/track-order',
@@ -53,8 +55,9 @@ export const Route = createFileRoute('/sitemap.xml')({
     handlers: {
       GET: async ({ request }) => {
         try {
-          const origin = new URL(request.url).origin;
-          const xml = await buildSitemap(origin);
+          // Always advertise the canonical production host so id-preview
+          // and per-PR domains never leak into Google's index.
+          const xml = await buildSitemap(BASE_URL);
           return new Response(xml, {
             status: 200,
             headers: {
