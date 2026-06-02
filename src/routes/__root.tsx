@@ -222,6 +222,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         // No hardcoded Lovable preview URL → fully portable to any domain.
         { property: "og:image", content: cfg.og_default_image || "/og-image.jpg" },
         { name: "twitter:image", content: cfg.og_default_image || "/og-image.jpg" },
+        { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9fdb44d7-764a-4750-a9b4-27f3a7cbdb79/id-preview-2639750b--7f1c3718-72f7-4329-a3db-26d099a317dc.lovable.app-1780087088668.png" },
+        { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9fdb44d7-764a-4750-a9b4-27f3a7cbdb79/id-preview-2639750b--7f1c3718-72f7-4329-a3db-26d099a317dc.lovable.app-1780087088668.png" },
       ],
       links: [
         { rel: "stylesheet", href: appCss },
