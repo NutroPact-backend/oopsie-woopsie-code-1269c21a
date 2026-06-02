@@ -195,7 +195,7 @@ function Lightbox({ images, startIndex, onClose }: { images: string[]; startInde
         <button onClick={e => { e.stopPropagation(); prev(); }} aria-label="Previous image" className="absolute left-4 text-white bg-white/10 rounded-full p-2 hover:bg-white/20"><ChevronLeft size={22} /></button>
         <button onClick={e => { e.stopPropagation(); next(); }} aria-label="Next image" className="absolute right-14 text-white bg-white/10 rounded-full p-2 hover:bg-white/20"><ChevronRight size={22} /></button>
       </>}
-      <img src={images[idx]} alt="" loading="lazy" decoding="async" className="max-h-[85vh] max-w-[85vw] object-contain" onClick={e => e.stopPropagation()} />
+      <img src={images[idx]} alt={`Product image ${idx + 1}`} loading="lazy" decoding="async" className="max-h-[85vh] max-w-[85vw] object-contain" onClick={e => e.stopPropagation()} />
       {images.length > 1 && (
         <div className="absolute bottom-4 flex gap-2">
           {images.map((_, i) => <button key={i} onClick={e => { e.stopPropagation(); setIdx(i); }} aria-label={`Go to image ${i + 1}`} aria-current={i === idx ? 'true' : undefined} className={`w-2 h-2 rounded-full ${i === idx ? 'bg-white' : 'bg-white/40'}`} />)}
