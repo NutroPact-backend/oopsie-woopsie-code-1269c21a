@@ -224,7 +224,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         { name: "apple-mobile-web-app-capable", content: "yes" },
         { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
         { name: "apple-mobile-web-app-title", content: "NutroPact" },
-        { name: "google-site-verification", content: "wtVrVs3JYwKkRZzsK17AYXKLfx5vxGArzyW2Hd-uHVg" },
         ...metaExtras,
         { name: "twitter:title", content: "NutroPact — Premium Nutrition" },
         { name: "twitter:description", content: "Premium nutrition and supplements crafted for performance and wellness." },
