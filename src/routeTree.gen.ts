@@ -21,12 +21,15 @@ import { Route as RefundRouteImport } from './routes/refund'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
+import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ComboRouteImport } from './routes/combo'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as BlogRouteImport } from './routes/blog'
+import { Route as AiDottxtRouteImport } from './routes/ai[.]txt'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AboutRouteImport } from './routes/about'
@@ -61,6 +64,7 @@ import { Route as ApiPublicDailyRewardsRouteImport } from './routes/api/public/d
 import { Route as ApiPublicConversionRouteImport } from './routes/api/public/conversion'
 import { Route as ApiPublicAutoShipmentRouteImport } from './routes/api/public/auto-shipment'
 import { Route as ApiPublicAutoInvoiceRouteImport } from './routes/api/public/auto-invoice'
+import { Route as ApiPublicAiContextRouteImport } from './routes/api/public/ai-context'
 import { Route as ApiPublicHooksSubscriptionsRunRouteImport } from './routes/api/public/hooks/subscriptions-run'
 import { Route as ApiPublicHooksSeoInsightsRouteImport } from './routes/api/public/hooks/seo-insights'
 import { Route as ApiPublicHooksSeoDailyRouteImport } from './routes/api/public/hooks/seo-daily'
@@ -130,6 +134,16 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
+  id: '/llms.txt',
+  path: '/llms.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsFullDottxtRoute = LlmsFullDottxtRouteImport.update({
+  id: '/llms-full.txt',
+  path: '/llms-full.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
@@ -158,6 +172,11 @@ const CartRoute = CartRouteImport.update({
 const BlogRoute = BlogRouteImport.update({
   id: '/blog',
   path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiDottxtRoute = AiDottxtRouteImport.update({
+  id: '/ai.txt',
+  path: '/ai.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -331,6 +350,11 @@ const ApiPublicAutoInvoiceRoute = ApiPublicAutoInvoiceRouteImport.update({
   path: '/api/public/auto-invoice',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicAiContextRoute = ApiPublicAiContextRouteImport.update({
+  id: '/api/public/ai-context',
+  path: '/api/public/ai-context',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksSubscriptionsRunRoute =
   ApiPublicHooksSubscriptionsRunRouteImport.update({
     id: '/api/public/hooks/subscriptions-run',
@@ -381,12 +405,15 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/account': typeof AccountRouteWithChildren
   '/admin': typeof AdminRoute
+  '/ai.txt': typeof AiDottxtRoute
   '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/combo': typeof ComboRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.txt': typeof LlmsDottxtRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/products': typeof ProductsRouteWithChildren
@@ -416,6 +443,7 @@ export interface FileRoutesByFullPath {
   '/verify/heatmap': typeof VerifyHeatmapRoute
   '/verify/wall': typeof VerifyWallRoute
   '/products/': typeof ProductsIndexRoute
+  '/api/public/ai-context': typeof ApiPublicAiContextRoute
   '/api/public/auto-invoice': typeof ApiPublicAutoInvoiceRoute
   '/api/public/auto-shipment': typeof ApiPublicAutoShipmentRoute
   '/api/public/conversion': typeof ApiPublicConversionRoute
@@ -443,12 +471,15 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/account': typeof AccountRouteWithChildren
   '/admin': typeof AdminRoute
+  '/ai.txt': typeof AiDottxtRoute
   '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/combo': typeof ComboRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.txt': typeof LlmsDottxtRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
@@ -477,6 +508,7 @@ export interface FileRoutesByTo {
   '/verify/heatmap': typeof VerifyHeatmapRoute
   '/verify/wall': typeof VerifyWallRoute
   '/products': typeof ProductsIndexRoute
+  '/api/public/ai-context': typeof ApiPublicAiContextRoute
   '/api/public/auto-invoice': typeof ApiPublicAutoInvoiceRoute
   '/api/public/auto-shipment': typeof ApiPublicAutoShipmentRoute
   '/api/public/conversion': typeof ApiPublicConversionRoute
@@ -505,12 +537,15 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/account': typeof AccountRouteWithChildren
   '/admin': typeof AdminRoute
+  '/ai.txt': typeof AiDottxtRoute
   '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/combo': typeof ComboRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.txt': typeof LlmsDottxtRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/products': typeof ProductsRouteWithChildren
@@ -540,6 +575,7 @@ export interface FileRoutesById {
   '/verify/heatmap': typeof VerifyHeatmapRoute
   '/verify/wall': typeof VerifyWallRoute
   '/products/': typeof ProductsIndexRoute
+  '/api/public/ai-context': typeof ApiPublicAiContextRoute
   '/api/public/auto-invoice': typeof ApiPublicAutoInvoiceRoute
   '/api/public/auto-shipment': typeof ApiPublicAutoShipmentRoute
   '/api/public/conversion': typeof ApiPublicConversionRoute
@@ -569,12 +605,15 @@ export interface FileRouteTypes {
     | '/about'
     | '/account'
     | '/admin'
+    | '/ai.txt'
     | '/blog'
     | '/cart'
     | '/checkout'
     | '/combo'
     | '/contact'
     | '/faq'
+    | '/llms-full.txt'
+    | '/llms.txt'
     | '/login'
     | '/privacy'
     | '/products'
@@ -604,6 +643,7 @@ export interface FileRouteTypes {
     | '/verify/heatmap'
     | '/verify/wall'
     | '/products/'
+    | '/api/public/ai-context'
     | '/api/public/auto-invoice'
     | '/api/public/auto-shipment'
     | '/api/public/conversion'
@@ -631,12 +671,15 @@ export interface FileRouteTypes {
     | '/about'
     | '/account'
     | '/admin'
+    | '/ai.txt'
     | '/blog'
     | '/cart'
     | '/checkout'
     | '/combo'
     | '/contact'
     | '/faq'
+    | '/llms-full.txt'
+    | '/llms.txt'
     | '/login'
     | '/privacy'
     | '/refund'
@@ -665,6 +708,7 @@ export interface FileRouteTypes {
     | '/verify/heatmap'
     | '/verify/wall'
     | '/products'
+    | '/api/public/ai-context'
     | '/api/public/auto-invoice'
     | '/api/public/auto-shipment'
     | '/api/public/conversion'
@@ -692,12 +736,15 @@ export interface FileRouteTypes {
     | '/about'
     | '/account'
     | '/admin'
+    | '/ai.txt'
     | '/blog'
     | '/cart'
     | '/checkout'
     | '/combo'
     | '/contact'
     | '/faq'
+    | '/llms-full.txt'
+    | '/llms.txt'
     | '/login'
     | '/privacy'
     | '/products'
@@ -727,6 +774,7 @@ export interface FileRouteTypes {
     | '/verify/heatmap'
     | '/verify/wall'
     | '/products/'
+    | '/api/public/ai-context'
     | '/api/public/auto-invoice'
     | '/api/public/auto-shipment'
     | '/api/public/conversion'
@@ -755,12 +803,15 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AccountRoute: typeof AccountRouteWithChildren
   AdminRoute: typeof AdminRoute
+  AiDottxtRoute: typeof AiDottxtRoute
   BlogRoute: typeof BlogRouteWithChildren
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   ComboRoute: typeof ComboRoute
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
+  LlmsFullDottxtRoute: typeof LlmsFullDottxtRoute
+  LlmsDottxtRoute: typeof LlmsDottxtRoute
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   ProductsRoute: typeof ProductsRouteWithChildren
@@ -782,6 +833,7 @@ export interface RootRouteChildren {
   VerifyCodeRoute: typeof VerifyCodeRouteWithChildren
   VerifyHeatmapRoute: typeof VerifyHeatmapRoute
   VerifyWallRoute: typeof VerifyWallRoute
+  ApiPublicAiContextRoute: typeof ApiPublicAiContextRoute
   ApiPublicAutoInvoiceRoute: typeof ApiPublicAutoInvoiceRoute
   ApiPublicAutoShipmentRoute: typeof ApiPublicAutoShipmentRoute
   ApiPublicConversionRoute: typeof ApiPublicConversionRoute
@@ -890,6 +942,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/llms.txt': {
+      id: '/llms.txt'
+      path: '/llms.txt'
+      fullPath: '/llms.txt'
+      preLoaderRoute: typeof LlmsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms-full.txt': {
+      id: '/llms-full.txt'
+      path: '/llms-full.txt'
+      fullPath: '/llms-full.txt'
+      preLoaderRoute: typeof LlmsFullDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/faq': {
       id: '/faq'
       path: '/faq'
@@ -930,6 +996,13 @@ declare module '@tanstack/react-router' {
       path: '/blog'
       fullPath: '/blog'
       preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai.txt': {
+      id: '/ai.txt'
+      path: '/ai.txt'
+      fullPath: '/ai.txt'
+      preLoaderRoute: typeof AiDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -1170,6 +1243,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicAutoInvoiceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/ai-context': {
+      id: '/api/public/ai-context'
+      path: '/api/public/ai-context'
+      fullPath: '/api/public/ai-context'
+      preLoaderRoute: typeof ApiPublicAiContextRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/subscriptions-run': {
       id: '/api/public/hooks/subscriptions-run'
       path: '/api/public/hooks/subscriptions-run'
@@ -1289,12 +1369,15 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AccountRoute: AccountRouteWithChildren,
   AdminRoute: AdminRoute,
+  AiDottxtRoute: AiDottxtRoute,
   BlogRoute: BlogRouteWithChildren,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   ComboRoute: ComboRoute,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
+  LlmsFullDottxtRoute: LlmsFullDottxtRoute,
+  LlmsDottxtRoute: LlmsDottxtRoute,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   ProductsRoute: ProductsRouteWithChildren,
@@ -1316,6 +1399,7 @@ const rootRouteChildren: RootRouteChildren = {
   VerifyCodeRoute: VerifyCodeRouteWithChildren,
   VerifyHeatmapRoute: VerifyHeatmapRoute,
   VerifyWallRoute: VerifyWallRoute,
+  ApiPublicAiContextRoute: ApiPublicAiContextRoute,
   ApiPublicAutoInvoiceRoute: ApiPublicAutoInvoiceRoute,
   ApiPublicAutoShipmentRoute: ApiPublicAutoShipmentRoute,
   ApiPublicConversionRoute: ApiPublicConversionRoute,
@@ -1340,13 +1424,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
