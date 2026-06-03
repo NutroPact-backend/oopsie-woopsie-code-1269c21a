@@ -1678,28 +1678,157 @@ export type Database = {
       }
       marketing_settings: {
         Row: {
+          ab_experiments: Json | null
+          ai_allow_inference: boolean | null
+          ai_allow_training: boolean | null
+          ai_brand_description: string | null
+          ai_facts: Json | null
+          ai_founder: Json | null
+          ai_mission: string | null
+          ai_policy_text: string | null
+          ai_usps: Json | null
+          bing_verification: string | null
           created_at: string
           data: Json | null
+          fb_capi_access_token: string | null
+          fb_capi_pixel_id: string | null
+          fb_capi_test_event_code: string | null
+          ga4_api_secret: string | null
+          ga4_measurement_id: string | null
+          geo_latitude: number | null
+          geo_longitude: number | null
+          geo_price_range: string | null
+          geo_service_areas: Json | null
+          gsc_verification: string | null
+          hreflang: Json | null
           id: string
           key: string
+          linkedin_partner_id: string | null
+          llms_extra_sections: Json | null
+          llms_intro: string | null
+          og_default_image: string | null
+          og_site_name: string | null
+          org_address: Json | null
+          org_email: string | null
+          org_founding_date: string | null
+          org_legal_name: string | null
+          org_opening_hours: Json | null
+          org_phone: string | null
+          org_same_as: Json | null
+          org_slogan: string | null
+          pinterest_tag_id: string | null
+          pinterest_verification: string | null
+          quora_pixel_id: string | null
+          reddit_pixel_id: string | null
+          robots_txt: string | null
+          twitter_card_type: string | null
+          twitter_pixel_id: string | null
+          twitter_site_handle: string | null
           updated_at: string
           value: Json | null
+          yandex_verification: string | null
         }
         Insert: {
+          ab_experiments?: Json | null
+          ai_allow_inference?: boolean | null
+          ai_allow_training?: boolean | null
+          ai_brand_description?: string | null
+          ai_facts?: Json | null
+          ai_founder?: Json | null
+          ai_mission?: string | null
+          ai_policy_text?: string | null
+          ai_usps?: Json | null
+          bing_verification?: string | null
           created_at?: string
           data?: Json | null
+          fb_capi_access_token?: string | null
+          fb_capi_pixel_id?: string | null
+          fb_capi_test_event_code?: string | null
+          ga4_api_secret?: string | null
+          ga4_measurement_id?: string | null
+          geo_latitude?: number | null
+          geo_longitude?: number | null
+          geo_price_range?: string | null
+          geo_service_areas?: Json | null
+          gsc_verification?: string | null
+          hreflang?: Json | null
           id?: string
           key: string
+          linkedin_partner_id?: string | null
+          llms_extra_sections?: Json | null
+          llms_intro?: string | null
+          og_default_image?: string | null
+          og_site_name?: string | null
+          org_address?: Json | null
+          org_email?: string | null
+          org_founding_date?: string | null
+          org_legal_name?: string | null
+          org_opening_hours?: Json | null
+          org_phone?: string | null
+          org_same_as?: Json | null
+          org_slogan?: string | null
+          pinterest_tag_id?: string | null
+          pinterest_verification?: string | null
+          quora_pixel_id?: string | null
+          reddit_pixel_id?: string | null
+          robots_txt?: string | null
+          twitter_card_type?: string | null
+          twitter_pixel_id?: string | null
+          twitter_site_handle?: string | null
           updated_at?: string
           value?: Json | null
+          yandex_verification?: string | null
         }
         Update: {
+          ab_experiments?: Json | null
+          ai_allow_inference?: boolean | null
+          ai_allow_training?: boolean | null
+          ai_brand_description?: string | null
+          ai_facts?: Json | null
+          ai_founder?: Json | null
+          ai_mission?: string | null
+          ai_policy_text?: string | null
+          ai_usps?: Json | null
+          bing_verification?: string | null
           created_at?: string
           data?: Json | null
+          fb_capi_access_token?: string | null
+          fb_capi_pixel_id?: string | null
+          fb_capi_test_event_code?: string | null
+          ga4_api_secret?: string | null
+          ga4_measurement_id?: string | null
+          geo_latitude?: number | null
+          geo_longitude?: number | null
+          geo_price_range?: string | null
+          geo_service_areas?: Json | null
+          gsc_verification?: string | null
+          hreflang?: Json | null
           id?: string
           key?: string
+          linkedin_partner_id?: string | null
+          llms_extra_sections?: Json | null
+          llms_intro?: string | null
+          og_default_image?: string | null
+          og_site_name?: string | null
+          org_address?: Json | null
+          org_email?: string | null
+          org_founding_date?: string | null
+          org_legal_name?: string | null
+          org_opening_hours?: Json | null
+          org_phone?: string | null
+          org_same_as?: Json | null
+          org_slogan?: string | null
+          pinterest_tag_id?: string | null
+          pinterest_verification?: string | null
+          quora_pixel_id?: string | null
+          reddit_pixel_id?: string | null
+          robots_txt?: string | null
+          twitter_card_type?: string | null
+          twitter_pixel_id?: string | null
+          twitter_site_handle?: string | null
           updated_at?: string
           value?: Json | null
+          yandex_verification?: string | null
         }
         Relationships: []
       }
