@@ -649,19 +649,13 @@ export default function Home() {
 
   const homeData = hp ?? {};
   const rawSections = homeData.sections?.length ? mergeSectionsWithLegacy(homeData.sections, homeData) : legacySectionsFromHp(homeData);
-  const sections = rawSections
+  const configuredSections = rawSections
     .filter((s: any) => s.enabled !== false)
     .sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
-  const hasSections = sections.some((sec: any) => {
-    if (sec.type === 'heroSlider') return Array.isArray(sec.slides) && sec.slides.length > 0;
-    if (sec.type === 'goalTiles') return Array.isArray(sec.tiles) && sec.tiles.length > 0;
-    if (sec.type === 'banner') return Boolean(sec.banner?.image || sec.image || sec.heading?.text || sec.title || sec.subheading?.text || sec.subtitle || sec.btnText);
-    if (sec.type === 'text') return Boolean(sec.textContent || sec.content || sec.heading?.text || sec.title || sec.subheading?.text || sec.subtitle);
-    if (sec.type === 'trustbar') return Array.isArray(sec.trustbarSettings?.items) && sec.trustbarSettings.items.length > 0;
-    if (sec.type === 'featuredProducts') return products.length > 0;
-    if (sec.type === 'reviews' || sec.type === 'testimonials') return testimonials.length > 0;
-    return false;
-  });
+  const hasConfiguredHomepage = configuredSections.some((sec: any) => sectionHasRenderableContent(sec, products, testimonials));
+  const sections = (hasConfiguredHomepage ? configuredSections : buildDefaultHomepageSections(products, testimonials))
+    .filter((s: any) => s.enabled !== false)
+    .sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
 
   return (
     <div className="overflow-x-hidden">
@@ -670,23 +664,6 @@ export default function Home() {
           the existing CMS-driven hero design. */}
       <h1 className="sr-only">NutroPact — Premium Nutrition &amp; Supplements</h1>
       <VideoSections placement="home" />
-      {!hasSections && (
-        <section className="px-4 py-16 md:px-8 md:py-24">
-          <div className="mx-auto flex min-h-[50vh] max-w-6xl items-center justify-center">
-            <div className="text-center">
-              <p className="text-sm font-semibold uppercase tracking-[0.08em] text-orange-500">NutroPact</p>
-              <h2 className="mt-4 text-3xl font-bold text-gray-900 md:text-5xl">Premium nutrition, now loading with a safe fallback</h2>
-              <p className="mx-auto mt-4 max-w-2xl text-base text-gray-600 md:text-lg">
-                Homepage content abhi configured nahi hai, isliye site blank nahi chhodi. Aap products aur core pages browse kar sakte ho.
-              </p>
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                <Link href="/products" className="hp-btn-primary inline-block"><T>Shop Products</T></Link>
-                <Link href="/our-story" className="hp-btn-secondary inline-block"><T>Our Story</T></Link>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
       {sections.map((sec: any, idx: number) => {
         const key = sec._id || idx;
         if (sec.type === 'heroSlider')      return <HeroSlider       key={key} sec={sec} />;
