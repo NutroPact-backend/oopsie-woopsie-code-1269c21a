@@ -7,7 +7,7 @@ export const Route = createFileRoute("/products/$slug")({
   loader: async ({ params }) => {
     const { data } = await supabase
       .from("products")
-      .select("name,slug,short_description,description,price,compare_price,images,brand,sku,in_stock")
+      .select("name,slug,short_description,description,price,compare_price,images,brand,sku,in_stock,rating,review_count")
       .eq("slug", params.slug)
       .maybeSingle();
     if (!data) throw notFound();
@@ -54,6 +54,15 @@ export const Route = createFileRoute("/products/$slug")({
               price: p.price,
               availability: p.in_stock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
             },
+            ...(Number(p.rating) > 0 && Number(p.review_count) > 0 ? {
+              aggregateRating: {
+                "@type": "AggregateRating",
+                ratingValue: Number(p.rating).toFixed(1),
+                reviewCount: Number(p.review_count),
+                bestRating: "5",
+                worstRating: "1",
+              },
+            } : {}),
           }),
         },
         {

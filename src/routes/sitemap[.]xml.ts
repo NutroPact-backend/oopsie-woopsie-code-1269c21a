@@ -7,7 +7,7 @@ const BASE_URL = 'https://www.nutropact.com';
 const STATIC_PATHS = [
   '/', '/products', '/combo', '/about', '/contact', '/blog', '/faq',
   '/shipping', '/refund', '/privacy', '/terms', '/testimonials', '/track-order',
-  '/search', '/support',
+  '/search', '/support', '/answers',
 ];
 
 

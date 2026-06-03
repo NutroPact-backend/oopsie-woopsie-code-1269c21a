@@ -64,6 +64,8 @@ Sitemap: /sitemap.xml
 # Full LLM doc: /llms-full.txt
 # AI policy:    /ai.txt
 # JSON context: /api/public/ai-context
+# RSS feed:     /rss.xml
+# Q&A hub:      /answers
 `;
 
 export const Route = createFileRoute('/robots.txt')({

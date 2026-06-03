@@ -258,6 +258,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         { rel: "alternate", type: "text/markdown", title: "LLM Summary (llms.txt)", href: "/llms.txt" },
         { rel: "alternate", type: "text/markdown", title: "LLM Full Reference", href: "/llms-full.txt" },
         { rel: "alternate", type: "application/json", title: "AI Context (JSON)", href: "/api/public/ai-context" },
+        { rel: "alternate", type: "application/rss+xml", title: "NutroPact Blog RSS", href: "/rss.xml" },
         ...(SUPABASE_ORIGIN ? [
           { rel: "preconnect", href: SUPABASE_ORIGIN, crossOrigin: "anonymous" as const },
           { rel: "dns-prefetch", href: SUPABASE_ORIGIN },

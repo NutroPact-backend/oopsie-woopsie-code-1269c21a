@@ -47,6 +47,17 @@ export const Route = createFileRoute("/blog/$slug")({
             author: { "@type": "Person", name: post.author || "NutroPact Team" },
             datePublished: post.created_at,
             dateModified: post.updated_at,
+            mainEntityOfPage: { "@type": "WebPage", "@id": `https://www.nutropact.com${url}` },
+            publisher: {
+              "@type": "Organization",
+              name: "NutroPact",
+              logo: { "@type": "ImageObject", url: "https://www.nutropact.com/favicon.svg" },
+            },
+            speakable: {
+              "@type": "SpeakableSpecification",
+              cssSelector: ["h1", "article p"],
+            },
+            inLanguage: "en-IN",
           }),
         },
         {
