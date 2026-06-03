@@ -14,19 +14,45 @@ function line(title: string, path: string, desc?: string) {
 }
 
 async function build(): Promise<string> {
-  const [cats, prods, posts] = await Promise.all([
+  const [cats, prods, posts, cfgRow] = await Promise.all([
     supabaseAdmin.from('categories').select('slug,name,description').limit(20),
     supabaseAdmin.from('products').select('slug,name,short_description,description').eq('is_active', true).order('updated_at', { ascending: false }).limit(40),
     supabaseAdmin.from('blog_posts').select('slug,title,excerpt').eq('published', true).order('updated_at', { ascending: false }).limit(20),
+    supabaseAdmin.from('marketing_settings')
+      .select('llms_intro,ai_brand_description,ai_mission,ai_usps,ai_facts,llms_extra_sections,org_legal_name')
+      .eq('key', 'default').maybeSingle(),
   ]);
+  const cfg: any = cfgRow.data || {};
+  const brandName = cfg.org_legal_name || 'NutroPact';
 
   const out: string[] = [];
-  out.push('# NutroPact');
+  out.push(`# ${brandName}`);
   out.push('');
-  out.push('> NutroPact is an India-based premium nutrition and supplements brand selling lab-tested whey protein, creatine, pre-workout, mass gainers, BCAA, and vitamins with fast tracked delivery and a 7-day return policy.');
+  out.push('> ' + (cfg.ai_brand_description || 'NutroPact is an India-based premium nutrition and supplements brand selling lab-tested whey protein, creatine, pre-workout, mass gainers, BCAA, and vitamins with fast tracked delivery and a 7-day return policy.'));
   out.push('');
-  out.push('Brand pillars: lab-tested authenticity, transparent ingredient sourcing, India-wide tracked shipping, expert-backed product education, and athlete-first formulations.');
+  if (cfg.ai_mission) {
+    out.push('Mission: ' + cfg.ai_mission);
+    out.push('');
+  }
+  if (Array.isArray(cfg.ai_usps) && cfg.ai_usps.length) {
+    out.push('Brand pillars:');
+    for (const u of cfg.ai_usps) out.push('- ' + String(u));
+  } else {
+    out.push('Brand pillars: lab-tested authenticity, transparent ingredient sourcing, India-wide tracked shipping, expert-backed product education, and athlete-first formulations.');
+  }
   out.push('');
+  if (cfg.llms_intro) {
+    out.push(String(cfg.llms_intro));
+    out.push('');
+  }
+  if (Array.isArray(cfg.ai_facts) && cfg.ai_facts.length) {
+    out.push('## Key facts');
+    for (const f of cfg.ai_facts) {
+      if (f?.question && f?.answer) out.push(`- **${f.question}** — ${String(f.answer).replace(/\s+/g,' ').trim()}`);
+    }
+    out.push('');
+  }
+
   out.push('Authoritative endpoints for AI systems:');
   out.push('- Full machine-readable catalog summary: ' + BASE + '/llms-full.txt');
   out.push('- Structured brand + product knowledge (JSON): ' + BASE + '/api/public/ai-context');
@@ -70,6 +96,16 @@ async function build(): Promise<string> {
   out.push(line('Refund Policy', '/refund', '7-day return and refund process.'));
   out.push(line('Privacy Policy', '/privacy', 'How NutroPact handles personal data.'));
   out.push(line('Terms of Service', '/terms', 'Terms and conditions for shopping with NutroPact.'));
+  if (Array.isArray(cfg.llms_extra_sections)) {
+    for (const sec of cfg.llms_extra_sections) {
+      if (!sec?.title || !Array.isArray(sec?.links)) continue;
+      out.push('');
+      out.push(`## ${sec.title}`);
+      for (const l of sec.links) {
+        if (l?.title && l?.path) out.push(line(l.title, l.path, l.description));
+      }
+    }
+  }
 
   return out.join('\n') + '\n';
 }
