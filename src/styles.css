@@ -358,44 +358,4 @@ html[data-native] header, html[data-native] nav, html[data-native] footer {
   }
 }
 
-/* =========================================================================
-   3D Layer — global hooks for the immersive 3D pass.
-   - `.tilt-3d` opt-in class for any block (cards, hero figures)
-   - Product card images get auto-tilt by selector below
-   - Respect prefers-reduced-motion + coarse pointer (touch)
-   ========================================================================= */
-
-/* Default product cards & feature blocks become 3D-tilt targets.
-   The AutoTilt3D mount picks up [data-tilt] at runtime. We attach the
-   attribute via CSS-attr selectors is not possible, so we add it via a
-   tiny inline hint: any element matching these selectors gets data-tilt
-   automatically through the MutationObserver in AutoTilt3D. */
-
-.tilt-3d,
-[data-tilt] {
-  transform-style: preserve-3d;
-  transition: transform 200ms ease-out, box-shadow 200ms ease-out;
-}
-
-.tilt-3d:hover,
-[data-tilt]:hover {
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
-}
-
-/* Glass surface treatment for cards over the 3D background */
-.glass-3d {
-  background: rgba(255, 255, 255, 0.72);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tilt-3d, [data-tilt] { transition: none !important; transform: none !important; }
-}
-
-@media (pointer: coarse) {
-  /* mobile: keep depth/glass aesthetic, drop tilt jitter */
-  [data-tilt] { transform: none !important; }
-}
 
