@@ -458,6 +458,7 @@ function mergeSectionsWithLegacy(existingSections: any[], hp: any) {
 
 export default function Home() {
   const [hp, setHp] = useState<any>(null);
+  const [hpResolved, setHpResolved] = useState(false);
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
 
@@ -468,12 +469,15 @@ export default function Home() {
   });
 
   useEffect(() => {
-    API.get('/homepage').then(r => setHp(r.data)).catch(() => setHp({}));
+    API.get('/homepage')
+      .then(r => setHp(r.data))
+      .catch(() => setHp({}))
+      .finally(() => setHpResolved(true));
     API.get('/homepage/testimonials').then(r => setTestimonials(r.data)).catch(() => {});
     API.get('/products').then(r => setProducts(r.data || [])).catch(() => {});
   }, []);
 
-  if (!hp) return (
+   if (!hp && !hpResolved) return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="animate-spin w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full" />
     </div>
