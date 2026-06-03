@@ -2033,6 +2033,7 @@ export default function AdminPage() {
             {tab === 'seodebug'     && <SeoDebugTab />}
             {tab === 'marketing'    && <MarketingSeoTab />}
             {tab === 'seocommand'   && <SeoCommandTab />}
+            {tab === 'aiseo'        && <AiSeoCenterTab />}
             {tab === 'roas'         && <RoasDashboardTab />}
             {tab === 'bulkorders'   && <OrderBulkOpsTab />}
             {tab === 'experiments'  && <AbExperimentsTab />}
