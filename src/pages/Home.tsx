@@ -457,6 +457,175 @@ function mergeSectionsWithLegacy(existingSections: any[], hp: any) {
   return [...existing, ...additions];
 }
 
+function sectionHasRenderableContent(sec: any, products: any[], testimonials: any[]) {
+  if (sec.type === 'heroSlider') return Array.isArray(sec.slides) && sec.slides.length > 0;
+  if (sec.type === 'goalTiles') return Array.isArray(sec.tiles) && sec.tiles.length > 0;
+  if (sec.type === 'banner') return Boolean(sec.banner?.image || sec.image || sec.heading?.text || sec.title || sec.subheading?.text || sec.subtitle || sec.btnText);
+  if (sec.type === 'text') return Boolean(sec.textContent || sec.content || sec.heading?.text || sec.title || sec.subheading?.text || sec.subtitle);
+  if (sec.type === 'trustbar') return Array.isArray(sec.trustbarSettings?.items) && sec.trustbarSettings.items.length > 0;
+  if (sec.type === 'featuredProducts') return products.length > 0;
+  if (sec.type === 'reviews' || sec.type === 'testimonials') return testimonials.length > 0;
+  return false;
+}
+
+function buildDefaultHomepageSections(products: any[], testimonials: any[]) {
+  const sections: any[] = [
+    {
+      type: 'banner',
+      name: 'NutroPact Hero',
+      order: 0,
+      enabled: true,
+      bgColor: '#fff7ed',
+      desktopPaddingTop: 72,
+      desktopPaddingBottom: 72,
+      mobilePaddingTop: 48,
+      mobilePaddingBottom: 48,
+      heading: {
+        text: 'Premium nutrition that does not cut corners',
+        desktopSize: 48,
+        mobileSize: 32,
+        weight: '900',
+        color: '#111827',
+        align: 'center',
+        marginBottom: 16,
+      },
+      subheading: {
+        text: 'Lab-tested whey, creatine, pre-workout, and daily performance essentials built for athletes across India.',
+        desktopSize: 18,
+        mobileSize: 16,
+        weight: '400',
+        color: '#4b5563',
+        align: 'center',
+        marginBottom: 0,
+      },
+      btnText: 'Shop All Products',
+      btnLink: '/products',
+    },
+    {
+      type: 'trustbar',
+      name: 'Trust Bar',
+      order: 10,
+      enabled: true,
+      bgColor: '#ffffff',
+      desktopPaddingTop: 18,
+      desktopPaddingBottom: 18,
+      mobilePaddingTop: 16,
+      mobilePaddingBottom: 16,
+      trustbarSettings: {
+        gap: 24,
+        textSize: 14,
+        textWeight: '700',
+        iconSize: 18,
+        items: [
+          { enabled: true, icon: '🧪', text: 'Lab-tested batches' },
+          { enabled: true, icon: '🚚', text: 'Tracked delivery across India' },
+          { enabled: true, icon: '✅', text: 'Authenticity-first approach' },
+          { enabled: true, icon: '↩️', text: '7-day return support' },
+        ],
+      },
+    },
+    {
+      type: 'goalTiles',
+      name: 'Core Categories',
+      order: 20,
+      enabled: true,
+      bgColor: '#f8fafc',
+      heading: {
+        text: 'Shop the essentials',
+        desktopSize: 30,
+        mobileSize: 24,
+        weight: '900',
+        color: '#111827',
+        align: 'center',
+        marginBottom: 12,
+      },
+      subheading: {
+        text: 'Everyday staples for strength, recovery, and performance.',
+        desktopSize: 16,
+        mobileSize: 14,
+        weight: '400',
+        color: '#6b7280',
+        align: 'center',
+        marginBottom: 0,
+      },
+      tileSettings: {
+        desktopTileWidth: 250,
+        desktopTileHeight: 220,
+        desktopImageHeight: 152,
+        radius: 14,
+        imagePadding: 0,
+        gridGap: 22,
+        tileBottomHeight: 40,
+        tileBottomColor: '#f97316',
+        tileBg: '#111827',
+        tileBottomTextColor: '#ffffff',
+      },
+      tiles: [
+        { enabled: true, image: '', link: '/products?search=whey', bottomText: { text: 'Whey Protein', desktopSize: 15, weight: '800', color: '#ffffff', align: 'center' }, bgColor: '#111827', bottomColor: '#f97316' },
+        { enabled: true, image: '', link: '/products?search=creatine', bottomText: { text: 'Creatine', desktopSize: 15, weight: '800', color: '#ffffff', align: 'center' }, bgColor: '#1f2937', bottomColor: '#fb923c' },
+        { enabled: true, image: '', link: '/products?search=pre-workout', bottomText: { text: 'Pre-Workout', desktopSize: 15, weight: '800', color: '#ffffff', align: 'center' }, bgColor: '#0f172a', bottomColor: '#ea580c' },
+        { enabled: true, image: '', link: '/products?search=gainer', bottomText: { text: 'Mass Gainers', desktopSize: 15, weight: '800', color: '#ffffff', align: 'center' }, bgColor: '#1e293b', bottomColor: '#f59e0b' },
+      ],
+    },
+    {
+      type: 'text',
+      name: 'Brand Promise',
+      order: 30,
+      enabled: true,
+      bgColor: '#ffffff',
+      heading: {
+        text: 'Built for serious athletes, not empty claims',
+        desktopSize: 32,
+        mobileSize: 24,
+        weight: '900',
+        color: '#111827',
+        align: 'center',
+        marginBottom: 12,
+      },
+      subheading: {
+        text: 'NutroPact keeps quality, transparency, and practical performance at the center of every batch.',
+        desktopSize: 16,
+        mobileSize: 14,
+        weight: '400',
+        color: '#6b7280',
+        align: 'center',
+        marginBottom: 0,
+      },
+      content: '<p>Shop confidently with lab-tested formulations, clear ingredient information, tracked delivery, COD support, and a customer-first return process.</p>',
+      btnText: 'Read Our Story',
+      btnLink: '/about',
+    },
+  ];
+
+  if (products.length > 0) {
+    sections.push({
+      type: 'featuredProducts',
+      name: 'Featured Products',
+      order: 40,
+      enabled: true,
+      bgColor: '#ffffff',
+      heading: { text: 'Popular right now', desktopSize: 30, mobileSize: 24, weight: '900', color: '#111827', align: 'center', marginBottom: 8 },
+      subheading: { text: 'Top picks from the live catalog.', desktopSize: 16, mobileSize: 14, weight: '400', color: '#6b7280', align: 'center', marginBottom: 0 },
+      featuredSettings: { count: 4, category: '' },
+    });
+  }
+
+  if (testimonials.length > 0) {
+    sections.push({
+      type: 'testimonials',
+      name: 'Testimonials',
+      order: 50,
+      enabled: true,
+      bgColor: '#f8fafc',
+      heading: { text: 'What customers are saying', desktopSize: 28, mobileSize: 22, weight: '900', color: '#111827', align: 'center', marginBottom: 8 },
+      subheading: { text: 'Verified feedback from real shoppers.', desktopSize: 16, mobileSize: 14, weight: '400', color: '#6b7280', align: 'center', marginBottom: 0 },
+      reviewsSettings: { count: 8, minRating: 4 },
+    });
+  }
+
+  return sections;
+}
+
 export default function Home() {
   const [hp, setHp] = useState<any>(null);
   const [hpResolved, setHpResolved] = useState(false);
