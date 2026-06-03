@@ -82,7 +82,7 @@ const GET: Record<string, Handler> = {
       supabase.from("global_reviews").select("*")
         .eq("is_approved", true)
         .eq("is_featured", true)
-        .order("pinned", { ascending: false })
+        .order("is_featured", { ascending: false })
         .order("created_at", { ascending: false })
         .limit(30),
       supabase.from("product_reviews").select("*")
@@ -97,11 +97,12 @@ const GET: Record<string, Handler> = {
     return camelize(merged);
   },
   "/testimonials": async () => {
-    // Manual reviews admin enabled for testimonials page + ALL customer-submitted product reviews
+    // Manual reviews + ALL customer-submitted product reviews.
+    // Stay compatible with the older global_reviews schema.
     const [manual, productReviews, productsList] = await Promise.all([
       supabase.from("global_reviews").select("*")
-        .eq("show_on_testimonials", true)
-        .order("pinned", { ascending: false })
+        .eq("is_approved", true)
+        .order("is_featured", { ascending: false })
         .order("created_at", { ascending: false }),
       supabase.from("product_reviews").select("*").order("created_at", { ascending: false }),
       supabase.from("products").select("id,name,slug"),
