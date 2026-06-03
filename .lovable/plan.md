@@ -1,130 +1,124 @@
-## 🎯 Goal
 
-3 cheezein deliver karni hain:
-1. **AI/Translation engine switch** — Lovable AI Gateway nikal ke teri di hui API key use karni h (Google Cloud Translation API recommend kar raha hu — accuracy ke liye)
-2. **Full audit & wrap** — pages/products/blogs/banners/FAQs sab admin-authored content ko `useContentTBatch` se wrap karna h taki language switch pe sab translate ho
-3. **Glitch fixes** — existing setup me 2 chhote issues hain (niche detail h)
+# Plan: AI SEO Domination — Option A + Option B
+
+Goal: Maximize real AI-search visibility (ChatGPT, Perplexity, Google AI Overviews, Gemini, Claude) by (A) adding missing on-site schema/entity signals and (B) building a 5-vector AI SEO Command Center inside admin to monitor + roadmap progress.
 
 ---
 
-## 🌐 Part 1 — Translation Engine (100% accuracy ke liye)
+## PART A — On-site signal upgrades (real ranking impact)
 
-### Recommendation: **Google Cloud Translation API**
+### A1. Schema enrichments
+- **`src/routes/__root.tsx`** — extend Organization JSON-LD:
+  - Add `sameAs: [...]` (Instagram, YouTube, Facebook, Twitter/X, LinkedIn) — pulled from `marketing_settings.social_links` (already in DB).
+  - Add separate `Brand` schema node.
+  - Add `ContactPoint` (customerService phone + email) from settings.
+- **`src/routes/testimonials.tsx`** — add brand-level `AggregateRating` + array of `Review` schema from real testimonials table.
+- **`src/routes/products.$slug.tsx`** — add:
+  - `HowTo` schema ("How to use {product}") generated from product.usage_instructions (fallback: omit).
+  - `Product → brand` reference + `Product → review[]` (top 5 product reviews if exist).
+  - `Question`/`Answer` schema from existing product Q&A table (top 3).
+- **`src/routes/blog.$slug.tsx`** — already strong; add `BreadcrumbList`.
+- **Auto `BreadcrumbList`** helper in `src/lib/seo-schema.ts` — used by all leaf routes (about, faq, contact, products list, category, blog list, answers).
 
-Tu bola "100% accuracy chahiye" — iske liye **dedicated translation service** chahiye, LLM nahi. Comparison:
+### A2. Entity hooks (Entity SEO)
+- New component `src/components/seo/EntityFooter.tsx` rendered on home/about: structured "About {Brand}" block with `<dl>` of key facts (founded, founder, HQ, categories, certifications) — both visible to humans and wrapped in `Speakable` selector. Pull from marketing_settings AI fields.
 
-| Engine | Indian languages accuracy | Cost (after free tier) |
-|---|---|---|
-| Google Cloud Translation v3 | ~92-95% (industry best) | $20 per 1M chars |
-| Gemini/GPT (current) | ~80-85% | Per token |
-| LibreTranslate (free) | ~75% | Free |
+### A3. Conversational SEO
+- Existing `/answers` is good. Add **"People also ask"** accordion block (auto from FAQs by category) on every product, category, and blog page footer with `FAQPage` JSON-LD (deduplicated, top 4 per page).
 
-Google Translate **500K chars/month FREE** — tere 100 items + ~13 languages me first month free hi nikal jayega.
+### A4. Internal linking (entity graph)
+- New component `RelatedEntities` on product/blog/category pages: auto-renders 4–6 related links (same category / shared tags) with descriptive anchor text.
 
-### Code changes
-- New file `src/lib/translation-provider.server.ts` — abstraction with 2 backends:
-  1. **`google`** (default if `GOOGLE_TRANSLATE_API_KEY` set) — REST API call to `translation.googleapis.com/language/translate/v2`
-  2. **`ai-fallback`** — existing AI gateway (Gemini/OpenAI), used only if Google key missing
-- Refactor `src/lib/content-translations.functions.ts` → `translateBatch()` calls new provider instead of inline AI
-- **Lovable AI Gateway code untouched** — bas priority me Google ko top pe rakh denge. AI ko fallback rakhenge taki agar Google API key na ho to system na toote.
-
-### Secret needed
-Tu **Google Cloud Translation API key** banake dega:
-- Console: https://console.cloud.google.com/ → enable "Cloud Translation API" → Credentials → Create API Key
-- Restrict it to "Cloud Translation API" only (security)
-
-Main `secrets--add_secret` se `GOOGLE_TRANSLATE_API_KEY` maangunga jab build mode me jayega.
+### A5. AI-friendly metadata sync
+- Update `/llms-full.txt` to dynamically include top 50 products with name+1-line description+price+URL (helps LLM retrieval).
+- Update `/api/public/ai-context` to include FAQ list, testimonials snippets, latest 10 blog titles.
 
 ---
 
-## 🔍 Part 2 — Full Audit & Wrap (sabse bada chunk)
+## PART B — AI SEO Command Center (admin dashboard)
 
-Abhi sirf 2 files me `useContentTBatch` use ho raha h. Saare ye DB-fed content **English me hi dikh raha h** language switch ke baad:
+### B1. Database (single migration)
+Three new tables (project-scoped to support future multi-site, but defaults to single project for now):
 
-### Customer pages to wrap
-
-| File | Admin-authored fields |
-|---|---|
-| `src/pages/Home.tsx` | section headings, subheadings, banner text, hero copy |
-| `src/pages/ProductPage.tsx` | product name, description, badges, review titles, Q&A |
-| `src/pages/ProductsPage.tsx` | product names, category names |
-| `src/pages/AboutPage.tsx` | story title/subtitle, blocks, pillars |
-| `src/pages/BlogPage.tsx` + `BlogPostPage.tsx` | post titles, excerpts, content |
-| `src/pages/FAQPage.tsx` | question/answer pairs |
-| `src/pages/TestimonialsPage.tsx` | testimonial text, author names→keep |
-| `src/pages/ComboPage.tsx` | combo names, descriptions |
-| `src/pages/CustomPage.tsx` | custom page title + body |
-| `src/pages/ContactPage.tsx`, `ShippingPage.tsx`, `RefundPage.tsx`, `TermsPage.tsx`, `PrivacyPage.tsx`, `ReturnPage.tsx` | page title + content (admin settings) |
-
-### Shared components
-| File | Fields |
-|---|---|
-| `src/components/layout/Header.tsx` | nav labels (if from DB) |
-| `src/components/layout/Footer.tsx` | footer links, copy |
-| `src/components/layout/AnnouncementBar.tsx` | announcement text |
-| `src/components/MarketplaceStrip.tsx`, `TrustBadges.tsx`, `SocialProof.tsx` | labels |
-| `src/components/CategoryLinks.tsx` | category names |
-| `src/components/product/OffersSection.tsx`, `UrgencyStack.tsx` | offer copy |
-| `src/components/RecentlyViewed.tsx`, `AbandonedCart.tsx` | product names |
-
-### Pattern me wrap karunga
-```tsx
-// Pehle (English me lock)
-<h2>{section.heading}</h2>
-
-// Baad me (auto-translate)
-const ct = useContentTBatch([
-  { entityType: "home_section", entityId: section.id, field: "heading", source: section.heading },
-  { entityType: "home_section", entityId: section.id, field: "subheading", source: section.subheading ?? "" },
-]);
-<h2>{ct("home_section", section.id, "heading")}</h2>
+```text
+ai_seo_projects(id, project_name, target_url, created_at)
+ai_seo_audits(id, project_id, score_aeo, score_geo, score_entity,
+              score_reputation, score_conversational, alerts jsonb,
+              checks jsonb, last_scanned_at)
+ai_seo_roadmap_tasks(id, project_id, phase, category, title,
+                     description, is_completed, sort_order,
+                     is_auto_injected, created_at)
 ```
+RLS: admin-only (uses `has_role(auth.uid(),'admin')`). GRANTs for `authenticated` + `service_role`. Seed one default project on first load.
 
-### Stable `entityType` naming convention (memory me save karunga)
-- `product` (name, description, short_desc)
-- `blog_post` (title, excerpt, content)
-- `faq_item` (question, answer)
-- `page_block` (title, body) — for custom pages, about, privacy etc.
-- `home_section` (heading, subheading, cta_label)
-- `banner` (text)
-- `category` (name)
-- `nav_item` (label)
-- `testimonial` (text)
-- `combo` (name, description)
+### B2. Server functions (`src/lib/aiSeoCenter.functions.ts`)
+- `runAiSeoAudit({ projectId })` — admin-only, fetches:
+  - `/robots.txt` → parses for `GPTBot, ChatGPT-User, Google-Extended, PerplexityBot, ClaudeBot, anthropic-ai, CCBot` Disallow rules → `score_geo`
+  - `/sitemap.xml`, `/llms.txt`, `/ai.txt`, `/rss.xml` reachability
+  - DB counts: # of FAQs (AEO), # of testimonials w/ reviews (Reputation), avg blog speakable coverage (Conversational), Organization+Brand+sameAs presence (Entity)
+  - Computes 5 scores 0–100 with documented rules
+  - Writes row to `ai_seo_audits`; triggers roadmap auto-injection per Rule 2 of spec
+- `getAiSeoOverview({ projectId })` — latest audit + alerts + score history (last 30 days)
+- `listRoadmapTasks` / `toggleRoadmapTask` / `addRoadmapTask` / `seedDefaultRoadmap`
+- `generateSchemaSnippet({ type, payload })` — returns FAQ/Article/Entity JSON-LD strings
 
-Jab future me admin koi naya section banaye, bas existing `entityType` me se pick karna h ya naya add karna h.
+### B3. Admin UI — new tab `src/pages/admin/tabs/AiSeoCenterTab.tsx`
+Sub-tabs:
+1. **Overview** — circular Global Health Score (avg of 5), Critical Alerts banner, 5 metric cards (AEO/GEO/Entity/Reputation/Conversational), "Run Audit Now" button + last-scanned timestamp.
+2. **Audit Engine** — Technical panel (robots/sitemap/llms.txt/ai.txt/rss status with green/red), Schema Generator (form → JSON-LD output + copy button for FAQ, Article, Entity, HowTo), URL status table (from sitemap with detected issues).
+3. **90-Day Roadmap** — 3-column kanban (Phase 1/2/3), each task = checkbox card with title + collapsible description, auto-injected tasks highlighted with badge, "Add custom task" button per column.
 
----
+Register in admin tab nav + tab-permissions.ts.
 
-## 🐞 Part 3 — Existing setup glitches mile
-
-### Glitch 1: `useAutoT` ka length cap silently fail karta h
-File: `src/lib/useContentT.tsx` line ~145 — `if (text.length > 200) return;` — agar koi `<T>` me 200+ char ka string dale to chup-chap source dikha deta h, koi warning nahi. **Fix:** length cap hata ke proper UI strings ke liye chunking add karunga, ya `console.warn` lagaunga dev mode me.
-
-### Glitch 2: `LocaleSwitcher` aur `LanguagePicker` me overlap
-2 components hain language switching ke liye — `LocaleSwitcher` (hreflang region) aur `LanguagePicker` (in-app locale). Confusing. **Fix:** verify karunga koi conflict toh nahi, dono apne-apne purpose ke liye chal rahe hain — agar nahi, consolidate karunga.
-
-### Glitch 3: Batch limit 50, lekin ProductsPage me 50+ products ho sakte
-`getContentTranslations` me `max(50)` validator h. Agar ek page pe 50 products × 2 fields = 100 items hue to error throw karega. **Fix:** client side me 50 ke chunks me split karke parallel calls karunga.
+### B4. Cron (optional, weekly)
+Add `src/routes/api/public/hooks/ai-seo-audit.ts` — calls audit runner; secured via `CRON_SECRET` header (existing pattern). Doc only — user can wire pg_cron later.
 
 ---
 
-## 🛠️ Execution Order
+## Files
 
-1. Google Translate API integration banaunga (translation-provider.server.ts + refactor)
-2. Tujhse `GOOGLE_TRANSLATE_API_KEY` secret maangunga
-3. Glitch fixes (3 chote fix)
-4. Audit + wrap — customer pages (Home → Product → Products → Blog → others)
-5. Audit + wrap — shared components (Header/Footer/Announcement/etc.)
-6. Test: language switch karke verify karunga ki sab content translate ho raha h
-7. Memory update: naye `entityType` convention save karunga `mem://features/i18n.md` me
+**New:**
+- `supabase/migrations/<ts>_ai_seo_center.sql`
+- `src/lib/aiSeoCenter.functions.ts`
+- `src/lib/seo-schema.ts` (breadcrumb + helpers)
+- `src/components/seo/EntityFooter.tsx`
+- `src/components/seo/PeopleAlsoAsk.tsx`
+- `src/components/seo/RelatedEntities.tsx`
+- `src/pages/admin/tabs/AiSeoCenterTab.tsx`
+- `src/pages/admin/tabs/ai-seo/OverviewPanel.tsx`
+- `src/pages/admin/tabs/ai-seo/AuditEnginePanel.tsx`
+- `src/pages/admin/tabs/ai-seo/RoadmapPanel.tsx`
+- `src/pages/admin/tabs/ai-seo/SchemaGenerator.tsx`
+- `src/routes/api/public/hooks/ai-seo-audit.ts`
 
----
+**Edited:**
+- `src/routes/__root.tsx` (Organization+Brand+sameAs+ContactPoint)
+- `src/routes/testimonials.tsx` (Review+AggregateRating schema)
+- `src/routes/products.$slug.tsx` (HowTo + brand link + reviews + Q&A schema + PeopleAlsoAsk + RelatedEntities)
+- `src/routes/blog.$slug.tsx` (BreadcrumbList + PeopleAlsoAsk)
+- `src/routes/category.$slug.tsx` (BreadcrumbList + RelatedEntities)
+- `src/routes/answers.tsx` (BreadcrumbList)
+- `src/routes/about.tsx` (EntityFooter)
+- `src/routes/index.tsx` (EntityFooter)
+- `src/routes/llms-full[.]txt.ts` (top-50 product manifest)
+- `src/routes/api/public/ai-context.ts` (FAQs+testimonials+blogs)
+- `src/pages/admin/AdminPage.tsx` + `tab-permissions.ts` (register new tab)
 
-## ❓ Confirm karne wali baatein
+## Scoring rules (documented in code)
+- `score_geo`: -25 per blocked major AI bot; +20 if llms.txt & ai.txt reachable; min 0
+- `score_aeo`: floor(faq_count*5) capped at 100; +20 if FAQPage schema present on >3 pages
+- `score_entity`: 40 if Org schema; +15 sameAs≥3; +15 Brand schema; +15 Founder Person; +15 GeoCoordinates
+- `score_reputation`: floor(reviews*2) + 20 if AggregateRating present; cap 100
+- `score_conversational`: 30 if /answers exists; +20 Speakable on blog; +20 AI search enabled; +30 product Q&A active
 
-1. **Google Cloud Translation API** OK h? (Pehle tu bola tha "free wala try karein" — but ab "100% accuracy" bola, to Google hi best h. ₹0 first month, baad me ~₹1200 ek-baar ka translate cost, monthly updates almost free.)
-2. **Agar Google nahi chahiye**, to bata kya use karu — DeepL (best for Euro langs, weak in Indian), Microsoft Translator (similar to Google), ya LibreTranslate (free but 75% accuracy).
-3. **Scope confirm** — saari 24 customer pages + ~10 shared components wrap karne hain, sahi h?
+## Auto-roadmap injection
+- aeo<60 → Phase 1 task "Deploy FAQ Block Schema Accordions to key commercial pages"
+- reputation<50 → Phase 2 task "Establish Off-Page Trust Footprint"
+- geo<40 → Phase 1 critical "Unblock AI crawlers in robots.txt"
+- entity<60 → Phase 2 "Complete Organization+Brand+sameAs schema"
+- conversational<60 → Phase 3 "Add conversational Q&A blocks to top 10 pages"
 
-Approve karte hi shuru kar deta hu.
+## Out of scope
+- Real external API integrations (Semrush, GSC) — per project memory, no Lovable connectors.
+- Multi-site project switcher UI (table supports it; UI ships single-project).
+- Live AI rank tracking (no public API exists for ChatGPT/Perplexity citations).

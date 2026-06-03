@@ -203,6 +203,136 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_seo_audits: {
+        Row: {
+          alerts: Json
+          checks: Json
+          id: string
+          last_scanned_at: string
+          project_id: string
+          score_aeo: number
+          score_conversational: number
+          score_entity: number
+          score_geo: number
+          score_reputation: number
+        }
+        Insert: {
+          alerts?: Json
+          checks?: Json
+          id?: string
+          last_scanned_at?: string
+          project_id: string
+          score_aeo?: number
+          score_conversational?: number
+          score_entity?: number
+          score_geo?: number
+          score_reputation?: number
+        }
+        Update: {
+          alerts?: Json
+          checks?: Json
+          id?: string
+          last_scanned_at?: string
+          project_id?: string
+          score_aeo?: number
+          score_conversational?: number
+          score_entity?: number
+          score_geo?: number
+          score_reputation?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_seo_audits_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ai_seo_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_seo_projects: {
+        Row: {
+          created_at: string
+          id: string
+          is_default: boolean
+          project_name: string
+          target_url: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          project_name: string
+          target_url: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          project_name?: string
+          target_url?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ai_seo_roadmap_tasks: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          injected_key: string | null
+          is_auto_injected: boolean
+          is_completed: boolean
+          phase: string
+          project_id: string
+          severity: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          injected_key?: string | null
+          is_auto_injected?: boolean
+          is_completed?: boolean
+          phase: string
+          project_id: string
+          severity?: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          injected_key?: string | null
+          is_auto_injected?: boolean
+          is_completed?: boolean
+          phase?: string
+          project_id?: string
+          severity?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_seo_roadmap_tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ai_seo_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       analytics_events: {
         Row: {
           channel: string | null

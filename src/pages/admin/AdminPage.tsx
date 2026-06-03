@@ -37,6 +37,7 @@ import AutomationTab from './tabs/AutomationTab';
 import ReconciliationTab from './tabs/ReconciliationTab';
 import MarketingSeoTab from './tabs/MarketingSeoTab';
 import SeoCommandTab from './tabs/SeoCommandTab';
+import AiSeoCenterTab from './tabs/AiSeoCenterTab';
 import ReturnsTab from './tabs/ReturnsTab';
 import OrderModifyTab from './tabs/OrderModifyTab';
 import SubscriptionsTab from './tabs/SubscriptionsTab';
@@ -102,7 +103,7 @@ AdminAPI.interceptors.request.use(config => {
   return config;
 });
 
-type Tab = 'dashboard' | 'analytics' | 'products' | 'productauth' | 'categories' | 'brands' | 'flavors' | 'sizes' | 'bulkimport' | 'inventory' | 'accounting' | 'orders' | 'abandoned' | 'subscriptions' | 'campaigns' | 'giftcards' | 'chatbot' | 'loyalty' | 'referrals' | 'wholesale' | 'productqa' | 'settings' | 'site' | 'about' | 'navigation' | 'homepage' | 'footer' | 'coupons' | 'offers' | 'notifications' | 'communications' | 'messaging' | 'mailsystem' | 'popups' | 'dimensions' | 'blog' | 'faq' | 'reviews' | 'reviewmod' | 'contact' | 'ai' | 'shipping' | 'automation' | 'reconciliation' | 'returns' | 'ordermodify' | 'users' | 'customer360' | 'pages' | 'sitemap' | 'payments' | 'wallet' | 'security' | 'marketing' | 'seocommand' | 'seodebug' | 'auditlog' | 'support' | 'backup' | 'roas' | 'bulkorders' | 'experiments' | 'health' | 'superadmin' | 'backgrounds' | 'whatsapp_channels' | 'urgency' | 'quick_checkout' | 'variants_pro' | 'verification' | 'growth_boosters' | 'videosections';
+type Tab = 'dashboard' | 'analytics' | 'products' | 'productauth' | 'categories' | 'brands' | 'flavors' | 'sizes' | 'bulkimport' | 'inventory' | 'accounting' | 'orders' | 'abandoned' | 'subscriptions' | 'campaigns' | 'giftcards' | 'chatbot' | 'loyalty' | 'referrals' | 'wholesale' | 'productqa' | 'settings' | 'site' | 'about' | 'navigation' | 'homepage' | 'footer' | 'coupons' | 'offers' | 'notifications' | 'communications' | 'messaging' | 'mailsystem' | 'popups' | 'dimensions' | 'blog' | 'faq' | 'reviews' | 'reviewmod' | 'contact' | 'ai' | 'aiseo' | 'shipping' | 'automation' | 'reconciliation' | 'returns' | 'ordermodify' | 'users' | 'customer360' | 'pages' | 'sitemap' | 'payments' | 'wallet' | 'security' | 'marketing' | 'seocommand' | 'seodebug' | 'auditlog' | 'support' | 'backup' | 'roas' | 'bulkorders' | 'experiments' | 'health' | 'superadmin' | 'backgrounds' | 'whatsapp_channels' | 'urgency' | 'quick_checkout' | 'variants_pro' | 'verification' | 'growth_boosters' | 'videosections';
 type ModalTab = 'details' | 'reviews';
 type ProductSubTab = 'basic' | 'variants' | 'media' | 'content' | 'benefits' | 'shipping' | 'seo' | 'pixels';
 
@@ -1878,6 +1879,7 @@ export default function AdminPage() {
       items: [
         { id: 'marketing', icon: <Zap size={16} />, label: 'Marketing & SEO Hub', desc: 'Pixels, CAPI, GSC, UTM builder, robots, OG defaults' },
         { id: 'seocommand', icon: <Sparkles size={16} />, label: 'SEO Command Center', desc: 'Semrush + GSC + AI on-page optimizer + technical crawler' },
+        { id: 'aiseo', icon: <Sparkles size={16} />, label: 'AI SEO Command Center', desc: '5-vector AEO/GEO/Entity/Reputation/Conversational audit + 90-day roadmap' },
         { id: 'seodebug', icon: <Globe size={16} />, label: 'SEO Debug', desc: 'Live view of meta tags, JSON-LD and pixels actually injected' },
       ],
     },
@@ -2031,6 +2033,7 @@ export default function AdminPage() {
             {tab === 'seodebug'     && <SeoDebugTab />}
             {tab === 'marketing'    && <MarketingSeoTab />}
             {tab === 'seocommand'   && <SeoCommandTab />}
+            {tab === 'aiseo'        && <AiSeoCenterTab />}
             {tab === 'roas'         && <RoasDashboardTab />}
             {tab === 'bulkorders'   && <OrderBulkOpsTab />}
             {tab === 'experiments'  && <AbExperimentsTab />}

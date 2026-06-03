@@ -7,14 +7,34 @@ export const Route = createFileRoute("/products/$slug")({
   loader: async ({ params }) => {
     const { data } = await supabase
       .from("products")
-      .select("name,slug,short_description,description,price,compare_price,images,brand,sku,in_stock,rating,review_count")
+      .select("id,name,slug,short_description,description,price,compare_price,images,brand,sku,in_stock,rating,review_count")
       .eq("slug", params.slug)
       .maybeSingle();
     if (!data) throw notFound();
-    return { product: data };
+    // Pull top approved Q&A + reviews for richer JSON-LD (AEO + Reputation).
+    const [qa, reviews] = await Promise.all([
+      supabase
+        .from("product_questions")
+        .select("question,answer,user_name,created_at")
+        .eq("product_id", data.id)
+        .eq("is_approved", true)
+        .not("answer", "is", null)
+        .order("helpful_count", { ascending: false })
+        .limit(5),
+      supabase
+        .from("product_reviews")
+        .select("rating,title,comment,user_name,created_at")
+        .eq("product_id", data.id)
+        .eq("is_approved", true)
+        .order("helpful_count", { ascending: false })
+        .limit(5),
+    ]);
+    return { product: data, qa: qa.data || [], reviews: reviews.data || [] };
   },
   head: ({ params, loaderData }) => {
     const p = loaderData?.product;
+    const qa = loaderData?.qa || [];
+    const reviews = loaderData?.reviews || [];
     const name = p?.name || "Product";
     const rawDesc = (p?.short_description || p?.description || `Buy ${name} at NutroPact. Lab-tested, authentic supplements with free delivery above ₹999.`).replace(/\s+/g, " ").trim();
     const desc = rawDesc.length > 160 ? rawDesc.slice(0, 157) + "…" : (rawDesc.length < 60 ? `${rawDesc} Lab-tested, authentic, free delivery above ₹999 across India.` : rawDesc);
@@ -63,6 +83,16 @@ export const Route = createFileRoute("/products/$slug")({
                 worstRating: "1",
               },
             } : {}),
+            ...(reviews.length ? {
+              review: reviews.map((r: any) => ({
+                "@type": "Review",
+                author: { "@type": "Person", name: r.user_name || "Verified buyer" },
+                datePublished: r.created_at,
+                reviewBody: r.comment || r.title || "",
+                name: r.title || undefined,
+                reviewRating: { "@type": "Rating", ratingValue: String(r.rating), bestRating: "5", worstRating: "1" },
+              })),
+            } : {}),
           }),
         },
         {
@@ -77,6 +107,19 @@ export const Route = createFileRoute("/products/$slug")({
             ],
           }),
         },
+        ...(qa.length ? [{
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "QAPage",
+            mainEntity: qa.map((q: any) => ({
+              "@type": "Question",
+              name: q.question,
+              answerCount: 1,
+              acceptedAnswer: { "@type": "Answer", text: q.answer, dateCreated: q.created_at },
+            })),
+          }),
+        }] : []),
       ] : [],
     };
   },
