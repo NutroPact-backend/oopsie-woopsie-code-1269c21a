@@ -18,6 +18,9 @@ const LANG_NAME: Record<LocaleCode, string> = {
   en: "English", hi: "Hindi", ta: "Tamil", te: "Telugu", kn: "Kannada",
   ml: "Malayalam", bn: "Bengali", mr: "Marathi", gu: "Gujarati", pa: "Punjabi",
   ur: "Urdu", or: "Odia", as: "Assamese",
+  bho: "Bhojpuri", doi: "Dogri", gom: "Konkani", mai: "Maithili",
+  "mni-Mtei": "Meiteilon (Manipuri)", lus: "Mizo", sa: "Sanskrit",
+  sd: "Sindhi", ks: "Kashmiri", ne: "Nepali", awa: "Awadhi",
 };
 
 export type TranslationProvider = "google" | "ai" | "none";
