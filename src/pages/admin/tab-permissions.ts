@@ -56,6 +56,7 @@ export const TAB_PERMISSIONS: Record<string, string> = {
   site: "site.edit",
   marketing: "marketing.edit",
   seocommand: "seocommand.edit",
+  aiseo: "seocommand.edit",
   settings: "settings.edit",
   ai: "ai.edit",
   chatbot: "chatbot.view",
