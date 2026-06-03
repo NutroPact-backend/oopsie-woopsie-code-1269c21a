@@ -31,9 +31,28 @@ export const listPageBackgrounds = createServerFn({ method: "GET" })
   .handler(async () => {
     const { data, error } = await supabaseAdmin
       .from("page_backgrounds")
-      .select("page_key, image_url, opacity, enabled, position, size, repeat, blend_mode");
+      .select("id, page_key, background_type, background_value, is_active, data, updated_at");
     if (error) throw new Error(error.message);
-    return { backgrounds: data ?? [] };
+    return {
+      backgrounds: (data ?? []).map((row: any) => {
+        const meta = row.data && typeof row.data === "object" ? row.data : {};
+        const imageUrl = row.background_type === "image" ? row.background_value ?? null : null;
+        return {
+          id: row.id,
+          page_key: row.page_key,
+          image_url: imageUrl,
+          opacity: typeof meta.opacity === "number" ? meta.opacity : 0.15,
+          enabled: row.is_active !== false,
+          position: meta.position || "center",
+          size: meta.size || "cover",
+          repeat: meta.repeat || "no-repeat",
+          blend_mode: meta.blend_mode || "normal",
+          background_type: row.background_type || "image",
+          background_value: row.background_value ?? null,
+          updated_at: row.updated_at ?? null,
+        };
+      }),
+    };
   });
 
 // ── Admin list (includes everything) ──
@@ -45,7 +64,26 @@ export const adminListPageBackgrounds = createServerFn({ method: "GET" })
       .select("*")
       .order("page_key");
     if (error) throw new Error(error.message);
-    return { backgrounds: data ?? [] };
+    return {
+      backgrounds: (data ?? []).map((row: any) => {
+        const meta = row.data && typeof row.data === "object" ? row.data : {};
+        return {
+          id: row.id,
+          page_key: row.page_key,
+          image_url: row.background_type === "image" ? row.background_value ?? null : null,
+          opacity: typeof meta.opacity === "number" ? meta.opacity : 0.15,
+          enabled: row.is_active !== false,
+          position: meta.position || "center",
+          size: meta.size || "cover",
+          repeat: meta.repeat || "no-repeat",
+          blend_mode: meta.blend_mode || "normal",
+          background_type: row.background_type || "image",
+          background_value: row.background_value ?? null,
+          data: meta,
+          updated_at: row.updated_at ?? null,
+        };
+      }),
+    };
   });
 
 // ── Upsert one ──
@@ -64,19 +102,32 @@ export const upsertPageBackground = createServerFn({ method: "POST" })
     }).parse(i),
   )
   .handler(async ({ data, context }) => {
-    const { userId } = context as { userId: string };
-    const { error } = await supabaseAdmin.from("page_backgrounds").upsert({
+    const payload = {
       page_key: data.pageKey,
-      image_url: data.imageUrl,
-      opacity: data.opacity,
-      enabled: data.enabled,
-      position: data.position,
-      size: data.size,
-      repeat: data.repeat,
-      blend_mode: data.blendMode,
+      background_type: data.imageUrl ? "image" : "none",
+      background_value: data.imageUrl,
+      is_active: data.enabled,
+      data: {
+        opacity: data.opacity,
+        position: data.position,
+        size: data.size,
+        repeat: data.repeat,
+        blend_mode: data.blendMode,
+      },
       updated_at: new Date().toISOString(),
-      updated_by: userId,
-    });
+    };
+
+    const { data: existing } = await supabaseAdmin
+      .from("page_backgrounds")
+      .select("id")
+      .eq("page_key", data.pageKey)
+      .maybeSingle();
+
+    const query = existing?.id
+      ? supabaseAdmin.from("page_backgrounds").update(payload).eq("id", existing.id)
+      : supabaseAdmin.from("page_backgrounds").insert(payload);
+
+    const { error } = await query;
     if (error) throw new Error(error.message);
     return { ok: true };
   });

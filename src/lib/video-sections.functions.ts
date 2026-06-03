@@ -54,15 +54,36 @@ const SectionInput = z.object({
 });
 
 function rowToSection(row: any) {
+  const data = row?.data && typeof row.data === "object" ? row.data : {};
+  const visibility = data.visibility && typeof data.visibility === "object"
+    ? data.visibility
+    : { desktop: true, mobile: true };
+  const placements = Array.isArray(data.placements) ? data.placements : (
+    row.page_key
+      ? [{ type: row.page_key, scope: "all", ids: [], position: 0 }]
+      : []
+  );
+  const videos = Array.isArray(data.videos) && data.videos.length
+    ? data.videos
+    : (row.video_url ? [{
+      id: row.id,
+      src: row.video_url,
+      type: data.videoType || "mp4",
+      thumbnail: row.thumbnail_url || "",
+      title: row.title || "",
+      views: data.views ?? 0,
+      productId: data.productId || "",
+      cta: data.cta || { text: "", href: "" },
+    }] : []);
   return {
     id: row.id,
-    heading: row.heading,
-    subheading: row.subheading || "",
-    layout: row.layout || "reel-carousel",
-    enabled: !!row.enabled,
-    videos: Array.isArray(row.videos) ? row.videos : [],
-    placements: Array.isArray(row.placements) ? row.placements : [],
-    visibility: row.visibility || { desktop: true, mobile: true },
+    heading: row.heading || row.title || "Watch & Shop",
+    subheading: row.subheading || row.description || "",
+    layout: data.layout || "reel-carousel",
+    enabled: row.is_active !== false,
+    videos,
+    placements,
+    visibility,
     sortOrder: row.sort_order ?? 0,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -96,7 +117,7 @@ export const listVideoSectionsForPlacement = createServerFn({ method: "POST" })
     const { data: rows, error } = await db
       .from("video_sections")
       .select("*")
-      .eq("enabled", true)
+      .eq("is_active", true)
       .order("sort_order", { ascending: true });
     if (error) throw new Error(error.message);
     const now = Date.now();
@@ -132,14 +153,20 @@ export const upsertVideoSection = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((input) => SectionInput.parse(input))
   .handler(async ({ data }) => {
+    const firstVideo = data.videos[0] || null;
     const payload = {
-      heading: data.heading,
-      subheading: data.subheading ?? null,
-      layout: data.layout,
-      enabled: data.enabled,
-      videos: data.videos,
-      placements: data.placements,
-      visibility: data.visibility,
+      title: data.heading,
+      description: data.subheading ?? null,
+      video_url: firstVideo?.src || null,
+      thumbnail_url: firstVideo?.thumbnail || null,
+      page_key: data.placements?.[0]?.type || "home",
+      is_active: data.enabled,
+      data: {
+        layout: data.layout,
+        videos: data.videos,
+        placements: data.placements,
+        visibility: data.visibility,
+      },
       sort_order: data.sortOrder,
       updated_at: new Date().toISOString(),
     };
