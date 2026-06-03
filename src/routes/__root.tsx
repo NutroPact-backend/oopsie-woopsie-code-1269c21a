@@ -34,6 +34,10 @@ const ChatWidget = lazy(() => import("@/components/ChatWidget"));
 const CookieConsent = lazy(() => import("@/components/CookieConsent"));
 const RecentlyViewed = lazy(() => import("@/components/RecentlyViewed"));
 const PageBackground = lazy(() => import("@/components/PageBackground"));
+const Scene3DBackground = lazy(() => import("@/components/three/Scene3DBackground"));
+const AutoTilt3D = lazy(() =>
+  import("@/components/three/Tilt3D").then((m) => ({ default: m.AutoTilt3D }))
+);
 
 const SUPABASE_ORIGIN = (() => {
   try { return new URL(import.meta.env.VITE_SUPABASE_URL).origin; } catch { return ""; }
@@ -425,6 +429,12 @@ function RootComponent() {
         {!isAdmin && (
           <Suspense fallback={null}>
             <PageBackground />
+          </Suspense>
+        )}
+        {!isAdmin && (
+          <Suspense fallback={null}>
+            <Scene3DBackground opacity={0.55} />
+            <AutoTilt3D />
           </Suspense>
         )}
         {!isAdmin && <Header />}
