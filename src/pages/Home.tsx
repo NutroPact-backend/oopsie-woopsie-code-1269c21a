@@ -386,6 +386,7 @@ function TestimonialsMarquee({ sec, testimonials }: { sec: any; testimonials: an
 
 function legacySectionsFromHp(hp: any) {
   const sections: any[] = [];
+  const hasCustomSections = Array.isArray(hp.customSections) && hp.customSections.length > 0;
   if (hp.heroSlides?.length || hp.heroSettings) {
     sections.push({
       type: 'heroSlider', name: 'Hero Slider', order: 0, enabled: hp.heroEnabled !== false,
@@ -431,7 +432,7 @@ function legacySectionsFromHp(hp: any) {
       featuredSettings: { count: hp.featuredCount || 4, category: '' },
     });
   }
-  if (hp.testimonialsEnabled !== false) {
+  if (hp.testimonialsEnabled && !hasCustomSections) {
     sections.push({
       type: 'testimonials', name: 'Testimonials', order: 99, enabled: true, bgColor: '#f9fafb',
       heading: { text: hp.testimonialsTitle || 'What Our Customers Say', desktopSize: 28, mobileSize: 22, weight: '900', color: '#111111', align: 'center', marginBottom: 8 },
@@ -487,7 +488,16 @@ export default function Home() {
   const sections = rawSections
     .filter((s: any) => s.enabled !== false)
     .sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
-  const hasSections = sections.length > 0;
+  const hasSections = sections.some((sec: any) => {
+    if (sec.type === 'heroSlider') return Array.isArray(sec.slides) && sec.slides.length > 0;
+    if (sec.type === 'goalTiles') return Array.isArray(sec.tiles) && sec.tiles.length > 0;
+    if (sec.type === 'banner') return Boolean(sec.banner?.image || sec.image || sec.heading?.text || sec.title || sec.subheading?.text || sec.subtitle || sec.btnText);
+    if (sec.type === 'text') return Boolean(sec.textContent || sec.content || sec.heading?.text || sec.title || sec.subheading?.text || sec.subtitle);
+    if (sec.type === 'trustbar') return Array.isArray(sec.trustbarSettings?.items) && sec.trustbarSettings.items.length > 0;
+    if (sec.type === 'featuredProducts') return products.length > 0;
+    if (sec.type === 'reviews' || sec.type === 'testimonials') return testimonials.length > 0;
+    return false;
+  });
 
   return (
     <div className="overflow-x-hidden">
