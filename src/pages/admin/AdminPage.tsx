@@ -37,6 +37,7 @@ import AutomationTab from './tabs/AutomationTab';
 import ReconciliationTab from './tabs/ReconciliationTab';
 import MarketingSeoTab from './tabs/MarketingSeoTab';
 import SeoCommandTab from './tabs/SeoCommandTab';
+import AiSeoCenterTab from './tabs/AiSeoCenterTab';
 import ReturnsTab from './tabs/ReturnsTab';
 import OrderModifyTab from './tabs/OrderModifyTab';
 import SubscriptionsTab from './tabs/SubscriptionsTab';
