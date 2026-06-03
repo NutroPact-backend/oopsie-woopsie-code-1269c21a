@@ -15,6 +15,17 @@ export const LOCALES = [
   { code: "ur", native: "اردو",       english: "Urdu" },
   { code: "or", native: "ଓଡ଼ିଆ",     english: "Odia" },
   { code: "as", native: "অসমীয়া",    english: "Assamese" },
+  { code: "bho",      native: "भोजपुरी",      english: "Bhojpuri" },
+  { code: "doi",      native: "डोगरी",         english: "Dogri" },
+  { code: "gom",      native: "कोंकणी",        english: "Konkani" },
+  { code: "mai",      native: "मैथिली",        english: "Maithili" },
+  { code: "mni-Mtei", native: "ꯃꯩꯇꯩꯂꯣꯟ",     english: "Meiteilon (Manipuri)" },
+  { code: "lus",      native: "Mizo ṭawng",    english: "Mizo" },
+  { code: "sa",       native: "संस्कृतम्",      english: "Sanskrit" },
+  { code: "sd",       native: "سنڌي",          english: "Sindhi" },
+  { code: "ks",       native: "کٲشُر",          english: "Kashmiri" },
+  { code: "ne",       native: "नेपाली",         english: "Nepali" },
+  { code: "awa",      native: "अवधी",          english: "Awadhi" },
 ] as const;
 
 export type LocaleCode = typeof LOCALES[number]["code"];
