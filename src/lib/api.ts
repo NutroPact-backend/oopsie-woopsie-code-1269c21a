@@ -855,11 +855,42 @@ async function dynamicPost(path: string, body: any): Promise<any> {
   if (m) {
     const id = crypto.randomUUID();
     const { error } = await supabase.from("product_reviews").insert({
-      id, product_id: m[1], name: body.name, comment: body.comment,
-      rating: body.rating ?? 5, title: body.title ?? "",
+      id, product_id: m[1],
+      user_name: body.name,
+      comment: body.comment,
+      rating: Math.max(1, Math.min(5, Number(body.rating ?? 5))),
+      title: (body.title ?? "").toString().slice(0, 200),
+      is_approved: false, // moderate by default
     });
     if (error) fail(500, error.message);
     return { success: true };
+  }
+  // /admin/products/:id/reviews  → admin creates a review (auto-approved)
+  m = path.match(/^\/admin\/products\/([^/]+)\/reviews$/);
+  if (m) {
+    if (!(await isCurrentUserAdmin())) fail(403, "Admin only");
+    const id = crypto.randomUUID();
+    const payload = {
+      id,
+      product_id: m[1],
+      user_name: body.name || "",
+      user_avatar: body.avatar || "",
+      rating: Math.max(1, Math.min(5, Number(body.rating ?? 5))),
+      title: body.title || "",
+      comment: body.comment || "",
+      images: Array.isArray(body.images) ? body.images : [],
+      is_verified: body.verified !== false,
+      is_approved: true,
+      data: {
+        variant: body.variant || "",
+        video: body.video || "",
+        pinned: !!body.pinned,
+        source: "admin",
+      },
+    };
+    const { data, error } = await supabase.from("product_reviews").insert(payload).select().single();
+    if (error) fail(500, error.message);
+    return camelize(data);
   }
   // /products/:id/notify-me
   m = path.match(/^\/products\/([^/]+)\/notify-me$/);
@@ -1089,14 +1120,21 @@ async function dynamicPut(path: string, body: any): Promise<any> {
       faq: "faqs",
       "packaging-boxes": "packaging_boxes",
       reviews: "global_reviews",
+      contact: "contact_submissions",
     };
     const table = tableMap[m[1]];
     if (table) {
       const row = table === 'products'
         ? await buildProductWriteRow(body, await supabase.from('products').select('*').eq('id', m[2]).maybeSingle().then(r => r.data))
-        : { ...snakeify(body), id: m[2] };
+        : (table === 'coupons'
+            ? { ...snakeify(body), code: m[2] }
+            : { ...snakeify(body), id: m[2] });
       delete (row as any)._id;
-      const { data, error } = await supabase.from(table as any).upsert(row).select().single();
+      const conflictCol = table === 'coupons' ? { onConflict: 'code' } : undefined;
+      const q = conflictCol
+        ? supabase.from(table as any).upsert(row, conflictCol as any)
+        : supabase.from(table as any).upsert(row);
+      const { data, error } = await q.select().single();
       if (error) fail(500, error.message);
       return table === 'products' ? shapeProductRow(data, { categoryName: parseProductData(data).category || body.category || "" }) : camelize(data);
     }
@@ -1107,6 +1145,13 @@ async function dynamicPut(path: string, body: any): Promise<any> {
 // DELETE
 async function dynamicDelete(path: string): Promise<any> {
   if (!(await isCurrentUserAdmin())) fail(403, "Admin only");
+  // /admin/products/:id/reviews/:rid → delete a single product review (4 segments)
+  const revDel = path.match(/^\/admin\/products\/([^/]+)\/reviews\/([^/]+)$/);
+  if (revDel) {
+    const { error } = await supabase.from("product_reviews").delete().eq("id", revDel[2]).eq("product_id", revDel[1]);
+    if (error) fail(500, error.message);
+    return { success: true };
+  }
   const m = path.match(/^\/admin\/notifications\/([^/]+)$/);
   if (m) {
     await supabase.from("notification_log").delete().eq("id", m[1]);
@@ -1134,7 +1179,9 @@ async function dynamicDelete(path: string): Promise<any> {
     };
     const table = tableMap[mm[1]];
     if (table) {
-      const { error } = await supabase.from(table as any).delete().eq("id", mm[2]);
+      // Coupons use `code` as the friendly identifier; routes pass code, not UUID.
+      const matchCol = table === "coupons" ? "code" : "id";
+      const { error } = await supabase.from(table as any).delete().eq(matchCol, mm[2]);
       if (error) fail(500, error.message);
       return { success: true };
     }
