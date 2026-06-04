@@ -3018,6 +3018,39 @@ export type Database = {
         }
         Relationships: []
       }
+      product_groups: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          slug: string | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          slug?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          slug?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       product_questions: {
         Row: {
           answer: string | null
@@ -3347,6 +3380,7 @@ export type Database = {
           data: Json | null
           description: string | null
           features: Json | null
+          group_id: string | null
           gst_rate: number | null
           hsn_code: string | null
           id: string
@@ -3388,6 +3422,7 @@ export type Database = {
           data?: Json | null
           description?: string | null
           features?: Json | null
+          group_id?: string | null
           gst_rate?: number | null
           hsn_code?: string | null
           id?: string
@@ -3429,6 +3464,7 @@ export type Database = {
           data?: Json | null
           description?: string | null
           features?: Json | null
+          group_id?: string | null
           gst_rate?: number | null
           hsn_code?: string | null
           id?: string
@@ -3460,7 +3496,15 @@ export type Database = {
           warnings?: string | null
           weight?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "product_groups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
