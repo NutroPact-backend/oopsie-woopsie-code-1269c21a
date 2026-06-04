@@ -139,6 +139,7 @@ function shapeProductRow(row: any, extras: { categoryName?: string | null; varia
     extra_categories: Array.isArray(data.extra_categories) ? data.extra_categories : [],
     combo_widget_enabled: data.combo_widget_enabled !== false,
     variants_pro_config: data.variants_pro_config || row.variants_pro_config || {},
+    group_id: row.group_id || null,
     display_variant: defaultVariant,
   });
 }
@@ -200,6 +201,7 @@ async function buildProductWriteRow(body: any, existing?: any) {
     hsn_code: body.hsnCode ?? body.hsn_code ?? existing?.hsn_code ?? null,
     gst_rate: Number(body.gstRate ?? body.gst_rate ?? existing?.gst_rate ?? 0),
     video_url: body.video ?? body.video_url ?? existing?.video_url ?? null,
+    group_id: body.groupId ?? body.group_id ?? existing?.group_id ?? null,
     data,
   };
 }
