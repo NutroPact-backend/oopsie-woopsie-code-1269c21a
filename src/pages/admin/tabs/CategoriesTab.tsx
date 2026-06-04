@@ -60,7 +60,21 @@ export default function CategoriesTab() {
     if (!editing) return;
     if (!editing.name.trim()) return alert('Name required');
     setSaving(true);
-    const payload: any = { ...editing, slug: editing.slug?.trim() || toSlug(editing.name) };
+    const toArr = (v: any): string[] => {
+      if (Array.isArray(v)) return v.map((s) => String(s).trim()).filter(Boolean);
+      if (typeof v === 'string') return v.split(',').map((s) => s.trim()).filter(Boolean);
+      return [];
+    };
+    const payload: any = {
+      ...editing,
+      slug: editing.slug?.trim() || toSlug(editing.name),
+      seo_keywords: toArr((editing as any).seo_keywords),
+      visible_on_pages: Array.isArray(editing.visible_on_pages) ? editing.visible_on_pages : [],
+    };
+    // Convert empty strings to null for nullable text columns to avoid type coercion issues
+    ['description', 'image_url', 'icon', 'seo_title', 'seo_description'].forEach((k) => {
+      if (payload[k] === '') payload[k] = null;
+    });
     if ('id' in editing && editing.id) {
       const { error } = await supabase.from('categories').update(payload).eq('id', editing.id);
       if (error) { setSaving(false); return alert(error.message); }
