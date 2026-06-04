@@ -1046,6 +1046,11 @@ async function dynamicPut(path: string, body: any): Promise<any> {
       .maybeSingle();
     const merged = { ...((current?.settings as any) ?? {}), ...(body ?? {}) };
     await supabase.from("site_settings").upsert({ key: "default", settings: merged });
+    try {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("site-settings-updated", { detail: merged }));
+      }
+    } catch {}
     return merged;
   }
   // /admin/<table>/<id>  → upsert row by id (camelCase body is snakeified)
