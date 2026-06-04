@@ -8,6 +8,7 @@ import {
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 import { formatPrice, calculateDiscount } from '@/lib/utils';
+import { formatSizeDisplay } from '@/lib/sizeFormat';
 import { useSEO } from '@/lib/useSEO';
 import { supabase } from '@/integrations/supabase/client';
 import API from '@/lib/api';
