@@ -56,7 +56,13 @@ const GET: Record<string, Handler> = {
     let q = supabase.from("products").select("*").eq("is_active", true);
     const category = params.get("category");
     const search = params.get("search");
-    if (category) q = q.eq("category", category);
+    if (category) {
+      // Match either the primary category column OR an ancestor category
+      // saved into the `tags` array (set via the product form's
+      // "Also show in parent categories" checkboxes).
+      const safe = category.replace(/[",{}\\]/g, "");
+      q = q.or(`category.eq.${safe},tags.cs.{${safe}}`);
+    }
     if (search) {
       const s = search.trim().replace(/[%,]/g, " ");
       q = q.or(`name.ilike.%${s}%,description.ilike.%${s}%,short_description.ilike.%${s}%,category.ilike.%${s}%,brand.ilike.%${s}%`);
