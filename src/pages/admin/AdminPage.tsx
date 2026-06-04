@@ -85,6 +85,7 @@ import VariantsProTab from './tabs/VariantsProTab';
 import VerificationTab from './tabs/VerificationTab';
 import GrowthBoostersTab from './tabs/GrowthBoostersTab';
 import VideoSectionsTab from './tabs/VideoSectionsTab';
+import ProductGroupsTab from './tabs/ProductGroupsTab';
 
 import VariantsManager, { syncVariantsToDb, variantsToJson, type VariantRow } from './components/VariantsManager';
 import { useCategoryNames, useCategories } from '@/hooks/useCategories';
@@ -105,7 +106,7 @@ AdminAPI.interceptors.request.use(config => {
   return config;
 });
 
-type Tab = 'dashboard' | 'analytics' | 'products' | 'productauth' | 'categories' | 'brands' | 'flavors' | 'sizes' | 'sizecharts' | 'bulkimport' | 'inventory' | 'accounting' | 'orders' | 'abandoned' | 'subscriptions' | 'campaigns' | 'giftcards' | 'chatbot' | 'loyalty' | 'referrals' | 'wholesale' | 'productqa' | 'settings' | 'site' | 'about' | 'navigation' | 'homepage' | 'footer' | 'coupons' | 'offers' | 'notifications' | 'communications' | 'messaging' | 'mailsystem' | 'popups' | 'dimensions' | 'blog' | 'faq' | 'reviews' | 'reviewmod' | 'contact' | 'ai' | 'aiseo' | 'shipping' | 'automation' | 'reconciliation' | 'returns' | 'ordermodify' | 'users' | 'customer360' | 'pages' | 'sitemap' | 'payments' | 'wallet' | 'security' | 'marketing' | 'seocommand' | 'seodebug' | 'auditlog' | 'support' | 'backup' | 'roas' | 'bulkorders' | 'experiments' | 'health' | 'superadmin' | 'backgrounds' | 'whatsapp_channels' | 'urgency' | 'quick_checkout' | 'variants_pro' | 'verification' | 'growth_boosters' | 'videosections';
+type Tab = 'dashboard' | 'analytics' | 'products' | 'product_groups' | 'productauth' | 'categories' | 'brands' | 'flavors' | 'sizes' | 'sizecharts' | 'bulkimport' | 'inventory' | 'accounting' | 'orders' | 'abandoned' | 'subscriptions' | 'campaigns' | 'giftcards' | 'chatbot' | 'loyalty' | 'referrals' | 'wholesale' | 'productqa' | 'settings' | 'site' | 'about' | 'navigation' | 'homepage' | 'footer' | 'coupons' | 'offers' | 'notifications' | 'communications' | 'messaging' | 'mailsystem' | 'popups' | 'dimensions' | 'blog' | 'faq' | 'reviews' | 'reviewmod' | 'contact' | 'ai' | 'aiseo' | 'shipping' | 'automation' | 'reconciliation' | 'returns' | 'ordermodify' | 'users' | 'customer360' | 'pages' | 'sitemap' | 'payments' | 'wallet' | 'security' | 'marketing' | 'seocommand' | 'seodebug' | 'auditlog' | 'support' | 'backup' | 'roas' | 'bulkorders' | 'experiments' | 'health' | 'superadmin' | 'backgrounds' | 'whatsapp_channels' | 'urgency' | 'quick_checkout' | 'variants_pro' | 'verification' | 'growth_boosters' | 'videosections';
 type ModalTab = 'details' | 'reviews';
 type ProductSubTab = 'basic' | 'variants' | 'media' | 'content' | 'benefits' | 'shipping' | 'seo' | 'pixels';
 
@@ -898,6 +899,14 @@ function ProductModal({ product, onClose, onSave, onReviewsChanged }: { product:
   const { data: allCats } = useCategories(true);
   const { data: allFlavors } = useFlavors(false);
   const { data: allSizes } = useSizes(false);
+  const [groups, setGroups] = useState<any[]>([]);
+  useEffect(() => {
+    let alive = true;
+    AdminAPI.get('/admin/product-groups')
+      .then(r => { if (alive) setGroups((r.data || []).filter((g: any) => g.active !== false)); })
+      .catch(() => { if (alive) setGroups([]); });
+    return () => { alive = false; };
+  }, []);
   // Build indented (hierarchical) options for category dropdown
   const catOptions = (() => {
     if (!allCats?.length) return CATEGORIES.map((n) => ({ name: n, label: n, depth: 0 }));
@@ -1128,6 +1137,17 @@ function ProductModal({ product, onClose, onSave, onReviewsChanged }: { product:
                         </div>
                       </div>
                     )}
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 block mb-1">Product Group <span className="text-gray-400 font-normal">(link related products)</span></label>
+                    <select value={form.groupId || ''} onChange={e => set('groupId', e.target.value || null)}
+                      className="w-full border rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:border-orange-400">
+                      <option value="">— No group —</option>
+                      {groups.map((g: any) => (
+                        <option key={g._id || g.id} value={g._id || g.id}>{g.name}</option>
+                      ))}
+                    </select>
+                    <p className="text-[11px] text-gray-400 mt-1">Products in the same group show up as clickable chips on the PDP — like Avvatar's flavor switcher. Manage groups in the <b>Product Groups</b> tab.</p>
                   </div>
                   <div>
                     <label className="text-xs font-bold text-gray-500 block mb-1">Price (₹) *</label>
@@ -1953,6 +1973,7 @@ export default function AdminPage() {
       id: 'catalog', label: 'Catalog',
       items: [
         { id: 'products', icon: <Box size={16} />, label: 'Products', desc: 'Add / edit products' },
+        { id: 'product_groups', icon: <Layers size={16} />, label: 'Product Groups', desc: 'Link related products as a family (Avvatar / MuscleBlaze style flavor switcher)' },
         { id: 'productauth', icon: <ShieldCheck size={16} />, label: 'Product Authentication', desc: 'ProofPack anti-piracy codes — QR + scratch + geo detection' },
         { id: 'categories', icon: <Layers size={16} />, label: 'Categories', desc: 'Master list, sub-categories, SEO, icons' },
         { id: 'brands', icon: <Award size={16} />, label: 'Brands', desc: 'Brand master — logo, description, sort' },
@@ -2136,6 +2157,7 @@ export default function AdminPage() {
             {tab === 'brands'       && <BrandsTab />}
             {tab === 'flavors'      && <FlavorsTab />}
             {tab === 'sizes'        && <SizesTab />}
+            {tab === 'product_groups' && <ProductGroupsTab />}
             {tab === 'sizecharts'   && <SizeChartsTab />}
             {tab === 'bulkimport'   && <BulkImportTab />}
             {tab === 'inventory'    && <InventoryTab />}

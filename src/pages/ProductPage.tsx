@@ -849,6 +849,37 @@ export default function ProductPage() {
               </div>
             )}
 
+            {/* Product Group siblings — Avvatar/MuscleBlaze-style switcher between related products */}
+            {Array.isArray(product.groupSiblings) && product.groupSiblings.length > 1 && (
+              <div>
+                <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">
+                  {product.group?.name || 'Also available'}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {product.groupSiblings.map((sib: any) => {
+                    const isCurrent = sib.isCurrent || sib.slug === slug;
+                    const oos = (sib.stock ?? 0) <= 0;
+                    const node = (
+                      <span className={`relative flex items-center gap-2 px-3 py-2 rounded-full border-2 text-sm font-semibold transition-all duration-150 ${isCurrent ? 'border-gray-900 bg-gray-900 text-white shadow-md' : 'border-gray-200 text-gray-700 hover:border-gray-400 bg-white'} ${oos ? 'opacity-60' : ''}`}>
+                        {sib.images?.[0] && (
+                          <img src={sib.images[0]} alt="" className="w-6 h-6 rounded-full object-cover border border-white/50" loading="lazy" />
+                        )}
+                        <span className="truncate max-w-[160px]">{sib.name}</span>
+                        {oos && <span className="text-[9px] font-black text-red-500 uppercase">OOS</span>}
+                      </span>
+                    );
+                    return isCurrent ? (
+                      <div key={sib._id}>{node}</div>
+                    ) : (
+                      <Link key={sib._id} to="/products/$slug" params={{ slug: sib.slug }} className="no-underline">
+                        {node}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Variant selector — Pro picker if admin configured + flag ON, else legacy */}
             {(() => {
               const proCfg = product.variants_pro_config && Object.keys(product.variants_pro_config).length > 0

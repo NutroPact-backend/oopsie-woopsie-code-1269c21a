@@ -139,6 +139,7 @@ function shapeProductRow(row: any, extras: { categoryName?: string | null; varia
     extra_categories: Array.isArray(data.extra_categories) ? data.extra_categories : [],
     combo_widget_enabled: data.combo_widget_enabled !== false,
     variants_pro_config: data.variants_pro_config || row.variants_pro_config || {},
+    group_id: row.group_id || null,
     display_variant: defaultVariant,
   });
 }
@@ -200,6 +201,7 @@ async function buildProductWriteRow(body: any, existing?: any) {
     hsn_code: body.hsnCode ?? body.hsn_code ?? existing?.hsn_code ?? null,
     gst_rate: Number(body.gstRate ?? body.gst_rate ?? existing?.gst_rate ?? 0),
     video_url: body.video ?? body.video_url ?? existing?.video_url ?? null,
+    group_id: body.groupId ?? body.group_id ?? existing?.group_id ?? null,
     data,
   };
 }
@@ -425,8 +427,32 @@ async function dynamicGet(path: string): Promise<any> {
       categoryName: buildCategoryAncestry(data.category_id, byId).join(" > ") || parseProductData(data).category || "",
       variants: (variants ?? []).map(shapeVariantRow),
     });
+    // Group siblings — other products in the same product group (Avvatar-style switcher)
+    let groupSiblings: any[] = [];
+    let group: any = null;
+    if (data.group_id) {
+      const [{ data: sibs }, { data: grp }] = await Promise.all([
+        supabase.from("products")
+          .select("id,name,slug,price,compare_price,images,stock,is_active")
+          .eq("group_id", data.group_id)
+          .eq("is_active", true)
+          .order("created_at", { ascending: true }),
+        supabase.from("product_groups").select("id,name,slug").eq("id", data.group_id).maybeSingle(),
+      ]);
+      groupSiblings = (sibs ?? []).map((s: any) => ({
+        _id: s.id, id: s.id, name: s.name, slug: s.slug,
+        price: Number(s.price || 0),
+        comparePrice: Number(s.compare_price || 0),
+        images: normalizeImages(s.images),
+        stock: Number(s.stock || 0),
+        isCurrent: s.id === data.id,
+      }));
+      group = grp ? camelize(grp) : null;
+    }
     return {
       ...result,
+      group,
+      groupSiblings,
       reviews: camelize((reviews ?? []).map((r: any) => ({
         ...r,
         name: r.user_name,
@@ -546,6 +572,7 @@ async function dynamicGet(path: string): Promise<any> {
 
 const adminGetTableMap: Record<string, string> = {
   "/admin/products": "products",
+  "/admin/product-groups": "product_groups",
   "/admin/orders": "orders",
   "/admin/blog": "blog_posts",
   "/admin/contact": "contact_submissions",
@@ -967,6 +994,7 @@ async function dynamicPost(path: string, body: any): Promise<any> {
 async function adminUpsert(path: string, body: any): Promise<any> {
   const tableMap: Record<string, string> = {
     "/admin/products": "products",
+    "/admin/product-groups": "product_groups",
     "/admin/blog": "blog_posts",
     "/admin/coupons": "coupons",
     "/admin/dimensions": "dimensions",
@@ -1048,6 +1076,7 @@ async function dynamicPut(path: string, body: any): Promise<any> {
     }
     const tableMap: Record<string, string> = {
       products: "products",
+      "product-groups": "product_groups",
       blog: "blog_posts",
       coupons: "coupons",
       dimensions: "dimensions",
@@ -1086,6 +1115,7 @@ async function dynamicDelete(path: string): Promise<any> {
   if (mm) {
     const tableMap: Record<string, string> = {
       products: "products",
+      "product-groups": "product_groups",
       blog: "blog_posts",
       coupons: "coupons",
       dimensions: "dimensions",
