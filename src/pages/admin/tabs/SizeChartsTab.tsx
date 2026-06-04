@@ -115,10 +115,19 @@ export default function SizeChartsTab() {
             <div className="p-6 space-y-5">
               <div className="grid grid-cols-2 gap-3">
                 <Field label="Name *"><input className="np-in" value={editing.name} onChange={e => setEditing({ ...editing, name: e.target.value, slug: toSlug(e.target.value) })} placeholder="e.g. T-Shirt Size Chart" /></Field>
-                <Field label="Category">
-                  <select className="np-in" value={editing.category} onChange={e => { setEditing({ ...editing, category: e.target.value }); }}>
-                    {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
+                <Field label="Category *">
+                  <input
+                    className="np-in"
+                    list="size-chart-categories"
+                    value={editing.category}
+                    onChange={e => setEditing({ ...editing, category: e.target.value })}
+                    placeholder="Type a new category or pick existing"
+                  />
+                  <datalist id="size-chart-categories">
+                    {Array.from(new Set(rows.map((r: any) => r.category).filter(Boolean))).map((c: string) => (
+                      <option key={c} value={c} />
+                    ))}
+                  </datalist>
                 </Field>
               </div>
 
