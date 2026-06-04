@@ -231,6 +231,7 @@ export default function VariantsManager(props: Props) {
                 const skuKey = (row.sku || '').trim().toUpperCase();
                 const isDup = !!skuKey && dupSkus.has(skuKey);
                 return (
+                <>
                 <tr key={i} className={`bg-white border ${isDup ? 'border-red-300' : 'border-gray-100'}`}>
                   <td className="px-2 text-center"><input type="radio" name="default-variant" checked={row.is_default} onChange={() => updateRow(i, { is_default: true })} /></td>
                   <td className="px-2 py-2">
@@ -285,6 +286,7 @@ export default function VariantsManager(props: Props) {
                     </td>
                   </tr>
                 )}
+                </>
                 );
               })}
             </tbody>
