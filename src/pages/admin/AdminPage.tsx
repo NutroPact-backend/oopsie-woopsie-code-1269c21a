@@ -332,17 +332,35 @@ function ImgUploadInp({ label, value, onChange, placeholder }: any) {
 function ImageGalleryManager({ images, onChange }: { images: string[]; onChange: (imgs: string[]) => void }) {
   const list: string[] = Array.isArray(images) ? images : [];
   const add = (url: string) => onChange([...list, url]);
+  const addMany = (urls: string[]) => onChange([...list, ...urls]);
   const remove = (i: number) => onChange(list.filter((_, idx) => idx !== i));
   const moveUp = (i: number) => { if (i === 0) return; const next = [...list]; [next[i - 1], next[i]] = [next[i], next[i - 1]]; onChange(next); };
   const moveDown = (i: number) => { if (i === list.length - 1) return; const next = [...list]; [next[i], next[i + 1]] = [next[i + 1], next[i]]; onChange(next); };
   const updateUrl = (i: number, val: string) => { const next = [...list]; next[i] = val; onChange(next); };
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const onDrop = (target: number) => {
+    if (dragIdx === null || dragIdx === target) { setDragIdx(null); return; }
+    const next = [...list];
+    const [moved] = next.splice(dragIdx, 1);
+    next.splice(target, 0, moved);
+    setDragIdx(null);
+    onChange(next);
+  };
   return (
     <div className="space-y-2">
       <label className="text-xs font-bold text-gray-500 block">Product Images</label>
       {list.map((url, i) => (
-        <ImageRowUploader key={i} value={url} index={i} isFirst={i === 0} isLast={i === list.length - 1}
-          onUpdate={val => updateUrl(i, val)} onRemove={() => remove(i)}
-          onMoveUp={() => moveUp(i)} onMoveDown={() => moveDown(i)} />
+        <div key={i}
+          draggable
+          onDragStart={() => setDragIdx(i)}
+          onDragOver={e => { e.preventDefault(); }}
+          onDrop={() => onDrop(i)}
+          onDragEnd={() => setDragIdx(null)}
+          className={`transition ${dragIdx === i ? 'opacity-40' : ''}`}>
+          <ImageRowUploader value={url} index={i} isFirst={i === 0} isLast={i === list.length - 1}
+            onUpdate={val => updateUrl(i, val)} onRemove={() => remove(i)}
+            onMoveUp={() => moveUp(i)} onMoveDown={() => moveDown(i)} />
+        </div>
       ))}
       {list.filter(Boolean).length > 1 && (
         <div className="flex gap-2 mt-1 flex-wrap">
@@ -354,8 +372,8 @@ function ImageGalleryManager({ images, onChange }: { images: string[]; onChange:
           <p className="text-xs text-gray-400 self-center ml-1">↑ First image = primary</p>
         </div>
       )}
-      <AddImageRow onAdd={add} />
-      <p className="text-xs text-gray-400">First image is primary (shown in listings). Add up to 6 for gallery.</p>
+      <AddImageRow onAdd={add} onAddMany={addMany} />
+      <p className="text-xs text-gray-400">Drag rows to reorder. First image is primary (shown in listings). Select multiple files at once to bulk upload.</p>
     </div>
   );
 }
