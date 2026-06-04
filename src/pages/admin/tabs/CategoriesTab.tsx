@@ -9,6 +9,19 @@ import { TabHelp } from './_TabHelp';
 import { PAGE_OPTIONS } from '@/lib/page-keys';
 
 const toSlug = (s: string) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const toCsv = (v: any) => Array.isArray(v) ? v.filter(Boolean).join(', ') : (typeof v === 'string' ? v : '');
+const toText = (v: any) => typeof v === 'string' ? v : '';
+const toEditState = (category?: Partial<Category> | null) => ({
+  ...EMPTY,
+  ...(category || {}),
+  description: toText(category?.description),
+  icon: toText(category?.icon),
+  image_url: toText(category?.image_url),
+  seo_title: toText((category as any)?.seo_title),
+  seo_description: toText((category as any)?.seo_description),
+  seo_keywords: toCsv((category as any)?.seo_keywords),
+  visible_on_pages: Array.isArray(category?.visible_on_pages) ? category.visible_on_pages : [],
+});
 
 const EMPTY: Omit<Category, 'id' | 'created_at' | 'updated_at'> = {
   name: '', slug: '', description: '', icon: '', image_url: '',
@@ -132,7 +145,7 @@ export default function CategoriesTab() {
           <h2 className="text-2xl font-black">Categories</h2>
           <p className="text-sm text-gray-500">Master list used in product form, navigation, offers, and category landing pages.</p>
         </div>
-        <button onClick={() => setEditing({ ...EMPTY, sort_order: (rows.reduce((m, r) => Math.max(m, r.sort_order), 0) + 10) })}
+        <button onClick={() => setEditing(toEditState({ sort_order: (rows.reduce((m, r) => Math.max(m, r.sort_order), 0) + 10) }))}
           className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded-xl text-sm">
           <Plus size={16} /> New Category
         </button>
@@ -160,7 +173,7 @@ export default function CategoriesTab() {
             </thead>
             <tbody>
               {tree.map(parent => (
-                <RowGroup key={parent.id} node={parent} depth={0} sel={sel} onEdit={c => setEditing(c)} onDelete={remove} onToggle={toggleActive} onFeature={toggleFeatured} onMove={move} onAddChild={(p) => setEditing({ ...EMPTY, parent_id: p.id, sort_order: ((p as any).children?.length || 0) * 10 })} />
+                <RowGroup key={parent.id} node={parent} depth={0} sel={sel} onEdit={c => setEditing(toEditState(c))} onDelete={remove} onToggle={toggleActive} onFeature={toggleFeatured} onMove={move} onAddChild={(p) => setEditing(toEditState({ parent_id: p.id, sort_order: ((p as any).children?.length || 0) * 10 }))} />
               ))}
               {tree.length === 0 && <tr><td colSpan={8} className="text-center py-12 text-gray-400">No categories yet — click "New Category".</td></tr>}
             </tbody>
