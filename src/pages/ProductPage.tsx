@@ -740,7 +740,7 @@ export default function ProductPage() {
         <div className="grid lg:grid-cols-[1fr_1.1fr] gap-10 items-start">
           {/* Gallery */}
           <div className="lg:sticky lg:top-24 space-y-3">
-            <div className={`relative bg-gray-950 rounded-3xl overflow-hidden aspect-square flex items-center justify-center shadow-2xl ${showVideo ? '' : 'cursor-zoom-in group'}`}
+            <div className={`relative bg-white rounded-3xl overflow-hidden aspect-square flex items-center justify-center shadow-2xl ${showVideo ? '' : 'cursor-zoom-in group'}`}
               onClick={() => !showVideo && images.length && setLightboxOpen(true)}>
               {discount > 0 && !showVideo && (
                 <span className="absolute bottom-4 left-4 z-10 bg-white text-gray-900 text-xs font-black px-3 py-1.5 rounded-full shadow-lg">
@@ -755,8 +755,8 @@ export default function ProductPage() {
               {showVideo && productVideo
                 ? <div className="w-full h-full p-0" onClick={e => e.stopPropagation()}><VideoEmbed url={productVideo} className="w-full h-full rounded-none" /></div>
                 : images[selectedImage]
-                  ? <img src={images[selectedImage]} alt={product.name} className="w-full h-full object-contain p-6 group-hover:scale-105 transition-transform duration-500"  loading="lazy" decoding="async"/>
-                  : <span className="text-7xl font-black text-gray-700">NP</span>}
+                  ? <img src={images[selectedImage]} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"  loading="lazy" decoding="async"/>
+                  : <span className="text-7xl font-black text-gray-300">NP</span>}
               {!showVideo && images.length > 1 && <>
                 <button onClick={e => { e.stopPropagation(); setSelectedImage(i => (i - 1 + images.length) % images.length); }} className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/10 border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/25 transition opacity-0 group-hover:opacity-100"><ChevronLeft size={16} /></button>
                 <button onClick={e => { e.stopPropagation(); setSelectedImage(i => (i + 1) % images.length); }} className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/10 border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/25 transition opacity-0 group-hover:opacity-100"><ChevronRight size={16} /></button>
