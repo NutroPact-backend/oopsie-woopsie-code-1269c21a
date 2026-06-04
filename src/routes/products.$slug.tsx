@@ -7,7 +7,7 @@ export const Route = createFileRoute("/products/$slug")({
   loader: async ({ params }) => {
     const { data } = await supabase
       .from("products")
-      .select("id,name,slug,short_description,description,price,compare_price,images,brand,sku,in_stock,rating,review_count")
+      .select("id,name,slug,short_description,description,price,compare_price,images,sku,stock,rating,review_count")
       .eq("slug", params.slug)
       .maybeSingle();
     if (!data) throw notFound();
@@ -66,13 +66,13 @@ export const Route = createFileRoute("/products/$slug")({
             description: desc,
             image: image ? [image] : undefined,
             sku: p.sku || undefined,
-            brand: { "@type": "Brand", name: p.brand || "NutroPact" },
+            brand: { "@type": "Brand", name: "NutroPact" },
             offers: {
               "@type": "Offer",
               url,
               priceCurrency: "INR",
               price: p.price,
-              availability: p.in_stock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+              availability: (p.stock ?? 0) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
             },
             ...(Number(p.rating) > 0 && Number(p.review_count) > 0 ? {
               aggregateRating: {
