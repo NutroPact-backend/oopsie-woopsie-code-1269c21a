@@ -141,7 +141,7 @@ export default function CategoriesTab() {
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <Field label="Name *">
-                  <input className="np-in" value={editing.name} onChange={e => setEditing({ ...editing, name: e.target.value, slug: editing.slug || toSlug(e.target.value) })} />
+                  <input className="np-in" value={editing.name} onChange={e => setEditing({ ...editing, name: e.target.value, slug: toSlug(e.target.value) })} />
                 </Field>
                 <Field label="Slug (URL)">
                   <input className="np-in font-mono" value={editing.slug} onChange={e => setEditing({ ...editing, slug: toSlug(e.target.value) })} placeholder="auto" />

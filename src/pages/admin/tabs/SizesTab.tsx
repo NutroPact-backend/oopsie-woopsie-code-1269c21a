@@ -81,7 +81,7 @@ export default function SizesTab() {
           <div className="bg-white rounded-2xl w-full max-w-md" onClick={e => e.stopPropagation()}>
             <div className="border-b px-6 py-4 flex items-center justify-between"><h3 className="text-xl font-black">{'id' in editing ? 'Edit' : 'New'} Size</h3><button onClick={() => setEditing(null)}><X size={20} /></button></div>
             <div className="p-6 space-y-3">
-              <Field label="Name * (e.g. 1 kg, 500 g, 60 caps)"><input className="np-in" value={editing.name} onChange={e => setEditing({ ...editing, name: e.target.value, slug: editing.slug || toSlug(e.target.value) })} /></Field>
+              <Field label="Name * (e.g. 1 kg, 500 g, 60 caps)"><input className="np-in" value={editing.name} onChange={e => setEditing({ ...editing, name: e.target.value, slug: toSlug(e.target.value) })} /></Field>
               <Field label="Slug"><input className="np-in font-mono" value={editing.slug} onChange={e => setEditing({ ...editing, slug: toSlug(e.target.value) })} /></Field>
               <Field label="Weight in grams (used for shipping calc)"><input type="number" className="np-in" value={editing.value_grams} onChange={e => setEditing({ ...editing, value_grams: Number(e.target.value) })} /></Field>
               <div className="grid grid-cols-2 gap-3">
