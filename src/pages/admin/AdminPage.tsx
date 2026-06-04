@@ -13,7 +13,7 @@ import UsersTab from './tabs/UsersTab';
 import Customer360Tab from './tabs/Customer360Tab';
 import LiveOrderToaster from '@/components/admin/LiveOrderToaster';
 import { useSimpleUpload } from '@/lib/useSimpleUpload';
-import axios from 'axios';
+import API from '@/lib/api';
 import { formatPrice, calculateDiscount } from '@/lib/utils';
 import SiteTab from './tabs/SiteTab';
 import AboutTab from './tabs/AboutTab';
@@ -99,12 +99,8 @@ import { Crown, Flame } from 'lucide-react';
 
 const TOKEN_KEY = 'np_admin_token';
 
-const AdminAPI = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
-AdminAPI.interceptors.request.use(config => {
-  const token = sessionStorage.getItem(TOKEN_KEY);
-  if (token) config.headers['x-admin-token'] = token;
-  return config;
-});
+// All admin CRUD goes through the shared Supabase adapter (api.ts) so saves actually persist.
+const AdminAPI = API;
 
 type Tab = 'dashboard' | 'analytics' | 'products' | 'product_groups' | 'productauth' | 'categories' | 'brands' | 'flavors' | 'sizes' | 'sizecharts' | 'bulkimport' | 'inventory' | 'accounting' | 'orders' | 'abandoned' | 'subscriptions' | 'campaigns' | 'giftcards' | 'chatbot' | 'loyalty' | 'referrals' | 'wholesale' | 'productqa' | 'settings' | 'site' | 'about' | 'navigation' | 'homepage' | 'footer' | 'coupons' | 'offers' | 'notifications' | 'communications' | 'messaging' | 'mailsystem' | 'popups' | 'dimensions' | 'blog' | 'faq' | 'reviews' | 'reviewmod' | 'contact' | 'ai' | 'aiseo' | 'shipping' | 'automation' | 'reconciliation' | 'returns' | 'ordermodify' | 'users' | 'customer360' | 'pages' | 'sitemap' | 'payments' | 'wallet' | 'security' | 'marketing' | 'seocommand' | 'seodebug' | 'auditlog' | 'support' | 'backup' | 'roas' | 'bulkorders' | 'experiments' | 'health' | 'superadmin' | 'backgrounds' | 'whatsapp_channels' | 'urgency' | 'quick_checkout' | 'variants_pro' | 'verification' | 'growth_boosters' | 'videosections';
 type ModalTab = 'details' | 'reviews';
@@ -899,7 +895,7 @@ function ReviewsTab({ product, onReviewsChanged }: { product: any; onReviewsChan
 // ─── Product Modal ────────────────────────────────────────────────────────────
 
 const EMPTY_PRODUCT: any = {
-  name: '', slug: '', price: 0, comparePrice: 0, category: 'Protein', stock: 50,
+  name: '', slug: '', price: 0, comparePrice: 0, category: '', stock: 50,
   ratings: 0, numReviews: 0, isActive: true,
   images: [''], video: '', banners: [],
   flavors: [], sizes: [],

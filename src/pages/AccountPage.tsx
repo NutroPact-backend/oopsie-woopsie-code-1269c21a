@@ -53,10 +53,10 @@ export default function AccountPage() {
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 bg-orange-500 rounded-full flex items-center justify-center text-white font-black text-xl">
-            {user.name[0].toUpperCase()}
+            {(user.name?.[0] || user.email?.[0] || '?').toUpperCase()}
           </div>
           <div>
-            <h1 className="text-2xl font-black">{user.name}</h1>
+            <h1 className="text-2xl font-black">{user.name || user.email?.split('@')[0] || 'Account'}</h1>
             <p className="text-gray-500 text-sm">{user.email}</p>
           </div>
         </div>

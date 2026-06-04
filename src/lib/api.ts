@@ -184,8 +184,8 @@ async function buildProductWriteRow(body: any, existing?: any) {
     description: body.description ?? existing?.description ?? null,
     short_description: body.shortDescription ?? body.short_description ?? existing?.short_description ?? null,
     sku: body.sku ?? existing?.sku ?? null,
-    price: Number(body.price || 0),
-    compare_price: Number(body.comparePrice ?? body.compare_price ?? 0),
+    price: Number(body.price ?? existing?.price ?? 0),
+    compare_price: Number(body.comparePrice ?? body.compare_price ?? existing?.compare_price ?? 0),
     stock: Number(body.stock ?? existing?.stock ?? 0),
     weight: Number(body.weight ?? existing?.weight ?? 0),
     images: normalizeImages(body.images ?? existing?.images ?? []),
@@ -287,7 +287,7 @@ const GET: Record<string, Handler> = {
         .eq("is_approved", true)
         .order("is_featured", { ascending: false })
         .order("created_at", { ascending: false }),
-      supabase.from("product_reviews").select("*").order("created_at", { ascending: false }),
+      supabase.from("product_reviews").select("*").eq("is_approved", true).order("created_at", { ascending: false }),
       supabase.from("products").select("id,name,slug"),
     ]);
     const pmap = new Map((productsList.data ?? []).map((p: any) => [p.id, p]));
@@ -536,7 +536,7 @@ async function dynamicGet(path: string): Promise<any> {
     }
     const table = adminGetTableMap[path];
     if (table) {
-      const { data } = await supabase.from(table as any).select("*").order("created_at", { ascending: false });
+      const { data } = await supabase.from(table as any).select("*").order("created_at", { ascending: false }).limit(1000);
       return camelize(data ?? []);
     }
     if (path === "/admin/homepage") {
@@ -855,11 +855,42 @@ async function dynamicPost(path: string, body: any): Promise<any> {
   if (m) {
     const id = crypto.randomUUID();
     const { error } = await supabase.from("product_reviews").insert({
-      id, product_id: m[1], name: body.name, comment: body.comment,
-      rating: body.rating ?? 5, title: body.title ?? "",
+      id, product_id: m[1],
+      user_name: body.name,
+      comment: body.comment,
+      rating: Math.max(1, Math.min(5, Number(body.rating ?? 5))),
+      title: (body.title ?? "").toString().slice(0, 200),
+      is_approved: false, // moderate by default
     });
     if (error) fail(500, error.message);
     return { success: true };
+  }
+  // /admin/products/:id/reviews  → admin creates a review (auto-approved)
+  m = path.match(/^\/admin\/products\/([^/]+)\/reviews$/);
+  if (m) {
+    if (!(await isCurrentUserAdmin())) fail(403, "Admin only");
+    const id = crypto.randomUUID();
+    const payload = {
+      id,
+      product_id: m[1],
+      user_name: body.name || "",
+      user_avatar: body.avatar || "",
+      rating: Math.max(1, Math.min(5, Number(body.rating ?? 5))),
+      title: body.title || "",
+      comment: body.comment || "",
+      images: Array.isArray(body.images) ? body.images : [],
+      is_verified: body.verified !== false,
+      is_approved: true,
+      data: {
+        variant: body.variant || "",
+        video: body.video || "",
+        pinned: !!body.pinned,
+        source: "admin",
+      },
+    };
+    const { data, error } = await supabase.from("product_reviews").insert(payload).select().single();
+    if (error) fail(500, error.message);
+    return camelize(data);
   }
   // /products/:id/notify-me
   m = path.match(/^\/products\/([^/]+)\/notify-me$/);
@@ -1089,14 +1120,21 @@ async function dynamicPut(path: string, body: any): Promise<any> {
       faq: "faqs",
       "packaging-boxes": "packaging_boxes",
       reviews: "global_reviews",
+      contact: "contact_submissions",
     };
     const table = tableMap[m[1]];
     if (table) {
       const row = table === 'products'
         ? await buildProductWriteRow(body, await supabase.from('products').select('*').eq('id', m[2]).maybeSingle().then(r => r.data))
-        : { ...snakeify(body), id: m[2] };
+        : (table === 'coupons'
+            ? { ...snakeify(body), code: m[2] }
+            : { ...snakeify(body), id: m[2] });
       delete (row as any)._id;
-      const { data, error } = await supabase.from(table as any).upsert(row).select().single();
+      const conflictCol = table === 'coupons' ? { onConflict: 'code' } : undefined;
+      const q = conflictCol
+        ? supabase.from(table as any).upsert(row, conflictCol as any)
+        : supabase.from(table as any).upsert(row);
+      const { data, error } = await q.select().single();
       if (error) fail(500, error.message);
       return table === 'products' ? shapeProductRow(data, { categoryName: parseProductData(data).category || body.category || "" }) : camelize(data);
     }
@@ -1107,6 +1145,13 @@ async function dynamicPut(path: string, body: any): Promise<any> {
 // DELETE
 async function dynamicDelete(path: string): Promise<any> {
   if (!(await isCurrentUserAdmin())) fail(403, "Admin only");
+  // /admin/products/:id/reviews/:rid → delete a single product review (4 segments)
+  const revDel = path.match(/^\/admin\/products\/([^/]+)\/reviews\/([^/]+)$/);
+  if (revDel) {
+    const { error } = await supabase.from("product_reviews").delete().eq("id", revDel[2]).eq("product_id", revDel[1]);
+    if (error) fail(500, error.message);
+    return { success: true };
+  }
   const m = path.match(/^\/admin\/notifications\/([^/]+)$/);
   if (m) {
     await supabase.from("notification_log").delete().eq("id", m[1]);
@@ -1134,7 +1179,9 @@ async function dynamicDelete(path: string): Promise<any> {
     };
     const table = tableMap[mm[1]];
     if (table) {
-      const { error } = await supabase.from(table as any).delete().eq("id", mm[2]);
+      // Coupons use `code` as the friendly identifier; routes pass code, not UUID.
+      const matchCol = table === "coupons" ? "code" : "id";
+      const { error } = await supabase.from(table as any).delete().eq(matchCol, mm[2]);
       if (error) fail(500, error.message);
       return { success: true };
     }
@@ -1143,12 +1190,24 @@ async function dynamicDelete(path: string): Promise<any> {
 }
 
 // ---------- public client ----------
-async function dispatch(method: "get" | "post" | "put" | "patch" | "delete", url: string, body?: any): Promise<{ data: any }> {
+async function dispatch(method: "get" | "post" | "put" | "patch" | "delete", url: string, body?: any, opts?: { params?: Record<string, any> }): Promise<{ data: any }> {
   // strip absolute origin and /api prefix so the same handler map works for
   // both internal API calls (`/products`) and legacy `${VITE_API_URL}/admin/...` calls.
   let cleaned = url;
   try { cleaned = new URL(url).pathname + (new URL(url).search || ""); } catch {}
   cleaned = cleaned.replace(/^\/api(?=\/|$)/, "") || "/";
+  // Merge axios-style { params } into the query string so callers like
+  // `API.get('/admin/contact', { params: { status: 'new' } })` actually filter.
+  if (opts?.params && typeof opts.params === "object") {
+    const usp = new URLSearchParams(cleaned.includes("?") ? cleaned.split("?")[1] : "");
+    for (const [k, v] of Object.entries(opts.params)) {
+      if (v === undefined || v === null || v === "") continue;
+      usp.set(k, String(v));
+    }
+    const qs = usp.toString();
+    const basePath = cleaned.split("?")[0];
+    cleaned = qs ? `${basePath}?${qs}` : basePath;
+  }
   const { path, params } = parsePath(cleaned);
   try {
     if (method === "get") {
@@ -1174,11 +1233,11 @@ async function dispatch(method: "get" | "post" | "put" | "patch" | "delete", url
 
 type ApiResp = { data: any };
 const API = {
-  get: (url: string): Promise<ApiResp> => dispatch("get", url),
-  post: (url: string, data?: unknown): Promise<ApiResp> => dispatch("post", url, data),
-  put: (url: string, data?: unknown): Promise<ApiResp> => dispatch("put", url, data),
-  patch: (url: string, data?: unknown): Promise<ApiResp> => dispatch("patch", url, data),
-  delete: (url: string): Promise<ApiResp> => dispatch("delete", url),
+  get: (url: string, opts?: any): Promise<ApiResp> => dispatch("get", url, undefined, opts),
+  post: (url: string, data?: unknown, opts?: any): Promise<ApiResp> => dispatch("post", url, data, opts),
+  put: (url: string, data?: unknown, opts?: any): Promise<ApiResp> => dispatch("put", url, data, opts),
+  patch: (url: string, data?: unknown, opts?: any): Promise<ApiResp> => dispatch("patch", url, data, opts),
+  delete: (url: string, opts?: any): Promise<ApiResp> => dispatch("delete", url, undefined, opts),
   request: (cfg: any): Promise<ApiResp> => dispatch((cfg?.method || "get").toLowerCase(), cfg.url, cfg?.data),
   interceptors: { request: { use: (_fn?: any) => {} }, response: { use: (_fn?: any) => {} } },
   create: (_cfg?: any): any => API,
