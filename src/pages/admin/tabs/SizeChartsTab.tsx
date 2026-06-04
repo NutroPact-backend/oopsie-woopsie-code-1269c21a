@@ -7,13 +7,6 @@ import { TabHelp } from './_TabHelp';
 
 const toSlug = (s: string) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
-const CATEGORIES = [
-  'apparel', 't-shirt', 'hoodie', 'joggers',
-  'wrist band', 'lifting belt', 'lifting straps', 'gloves',
-  'knee sleeve', 'elbow sleeve', 'wrist wrap',
-  'shoes', 'cap', 'shaker', 'bag', 'other',
-];
-
 const PRESETS: Record<string, { columns: string[]; rows: string[][]; unit: string }> = {
   't-shirt':       { unit: 'inches', columns: ['Size','Chest','Length','Shoulder'], rows: [['S','38','27','17'],['M','40','28','17.5'],['L','42','29','18'],['XL','44','30','18.5'],['XXL','46','31','19']] },
   'hoodie':        { unit: 'inches', columns: ['Size','Chest','Length','Sleeve'],   rows: [['S','40','27','24'],['M','42','28','25'],['L','44','29','25.5'],['XL','46','30','26']] },
@@ -24,7 +17,7 @@ const PRESETS: Record<string, { columns: string[]; rows: string[][]; unit: strin
   'shoes':         { unit: 'UK',     columns: ['UK','US','EU','Foot Length (cm)'],  rows: [['6','7','40','25'],['7','8','41','25.7'],['8','9','42','26.5'],['9','10','43','27.3'],['10','11','44','28']] },
 };
 
-const EMPTY = { name: '', slug: '', category: 'apparel', description: '', image_url: '', columns: ['Size'], rows: [['S']], unit_hint: '', active: true, sort_order: 0 };
+const EMPTY = { name: '', slug: '', category: '', description: '', image_url: '', columns: ['Size'], rows: [['S']], unit_hint: '', active: true, sort_order: 0 };
 
 export default function SizeChartsTab() {
   const [rows, setRows] = useState<any[]>([]);
@@ -52,11 +45,12 @@ export default function SizeChartsTab() {
 
   const save = async () => {
     if (!editing?.name?.trim()) return alert('Name required');
+    if (!editing?.category?.trim()) return alert('Category required');
     setSaving(true);
     const payload: any = {
       name: editing.name.trim(),
       slug: editing.slug?.trim() || toSlug(editing.name),
-      category: editing.category || 'apparel',
+      category: editing.category.trim(),
       description: editing.description || null,
       image_url: editing.image_url || null,
       columns: editing.columns || [],
@@ -121,10 +115,19 @@ export default function SizeChartsTab() {
             <div className="p-6 space-y-5">
               <div className="grid grid-cols-2 gap-3">
                 <Field label="Name *"><input className="np-in" value={editing.name} onChange={e => setEditing({ ...editing, name: e.target.value, slug: toSlug(e.target.value) })} placeholder="e.g. T-Shirt Size Chart" /></Field>
-                <Field label="Category">
-                  <select className="np-in" value={editing.category} onChange={e => { setEditing({ ...editing, category: e.target.value }); }}>
-                    {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
+                <Field label="Category *">
+                  <input
+                    className="np-in"
+                    list="size-chart-categories"
+                    value={editing.category}
+                    onChange={e => setEditing({ ...editing, category: e.target.value })}
+                    placeholder="Type a new category or pick existing"
+                  />
+                  <datalist id="size-chart-categories">
+                    {Array.from(new Set(rows.map((r: any) => r.category).filter(Boolean))).map((c: string) => (
+                      <option key={c} value={c} />
+                    ))}
+                  </datalist>
                 </Field>
               </div>
 
