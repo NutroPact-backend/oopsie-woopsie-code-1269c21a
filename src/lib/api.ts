@@ -994,6 +994,7 @@ async function dynamicPost(path: string, body: any): Promise<any> {
 async function adminUpsert(path: string, body: any): Promise<any> {
   const tableMap: Record<string, string> = {
     "/admin/products": "products",
+    "/admin/product-groups": "product_groups",
     "/admin/blog": "blog_posts",
     "/admin/coupons": "coupons",
     "/admin/dimensions": "dimensions",
@@ -1075,6 +1076,7 @@ async function dynamicPut(path: string, body: any): Promise<any> {
     }
     const tableMap: Record<string, string> = {
       products: "products",
+      "product-groups": "product_groups",
       blog: "blog_posts",
       coupons: "coupons",
       dimensions: "dimensions",
@@ -1113,6 +1115,7 @@ async function dynamicDelete(path: string): Promise<any> {
   if (mm) {
     const tableMap: Record<string, string> = {
       products: "products",
+      "product-groups": "product_groups",
       blog: "blog_posts",
       coupons: "coupons",
       dimensions: "dimensions",
