@@ -770,7 +770,7 @@ export default function ProductPage() {
                     aria-current={!showVideo && selectedImage === i ? 'true' : undefined}
                     className={`shrink-0 w-16 h-16 rounded-2xl overflow-hidden border-2 transition ${!showVideo && selectedImage === i ? 'border-gray-900 shadow-md' : 'border-gray-100 hover:border-gray-300'}`}>
                     <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                      <img src={img} alt={`${product?.name || 'Product'} thumbnail ${i + 1}`} className="w-full h-full object-contain p-1.5" loading="lazy"  decoding="async"/>
+                      <img src={img} alt={`${product?.name || 'Product'} thumbnail ${i + 1}`} className="w-full h-full object-cover" loading="lazy"  decoding="async"/>
                     </div>
                   </button>
                 ))}
@@ -1112,7 +1112,7 @@ export default function ProductPage() {
                   className="shrink-0 w-48 border border-gray-100 rounded-2xl bg-white shadow-sm hover:shadow-md transition overflow-hidden flex flex-col">
                   <div className="relative bg-gray-50 h-40 flex items-center justify-center">
                     {d > 0 && <span className="absolute top-2 left-2 bg-green-500 text-white text-xs font-black px-1.5 py-0.5 rounded-full">{d}%</span>}
-                    {p.images?.[0] ? <img src={p.images[0]} alt={p.name} className="h-full w-full object-contain p-2" loading="lazy"  decoding="async"/> : <span className="text-4xl font-black text-gray-200">NP</span>}
+                    {p.images?.[0] ? <img src={p.images[0]} alt={p.name} className="h-full w-full object-cover" loading="lazy"  decoding="async"/> : <span className="text-4xl font-black text-gray-200">NP</span>}
                   </div>
                   <div className="p-3 flex flex-col flex-1">
                     <p className="text-xs text-gray-500">{p.category}</p>
