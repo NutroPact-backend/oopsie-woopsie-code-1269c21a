@@ -1,0 +1,1 @@
+ALTER TABLE public.categories ADD COLUMN IF NOT EXISTS visible_on_pages text[] NOT NULL DEFAULT '{}'::text[];

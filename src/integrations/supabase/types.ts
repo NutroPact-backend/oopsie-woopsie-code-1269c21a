@@ -674,6 +674,7 @@ export type Database = {
           slug: string | null
           sort_order: number | null
           updated_at: string
+          visible_on_pages: string[]
         }
         Insert: {
           active?: boolean | null
@@ -694,6 +695,7 @@ export type Database = {
           slug?: string | null
           sort_order?: number | null
           updated_at?: string
+          visible_on_pages?: string[]
         }
         Update: {
           active?: boolean | null
@@ -714,6 +716,7 @@ export type Database = {
           slug?: string | null
           sort_order?: number | null
           updated_at?: string
+          visible_on_pages?: string[]
         }
         Relationships: []
       }
