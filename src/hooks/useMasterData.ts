@@ -91,6 +91,7 @@ export interface ProductVariant {
   price: number; compare_price: number; stock: number; low_stock_threshold: number;
   image_url: string; barcode: string; weight_grams: number;
   is_default: boolean; active: boolean; sort_order: number;
+  data?: { gallery_images?: string[]; description?: string; highlights?: string[] } | null;
 }
 
 export async function fetchVariants(productId: string): Promise<ProductVariant[]> {
