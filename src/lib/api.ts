@@ -126,7 +126,7 @@ const GET: Record<string, Handler> = {
     return camelize(data ?? []);
   },
   "/faq": async () => {
-    const { data } = await supabase.from("faqs").select("*").eq("enabled", true).order("order", { ascending: true });
+    const { data } = await supabase.from("faqs").select("*").eq("is_active", true).order("sort_order", { ascending: true });
     return camelize(data ?? []);
   },
   "/settings": async () => {
