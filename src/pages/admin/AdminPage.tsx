@@ -893,6 +893,24 @@ function ProductModal({ product, onClose, onSave, onReviewsChanged }: { product:
   const [selSizeIds, setSelSizeIds] = useState<string[]>([]);
   const catNames = useCategoryNames();
   const CATEGORIES = catNames.length ? catNames : FALLBACK_CATEGORIES;
+  const { data: allCats } = useCategories(true);
+  // ancestors of currently selected category (parent → super-parent → …)
+  const catAncestors = (() => {
+    if (!allCats?.length || !form.category) return [] as { id: string; name: string }[];
+    const byName = new Map(allCats.map((c: any) => [c.name, c]));
+    const byId = new Map(allCats.map((c: any) => [c.id, c]));
+    const out: any[] = [];
+    let cur: any = byName.get(form.category);
+    const seen = new Set<string>();
+    while (cur?.parent_id && !seen.has(cur.parent_id)) {
+      seen.add(cur.parent_id);
+      const p: any = byId.get(cur.parent_id);
+      if (!p) break;
+      out.push({ id: p.id, name: p.name });
+      cur = p;
+    }
+    return out;
+  })();
   const set = (k: string, v: any) => setForm((f: any) => ({ ...f, [k]: v }));
   const setNested = (parent: string, k: string, v: any) => setForm((f: any) => ({ ...f, [parent]: { ...(f[parent] || {}), [k]: v } }));
 
