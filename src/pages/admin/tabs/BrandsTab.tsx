@@ -6,6 +6,7 @@ import { fetchBrands, invalidateBrandsCache, type Brand } from '@/hooks/useMaste
 import { useSimpleUpload } from '@/lib/useSimpleUpload';
 import { useBulkSelection, BulkActionBar, SelectCheckbox, runForEach } from '@/pages/admin/components/BulkSelect';
 import { TabHelp } from './_TabHelp';
+import SmartImg from '@/components/SmartImg';
 
 const toSlug = (s: string) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const EMPTY: Omit<Brand, 'id'> = { name: '', slug: '', logo_url: '', description: '', sort_order: 0, active: true };
@@ -79,7 +80,12 @@ export default function BrandsTab() {
                   <td className="px-3 py-3"><SelectCheckbox checked={sel.isSelected(b.id)} onChange={() => sel.toggleOne(b.id)} /></td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      {b.logo_url ? <img src={b.logo_url} alt="" className="w-10 h-10 object-contain rounded bg-gray-50" /> : <div className="w-10 h-10 rounded bg-gray-100 flex items-center justify-center text-xs font-black text-gray-400">{b.name[0]}</div>}
+                      <SmartImg
+                        src={b.logo_url}
+                        alt=""
+                        className="w-10 h-10 object-contain rounded bg-gray-50"
+                        fallback={<div className="w-10 h-10 rounded bg-gray-100 flex items-center justify-center text-xs font-black text-gray-400">{b.name[0]}</div>}
+                      />
                       <div><p className="font-bold">{b.name}</p>{b.description && <p className="text-xs text-gray-500 line-clamp-1 max-w-xs">{b.description}</p>}</div>
                     </div>
                   </td>
@@ -117,7 +123,7 @@ export default function BrandsTab() {
                     <input type="file" accept="image/*" className="hidden" onChange={async e => { const f = e.target.files?.[0]; if (!f) return; const url = await uploadFile(f); if (url) setEditing({ ...editing, logo_url: url }); }} />
                   </label>
                 </div>
-                {editing.logo_url && <img src={editing.logo_url} alt="" className="mt-2 h-16 object-contain bg-gray-50 rounded" />}
+                {editing.logo_url && <SmartImg src={editing.logo_url} alt="" className="mt-2 h-16 object-contain bg-gray-50 rounded" />}
               </Field>
               <div className="grid grid-cols-2 gap-3">
                 <Field label="Sort order"><input type="number" className="np-in" value={editing.sort_order} onChange={e => setEditing({ ...editing, sort_order: Number(e.target.value) })} /></Field>

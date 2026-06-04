@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { getGrowthBoosters } from "@/lib/growthBoosters.functions";
+import SmartImg from "@/components/SmartImg";
 
 export default function MarketplaceStrip() {
   const get = useServerFn(getGrowthBoosters);
@@ -18,7 +19,7 @@ export default function MarketplaceStrip() {
         {brands.map((b: any) => (
           <a key={b.id} href={b.url} target="_blank" rel="noopener noreferrer" aria-label={b.label}
             className="opacity-70 hover:opacity-100 transition grayscale hover:grayscale-0">
-            <img src={b.logo} alt={b.label} className="h-7 sm:h-8 w-auto object-contain" loading="lazy" decoding="async" />
+            <SmartImg src={b.logo} alt={b.label} className="h-7 sm:h-8 w-auto object-contain" loading="lazy" decoding="async" />
           </a>
         ))}
       </div>
