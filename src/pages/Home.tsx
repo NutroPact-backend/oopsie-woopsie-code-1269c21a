@@ -313,7 +313,7 @@ function FeaturedProducts({ sec, products }: { sec: any; products: any[] }) {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 md:gap-5 mt-6 md:mt-8">
           {shown.map((p: any) => (
             <Link key={p._id} href={`/products/${p.slug}`}
-              className="bg-white rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all overflow-hidden group border border-gray-100">
+              className="tilt-3d bg-white rounded-2xl shadow-sm overflow-hidden group border border-gray-100">
               <div className="bg-gray-100 h-48 flex items-center justify-center relative overflow-hidden">
                 {p.images?.[0]
                   ? <img src={p.images[0]} alt={p.name} loading="lazy" decoding="async"

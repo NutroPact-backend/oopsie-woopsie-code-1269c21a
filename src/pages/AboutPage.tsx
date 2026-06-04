@@ -217,7 +217,7 @@ export default function AboutPage() {
             {pillars.map((pl, i) => (
               <div
                 key={i}
-                className="rounded-2xl bg-white border border-gray-100 p-6 hover:border-orange-200 hover:shadow-sm transition"
+                className="tilt-3d rounded-2xl bg-white border border-gray-100 p-6 hover:border-orange-200 transition"
               >
                 <div className="text-3xl mb-3">{pl.icon}</div>
                 <h4 className="font-black text-lg tracking-tight"><T>{pl.title}</T></h4>
@@ -239,7 +239,7 @@ export default function AboutPage() {
             {certs.map((c, i) => (
               <div
                 key={i}
-                className="aspect-[3/2] rounded-2xl border border-gray-100 bg-white flex flex-col items-center justify-center p-4 hover:border-gray-200 transition"
+                className="tilt-3d aspect-[3/2] rounded-2xl border border-gray-100 bg-white flex flex-col items-center justify-center p-4 hover:border-gray-200 transition"
               >
                 {c.image ? (
                   <img

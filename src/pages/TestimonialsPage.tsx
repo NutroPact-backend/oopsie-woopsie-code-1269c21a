@@ -22,7 +22,7 @@ function ReviewCard({ r }: { r: any }) {
   const [expanded, setExpanded] = useState(false);
   const isLong = r.comment?.length > 220;
   return (
-    <article className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col hover:shadow-md transition-shadow">
+    <article className="tilt-3d bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col">
       <div className="flex items-center gap-3 mb-3">
         <img src={r.avatar || `https://i.pravatar.cc/80?u=${r.name}`} alt={r.name}
           className="w-11 h-11 rounded-full object-cover border-2 border-orange-100 shrink-0"  loading="lazy" decoding="async"/>
