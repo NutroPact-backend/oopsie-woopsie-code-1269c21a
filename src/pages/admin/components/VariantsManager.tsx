@@ -242,17 +242,49 @@ export default function VariantsManager(props: Props) {
                   <td className="px-2"><input type="number" value={row.compare_price} onChange={e => updateRow(i, { compare_price: Number(e.target.value) })} className="w-20 border rounded-lg px-2 py-1.5 text-xs text-right" /></td>
                   <td className="px-2"><input type="number" value={row.stock} onChange={e => updateRow(i, { stock: Number(e.target.value) })} className={`w-16 border rounded-lg px-2 py-1.5 text-xs text-right ${row.stock <= 0 ? 'border-red-300 bg-red-50' : row.stock < 10 ? 'border-amber-300 bg-amber-50' : ''}`} /></td>
                   <td className="px-2">
-                    <div className="flex items-center gap-1">
-                      {row.image_url ? <img src={row.image_url} alt="" className="w-8 h-8 object-cover rounded" /> : <div className="w-8 h-8 bg-gray-100 rounded" />}
-                      <label className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-[10px] font-bold cursor-pointer">
+                    <div className="flex items-center gap-1 flex-wrap max-w-[200px]">
+                      {(row.images || []).map((img, j) => (
+                        <div key={j} className="relative group">
+                          <img src={img} alt="" className={`w-8 h-8 object-cover rounded border ${j === 0 ? 'border-orange-400' : 'border-gray-200'}`} />
+                          <button type="button" onClick={() => removeImageFromRow(i, j)} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-3.5 h-3.5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition" title="Remove image"><XIcon size={8} /></button>
+                        </div>
+                      ))}
+                      <label className="px-1.5 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-[10px] font-bold cursor-pointer flex items-center" title="Add image(s)">
                         {isUploading ? '…' : <Upload size={11} />}
-                        <input type="file" accept="image/*" className="hidden" onChange={async e => { const f = e.target.files?.[0]; if (!f) return; const url = await uploadFile(f); if (url) updateRow(i, { image_url: url }); }} />
+                        <input type="file" accept="image/*" multiple className="hidden" onChange={async e => { const files = Array.from(e.target.files || []); for (const f of files) await addImageToRow(i, f); e.currentTarget.value = ''; }} />
                       </label>
                     </div>
+                    {(row.images?.length || 0) > 0 && <div className="text-[9px] text-gray-400 mt-0.5">{row.images.length} img · first = main</div>}
                   </td>
                   <td className="px-2 text-center"><input type="checkbox" checked={row.active} onChange={e => updateRow(i, { active: e.target.checked })} /></td>
-                  <td className="px-2"><button type="button" onClick={() => removeRow(i)} className="p-1.5 text-red-400 hover:bg-red-50 rounded-lg"><Trash2 size={13} /></button></td>
+                  <td className="px-2 whitespace-nowrap">
+                    <button type="button" onClick={() => toggleExpand(i)} className="p-1.5 text-gray-500 hover:bg-gray-100 rounded-lg" title="Per-variant description / highlights overrides">
+                      {expanded[i] ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                    </button>
+                    <button type="button" onClick={() => removeRow(i)} className="p-1.5 text-red-400 hover:bg-red-50 rounded-lg"><Trash2 size={13} /></button>
+                  </td>
                 </tr>
+                {expanded[i] && (
+                  <tr key={`${i}-x`} className="bg-orange-50/40">
+                    <td colSpan={9} className="px-3 py-3">
+                      <div className="grid md:grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-[10px] font-black uppercase text-gray-500">Description override (optional)</label>
+                          <textarea value={row.description} onChange={e => updateRow(i, { description: e.target.value })}
+                            rows={4} placeholder="Leave blank to inherit the main product description. Set this only if this flavor/size needs its own copy."
+                            className="w-full mt-1 border rounded-lg px-2 py-1.5 text-xs" />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-black uppercase text-gray-500">Highlights override (one per line)</label>
+                          <textarea value={(row.highlights || []).join('\n')} onChange={e => updateRow(i, { highlights: e.target.value.split('\n').map(s => s.trim()).filter(Boolean) })}
+                            rows={4} placeholder={'24g protein per scoop\nNo added sugar\nMade in India'}
+                            className="w-full mt-1 border rounded-lg px-2 py-1.5 text-xs font-mono" />
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-gray-500 mt-2">💡 When this variant is selected on the product page, its gallery images lead, and description / highlights swap to these overrides (if set).</p>
+                    </td>
+                  </tr>
+                )}
                 );
               })}
             </tbody>
