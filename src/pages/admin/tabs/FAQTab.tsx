@@ -1,17 +1,11 @@
 // @ts-nocheck
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Plus, Trash2, Edit2, Save, X, ChevronUp, ChevronDown, HelpCircle, Eye, EyeOff, GripVertical } from 'lucide-react';
 import { TabHelp } from "./_TabHelp";
 import { useBulkSelection, BulkActionBar, SelectCheckbox, runForEach } from '@/pages/admin/components/BulkSelect';
 
-const AdminAPI = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
-AdminAPI.interceptors.request.use(config => {
-  const token = sessionStorage.getItem('np_admin_token');
-  if (token) config.headers['x-admin-token'] = token;
-  return config;
-});
-
+import API from '@/lib/api';
+const AdminAPI = API;
 const DEFAULT_CATEGORIES = ['Orders & Shipping', 'Returns & Refunds', 'Product Quality', 'Payments', 'Account & Orders', 'Supplements & Advice', 'General'];
 
 const EMPTY_FAQ = { category: 'General', question: '', answer: '', enabled: true, order: 0 };

@@ -1,18 +1,12 @@
 // @ts-nocheck
 import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
 import { Save, Bell, Zap, ShoppingCart, Trash2, Plus, Image, Upload } from 'lucide-react';
 import { useSimpleUpload } from '@/lib/useSimpleUpload';
 import { TabHelp } from "./_TabHelp";
 import { SelectCheckbox, BulkActionBar } from '@/pages/admin/components/BulkSelect';
 
-const AdminAPI = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
-AdminAPI.interceptors.request.use(config => {
-  const token = sessionStorage.getItem('np_admin_token');
-  if (token) config.headers['x-admin-token'] = token;
-  return config;
-});
-
+import API from '@/lib/api';
+const AdminAPI = API;
 function Toggle({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) {
   return (
     <button type="button" onClick={() => onChange(!value)} className={`relative inline-flex w-11 h-6 rounded-full transition-colors focus:outline-none ${value ? 'bg-orange-500' : 'bg-gray-300'}`}>

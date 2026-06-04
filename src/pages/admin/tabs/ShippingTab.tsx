@@ -1,13 +1,11 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Save, Truck, MapPin, CheckCircle, XCircle, Loader2, ExternalLink, Plus, Trash2, Star } from 'lucide-react';
 import { TabHelp } from "./_TabHelp";
 
 
-const AdminAPI = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
-
-
+import API from '@/lib/api';
+const AdminAPI = API;
 type CarrierId = 'shiprocket' | 'delhivery' | 'bluedart' | 'shipmozo' | 'ekart' | 'amazon_shipping' | 'indiapost' | 'dtdc';
 
 type Field = { key: string; label: string; type?: 'text' | 'password' | 'select'; options?: string[]; placeholder?: string; hint?: string };

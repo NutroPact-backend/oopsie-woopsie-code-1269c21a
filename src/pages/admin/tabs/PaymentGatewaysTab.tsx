@@ -1,11 +1,11 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Save, Wallet, CreditCard, Smartphone, Banknote, Percent, Shield, Eye, EyeOff, Tag, Plus, Trash2, GripVertical } from 'lucide-react';
 import { TabHelp } from "./_TabHelp";
 
 
-const AdminAPI = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
+import API from '@/lib/api';
+const AdminAPI = API;
 AdminAPI.interceptors.request.use(c => {
   const t = sessionStorage.getItem('np_admin_token');
   if (t) c.headers['x-admin-token'] = t;

@@ -1,17 +1,11 @@
 // @ts-nocheck
 import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
 import { Save, Globe, Bell, Search, Zap, Palette, MessageCircle, Image, Upload, FileText, Plus, Trash2, RotateCcw } from 'lucide-react';
 import { useSimpleUpload } from '@/lib/useSimpleUpload';
 import { TabHelp } from './_TabHelp';
 
-const AdminAPI = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
-AdminAPI.interceptors.request.use(config => {
-  const token = sessionStorage.getItem('np_admin_token');
-  if (token) config.headers['x-admin-token'] = token;
-  return config;
-});
-
+import API from '@/lib/api';
+const AdminAPI = API;
 function Field({ label, help, children }: { label: string; help?: string; children: React.ReactNode }) {
   return (
     <div>

@@ -1,12 +1,11 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Save, Sparkles, Bot, Key, Eye, EyeOff, ExternalLink } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { TabHelp } from "./_TabHelp";
 
-const AdminAPI = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
-
+import API from '@/lib/api';
+const AdminAPI = API;
 // Free Google Gemini models (generativelanguage.googleapis.com)
 const MODELS = [
   { id: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash — fast, free, recommended' },

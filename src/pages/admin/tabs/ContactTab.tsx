@@ -1,16 +1,10 @@
 // @ts-nocheck
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
 import { Mail, Phone, MessageSquare, Trash2, Download, Search, RefreshCw, CheckCircle, Clock, Eye, X, Filter } from 'lucide-react';
 import { TabHelp } from "./_TabHelp";
 
-const AdminAPI = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
-AdminAPI.interceptors.request.use(config => {
-  const token = sessionStorage.getItem('np_admin_token');
-  if (token) config.headers['x-admin-token'] = token;
-  return config;
-});
-
+import API from '@/lib/api';
+const AdminAPI = API;
 const STATUS_COLORS: Record<string, string> = {
   new: 'bg-blue-100 text-blue-700 border-blue-200',
   read: 'bg-yellow-100 text-yellow-700 border-yellow-200',

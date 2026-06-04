@@ -1,18 +1,12 @@
 // @ts-nocheck
 import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
 import { Plus, Trash2, Save, Eye, EyeOff, ChevronDown, ChevronUp, Image, Video, LayoutGrid, Upload } from 'lucide-react';
 import { useSimpleUpload } from '@/lib/useSimpleUpload';
 import { TabHelp } from "./_TabHelp";
 import { BulkActionBar, SelectCheckbox } from '@/pages/admin/components/BulkSelect';
 
-const AdminAPI = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
-AdminAPI.interceptors.request.use(config => {
-  const token = sessionStorage.getItem('np_admin_token');
-  if (token) config.headers['x-admin-token'] = token;
-  return config;
-});
-
+import API from '@/lib/api';
+const AdminAPI = API;
 function Inp({ label, value, onChange, placeholder, type = 'text', help }: any) {
   return (
     <div>

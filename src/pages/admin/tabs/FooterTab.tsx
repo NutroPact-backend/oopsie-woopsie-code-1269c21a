@@ -1,17 +1,11 @@
 // @ts-nocheck
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Plus, Trash2, Save, Link, FileText, Share2, Image, Award } from 'lucide-react';
 import { TabHelp } from "./_TabHelp";
 import { useBulkSelection, BulkActionBar, SelectCheckbox } from '../components/BulkSelect';
 
-const AdminAPI = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
-AdminAPI.interceptors.request.use(config => {
-  const token = sessionStorage.getItem('np_admin_token');
-  if (token) config.headers['x-admin-token'] = token;
-  return config;
-});
-
+import API from '@/lib/api';
+const AdminAPI = API;
 const DEFAULT_BLOCKS = [
   { type: 'links', title: 'Useful Links', enabled: true, order: 0, width: 20, mobileWidth: 100, links: [{ label: 'About Us', href: '/about' }, { label: 'Privacy Policy', href: '/privacy' }, { label: 'Terms of Use', href: '/terms' }, { label: 'Shipping Policy', href: '/shipping' }, { label: 'Return Policy', href: '/refund' }] },
   { type: 'links', title: 'Explore', enabled: true, order: 1, width: 18, mobileWidth: 100, links: [{ label: 'Contact Us', href: '/contact' }, { label: 'FAQs', href: '/faq' }, { label: 'Track Order', href: '/track-order' }] },

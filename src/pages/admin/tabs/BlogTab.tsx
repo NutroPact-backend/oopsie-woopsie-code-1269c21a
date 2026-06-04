@@ -1,6 +1,5 @@
 // @ts-nocheck
 import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
 import { Plus, Trash2, Edit2, Eye, EyeOff, Save, X, Upload, BookOpen, Calendar, Tag, ChevronDown, ChevronUp, Search,
   Bold, Italic, Underline as UnderlineIcon, Strikethrough, Heading1, Heading2, Heading3, List, ListOrdered, Quote,
   Link as LinkIcon, Image as ImageIcon, Code, Undo, Redo, AlignLeft, AlignCenter, AlignRight, Eraser, Search as SearchIcon } from 'lucide-react';
@@ -8,13 +7,8 @@ import { useSimpleUpload } from '@/lib/useSimpleUpload';
 import { TabHelp } from "./_TabHelp";
 import { useBulkSelection, BulkActionBar, SelectCheckbox, runForEach } from '@/pages/admin/components/BulkSelect';
 
-const AdminAPI = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
-AdminAPI.interceptors.request.use(config => {
-  const token = sessionStorage.getItem('np_admin_token');
-  if (token) config.headers['x-admin-token'] = token;
-  return config;
-});
-
+import API from '@/lib/api';
+const AdminAPI = API;
 function toSlug(s: string) { return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
 
 const EMPTY_POST = {
