@@ -888,7 +888,7 @@ export default function ProductPage() {
                   {product.sizes?.filter((s: string) => s).length > 0 && (
                     <div>
                       <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">
-                        Size — <span className="text-gray-900 normal-case tracking-normal font-bold">{selectedSize}</span>
+                        Size — <span className="text-gray-900 normal-case tracking-normal font-bold">{formatSizeDisplay(selectedSize)}</span>
                       </p>
                       <div className="flex flex-wrap gap-2">
                         {product.sizes.filter((s: string) => s).map((s: string) => {
@@ -896,9 +896,9 @@ export default function ProductPage() {
                           const variantOOS = matches.length > 0 && matches.every((v: any) => (v.stock ?? 0) <= 0);
                           return (
                             <button key={s} onClick={() => setSelectedSize(s)}
-                              title={variantOOS ? `${s} — out of stock` : s}
+                              title={variantOOS ? `${formatSizeDisplay(s)} — out of stock` : formatSizeDisplay(s)}
                               className={`relative px-5 py-2.5 rounded-full border-2 text-sm font-semibold transition-all duration-150 ${selectedSize === s ? 'border-gray-900 bg-gray-900 text-white shadow-md' : 'border-gray-200 text-gray-600 hover:border-gray-400'} ${variantOOS ? 'opacity-50 line-through' : ''}`}>
-                              {s}
+                              {formatSizeDisplay(s)}
                             </button>
                           );
                         })}
