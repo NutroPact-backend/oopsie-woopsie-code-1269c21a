@@ -51,7 +51,7 @@ export default function BrandsTab() {
           <h2 className="text-2xl font-black">Brands</h2>
           <p className="text-sm text-gray-500">Master brand list — used in product form & filters.</p>
         </div>
-        <button onClick={() => setEditing({ ...EMPTY, sort_order: rows.length * 10 })}
+        <button onClick={() => { setSlugTouched(false); setEditing({ ...EMPTY, sort_order: rows.length * 10 }); }}
           className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded-xl text-sm">
           <Plus size={16} /> New Brand
         </button>
@@ -87,7 +87,7 @@ export default function BrandsTab() {
                   <td className="px-4 py-3 text-center"><button onClick={() => toggle(b)}>{b.active ? <Eye size={16} className="text-green-600" /> : <EyeOff size={16} className="text-gray-300" />}</button></td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => setEditing(b)} className="p-1.5 hover:bg-gray-100 rounded"><Edit2 size={14} /></button>
+                      <button onClick={() => { setSlugTouched(true); setEditing(b); }} className="p-1.5 hover:bg-gray-100 rounded"><Edit2 size={14} /></button>
                       <button onClick={() => remove(b)} className="p-1.5 hover:bg-red-50 text-red-500 rounded"><Trash2 size={14} /></button>
                     </div>
                   </td>
