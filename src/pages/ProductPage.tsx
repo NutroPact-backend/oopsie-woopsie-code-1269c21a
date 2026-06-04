@@ -710,7 +710,8 @@ export default function ProductPage() {
     return (
       <div className="w-full space-y-2 my-3">
         {bs.map((b: any, i: number) => {
-          const img = (window.innerWidth < 768 && b.mobileImage) ? b.mobileImage : b.image;
+          const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+          const img = (isMobile && b.mobileImage) ? b.mobileImage : b.image;
           if (!img) return null;
           const inner = <img src={img} alt={`${product?.name || 'Product'} promotional banner`} className="w-full rounded-2xl object-cover max-h-52 md:max-h-72" loading="lazy"  decoding="async"/>;
           return b.link ? (

@@ -34,7 +34,7 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (v: stri
       ref.current.innerHTML = value || '';
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [value]);
 
   const exec = (cmd: string, arg?: string) => {
     ref.current?.focus();
