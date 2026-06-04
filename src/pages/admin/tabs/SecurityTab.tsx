@@ -337,7 +337,7 @@ function ProductAuthSecretCard() {
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-900 flex gap-2">
             <AlertTriangle size={16} className="flex-shrink-0 mt-0.5" />
             <div>
-              Ye secret QR codes ko sign karta hai. <strong>Rotate karne ke baad purane codes "previous" secret se grace period me verify hote rahenge</strong> — jab tak tu "Clear previous" na kare. Custom secret kam se kam 32 chars ka hona chahiye (sirf A–Z, a–z, 0–9, _ , -).
+              This secret signs QR codes. <strong>After rotating, old codes continue to verify against the "previous" secret during the grace period</strong> — until you press "Clear previous". Custom secret must be at least 32 chars (only A–Z, a–z, 0–9, _ , -).
             </div>
           </div>
 

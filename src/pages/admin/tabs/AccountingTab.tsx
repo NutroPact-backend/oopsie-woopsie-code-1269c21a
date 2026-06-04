@@ -250,7 +250,7 @@ export default function AccountingTab() {
                 <FileSpreadsheet size={14} /> HSN Summary
               </button>
             </div>
-            <p className="text-[11px] text-gray-400">Aggregated from issued invoices in the selected month. B2B (with GSTIN) ko alag se export karne ke liye admin → invoices use kijiye.</p>
+            <p className="text-[11px] text-gray-400">Aggregated from issued invoices in the selected month. To export B2B (with GSTIN) separately, use admin → invoices.</p>
           </div>
         </div>
       )}

@@ -199,7 +199,7 @@ export default function SiteTab() {
           </label>
         </div>
 
-        <Field label="Announcement Messages" help="Add multiple messages — wo auto-slide honge thodi-thodi der ruk kar.">
+        <Field label="Announcement Messages" help="Add multiple messages — wo auto-slide honge thodi-thodi der ruk .">
           {(() => {
             const msgs: string[] = Array.isArray(s.announcementMessages) && s.announcementMessages.length
               ? s.announcementMessages

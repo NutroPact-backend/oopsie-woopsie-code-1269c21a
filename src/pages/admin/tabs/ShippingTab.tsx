@@ -76,7 +76,7 @@ const CARRIERS: { id: CarrierId; name: string; logo: string; docsUrl: string; st
     id: 'ekart', name: 'Ekart Logistics', logo: '🛒', status: 'manual', kind: 'direct',
     commission: 'Negotiated merchant rates · no public rate card',
     docsUrl: 'https://ekartlogistics.com/contactus',
-    description: 'Flipkart-owned. No public self-serve API — onboarding through Ekart sales team. Use via Shiprocket instead, ya yahan credentials store karo jab merchant access mile.',
+    description: 'Flipkart-owned. No public self-serve API — onboarding through Ekart sales team. Use via Shiprocket instead, or store credentials here once you have merchant access.',
     fields: [
       { key: 'merchantCode', label: 'Merchant Code' },
       { key: 'apiKey', label: 'API Key', type: 'password' },
@@ -226,7 +226,7 @@ export default function ShippingTab() {
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
             <h3 className="font-black text-sm flex items-center gap-2"><MapPin size={14} className="text-orange-500" /> Pickup / Origin Addresses</h3>
-            <p className="text-xs text-gray-400 mt-0.5">Multiple warehouses add kar sakte ho. Default wale se pickup hoga (admin per-order override kar sakta hai).</p>
+            <p className="text-xs text-gray-400 mt-0.5">You can add multiple warehouses. Pickup happens from the default one (admin can override per order).</p>
           </div>
           <button onClick={addLoc} className="text-xs font-bold px-3 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600 inline-flex items-center gap-1.5">
             <Plus size={12} /> Add Address
@@ -235,7 +235,7 @@ export default function ShippingTab() {
 
         {s.pickupLocations.length === 0 && (
           <div className="text-xs text-gray-500 bg-gray-50 border border-dashed border-gray-200 rounded-xl p-4 text-center">
-            Koi pickup address nahi hai. <button onClick={addLoc} className="text-orange-500 font-bold hover:underline">+ Add your first warehouse</button>
+            No pickup address configured. <button onClick={addLoc} className="text-orange-500 font-bold hover:underline">+ Add your first warehouse</button>
           </div>
         )}
 
@@ -289,13 +289,13 @@ export default function ShippingTab() {
             <label className="text-[11px] font-bold text-gray-500 block mb-1">Priority delay (mins)</label>
             <input type="number" min={0} value={s.automation?.priorityDelayMinutes ?? 10} onChange={e => setAuto('priorityDelayMinutes', Number(e.target.value) || 0)}
               className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
-            <p className="text-[10px] text-gray-400 mt-1">Fast-delivery wale orders ke liye delay. Default 10.</p>
+            <p className="text-[10px] text-gray-400 mt-1">Delay for fast-delivery orders. Default 10.</p>
           </div>
           <div>
             <label className="text-[11px] font-bold text-gray-500 block mb-1">Volumetric divisor</label>
             <input type="number" min={1000} value={s.automation?.volumetricDivisor ?? 5000} onChange={e => setAuto('volumetricDivisor', Number(e.target.value) || 5000)}
               className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
-            <p className="text-[10px] text-gray-400 mt-1">(L×W×H)/divisor → vol. weight in kg. India couriers 5000 use karte hain.</p>
+            <p className="text-[10px] text-gray-400 mt-1">(L×W×H)/divisor → volumetric weight in kg. Indian couriers typically use 5000.</p>
           </div>
         </div>
       </section>
@@ -305,7 +305,7 @@ export default function ShippingTab() {
       {/* Default carrier */}
       <section className="bg-white rounded-2xl border border-gray-100 p-5 space-y-3">
         <h3 className="font-black text-sm">Default Carrier</h3>
-        <p className="text-xs text-gray-400 -mt-2">New orders is carrier ke through ship honge (admin override kar sakta hai).</p>
+        <p className="text-xs text-gray-400 -mt-2">New orders ship through this carrier (admin can override).</p>
         <select value={s.defaultCarrier || ''} onChange={e => setField('defaultCarrier', e.target.value)}
           className="w-full sm:w-80 border rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:border-orange-400">
           <option value="">— Select default —</option>
@@ -314,7 +314,7 @@ export default function ShippingTab() {
             return <option key={id} value={id}>{c.logo} {c.name}</option>;
           })}
         </select>
-        {enabledCarriers.length === 0 && <p className="text-xs text-amber-600">⚠ No carrier enabled yet — neeche kisi ko enable karo.</p>}
+        {enabledCarriers.length === 0 && <p className="text-xs text-amber-600">⚠ No carrier enabled yet — enable one below.</p>}
       </section>
 
       {/* Carriers list — grouped by kind */}
@@ -400,7 +400,7 @@ export default function ShippingTab() {
 
 
       <p className="text-xs text-gray-400 px-1">
-        💡 Tip: <b>Aggregators</b> (Shiprocket/Shipmozo) sabse tezi se start hote hain — chhota markup dete ho but ek hi panel se sab couriers. <b>Direct carriers</b> me commission nahi hota par har ek ka alag KYC + minimum volume chahiye. Dono enable kar sakte ho — orders me jo carrier choose karoge wahi route hoga.
+        💡 Tip: <b>Aggregators</b> (Shiprocket/Shipmozo) are the fastest to start with — you pay a small markup but get all couriers from one panel. <b>Direct carriers</b> have no commission but each needs its own KYC + minimum volume. You can enable both — the carrier chosen on each order is the one that routes.
       </p>
     </div>
   );

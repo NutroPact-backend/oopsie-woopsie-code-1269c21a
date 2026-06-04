@@ -605,7 +605,7 @@ function SettingsView() {
         <div>
           <h3 className="text-sm font-bold text-gray-800">Auto-escalation rules</h3>
           <p className="text-[11px] text-gray-500 mt-0.5">
-            AI khud decide karega kab human agent ko bhejna h. Aap rules tune kar sakte ho.
+            The AI decides on its own when to hand off to a human agent. You can tune the rules.
           </p>
         </div>
 
@@ -619,7 +619,7 @@ function SettingsView() {
             <span>1 — sirf 100% sure replies, warna escalate</span>
           </div>
           <p className="text-[11px] text-gray-600 mt-1">
-            Recommended: <b>0.55–0.65</b>. AI har reply ke saath 0–1 confidence return karta h; isse niche hone par auto-escalate.
+            Recommended: <b>0.55–0.65</b>. The AI returns a 0–1 confidence with every reply; below this threshold it auto-escalates.
           </p>
         </Field>
 
@@ -640,7 +640,7 @@ function SettingsView() {
               onChange={e => setS({ ...s, escalate_on_no_kb: e.target.checked })} />
             <span>
               <b className="block text-xs">KB match na milne par escalate</b>
-              <span className="text-[11px] text-gray-500">Strict mode — agar koi article match nahi hua to seedha human.</span>
+              <span className="text-[11px] text-gray-500">Strict mode — if no article matches, escalate straight to a human.</span>
             </span>
           </label>
 

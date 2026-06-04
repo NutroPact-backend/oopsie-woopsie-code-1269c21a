@@ -64,8 +64,8 @@ export default function MailSystemTab() {
           <Mail size={22} /> Mail System
         </h2>
         <p className="text-sm text-gray-500 mt-1">
-          Email channel ka status, mailboxes, aur self-hosted SMTP relay setup guide. 
-          Detailed provider/template config karne ke liye <b>Messaging Gateway → Email</b> tab use kar.
+          Email channel status, mailboxes, and self-hosted SMTP relay setup guide. 
+          For detailed provider/template config use the <b>Messaging Gateway → Email</b> tab.
         </p>
       </div>
 
@@ -131,7 +131,7 @@ export default function MailSystemTab() {
         </div>
         {!enabled && (
           <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2">
-            Email channel disabled hai — pehle Messaging Gateway me enable kar aur endpoint set kar.
+            Email channel is disabled — enable it in Messaging Gateway and set the endpoint first.
           </p>
         )}
         {testMsg && (
@@ -143,49 +143,48 @@ export default function MailSystemTab() {
       <div className="bg-white border rounded-2xl p-5 space-y-4">
         <div>
           <h3 className="font-black text-lg flex items-center gap-2">
-            <Server size={18} /> Option A — Self-hosted SMTP relay (apna mail server)
+            <Server size={18} /> Option A — Self-hosted SMTP relay (your own mail server)
           </h3>
           <p className="text-xs text-gray-500 mt-1">
-            ₹400/month VPS pe khud ka mail server. Koi monthly per-email charge nahi. Unlimited mails.
-            Setup ~30 min ka kaam hai.
+            Your own mail server on a ₹400/month VPS. No monthly per-email charge. Unlimited emails.
+            Setup takes about 30 minutes.
           </p>
         </div>
 
         <ol className="space-y-3 text-sm">
-          <Step n={1} title="VPS lo (Hetzner / Contabo / DigitalOcean — koi bhi)">
-            Ubuntu 22.04, 1GB RAM kaafi hai. Static IPv4 must hai.
+          <Step n={1} title="Get a VPS (Hetzner / Contabo / DigitalOcean — any provider)">
+            Ubuntu 22.04 with 1GB RAM is enough. A static IPv4 is required.
           </Step>
-          <Step n={2} title="Domain pe DNS records add kar">
+          <Step n={2} title="Add DNS records on your domain">
             <CodeRow label="MX" value="mail.yourdomain.com (priority 10)" onCopy={copy} copied={copied} />
             <CodeRow label="A" value="mail.yourdomain.com → <YOUR_VPS_IP>" onCopy={copy} copied={copied} />
             <CodeRow label="SPF (TXT)" value='"v=spf1 mx ~all"' onCopy={copy} copied={copied} />
             <CodeRow label="DMARC (TXT @ _dmarc)" value='"v=DMARC1; p=quarantine; rua=mailto:postmaster@yourdomain.com"' onCopy={copy} copied={copied} />
-            <p className="text-[11px] text-gray-500 mt-1">DKIM record VPS setup ke baad milega.</p>
+            <p className="text-[11px] text-gray-500 mt-1">You'll get the DKIM record after VPS setup.</p>
           </Step>
-          <Step n={3} title="VPS pe relay app install kar">
-            <p className="text-xs text-gray-600 mb-2">Yahan se relay package download karke VPS pe upload kar:</p>
+          <Step n={3} title="Install the relay app on the VPS">
+            <p className="text-xs text-gray-600 mb-2">Download the relay package from here and upload it to the VPS:</p>
             <a
               href="/api/public/mail-relay-download"
               className="inline-flex items-center gap-1 text-xs font-bold text-orange-600 hover:underline"
             >
               <ExternalLink size={12} /> mail-relay-package.zip (Node.js + nodemailer)
             </a>
-            <pre className="bg-gray-900 text-gray-100 text-xs p-3 rounded mt-2 overflow-x-auto">{`# VPS pe SSH karke
+            <pre className="bg-gray-900 text-gray-100 text-xs p-3 rounded mt-2 overflow-x-auto">{`# SSH into the VPS
 unzip mail-relay-package.zip
 cd self-hosted-mail-relay
 npm install
 echo "RELAY_TOKEN=$(openssl rand -hex 32)" > .env
-node server.js  # ya pm2 start server.js`}</pre>
+node server.js  # or pm2 start server.js`}</pre>
           </Step>
-          <Step n={4} title="Messaging Gateway me preset apply kar">
+          <Step n={4} title="Apply the preset in Messaging Gateway">
             <p className="text-xs text-gray-600">
               <b>Messaging Gateway → Email → "🏠 Self-hosted SMTP relay" preset</b> click kar, 
-              endpoint ko apne VPS ka URL bana (<code>https://mail.yourdomain.com/send</code>), 
-              fir <b>API Keys</b> section me <code>MAIL_RELAY_TOKEN</code> add kar (jo step 3 me banaya).
+              change the endpoint to your VPS URL (<code>https://mail.yourdomain.com/send</code>), then in the <b>API Keys</b> section add <code>MAIL_RELAY_TOKEN</code> (the one you generated in step 3).
             </p>
           </Step>
-          <Step n={5} title="Test bhej">
-            Upar "Send a test email" se test kar. Inbox check kar.
+          <Step n={5} title="Send a test">
+            Use "Send a test email" above and check your inbox.
           </Step>
         </ol>
       </div>
@@ -196,7 +195,7 @@ node server.js  # ya pm2 start server.js`}</pre>
           <Mail size={18} /> Option B — Hosted (Resend / Brevo / SendGrid)
         </h3>
         <p className="text-xs text-gray-500 mt-1">
-          Setup 2 min me. Free tier: Resend 100/day, Brevo 300/day, SendGrid 100/day.
+          Setup in 2 minutes. Free tier: Resend 100/day, Brevo 300/day, SendGrid 100/day.
         </p>
         <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
           {[
@@ -214,8 +213,8 @@ node server.js  # ya pm2 start server.js`}</pre>
         </div>
         <p className="text-xs text-gray-600 mt-3 flex items-start gap-1.5">
           <Info size={12} className="mt-0.5 text-blue-500 shrink-0" />
-          Provider chuna → Messaging Gateway me preset apply kar → API Keys me apni key paste kar.
-          Bas. Dispatcher khud bhejega.
+          Provider chuna → Apply the preset in Messaging Gateway → API Keys me apni key paste .
+          That's it. The dispatcher will send automatically.
         </p>
       </div>
     </div>

@@ -103,7 +103,7 @@ export default function AITab() {
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
           <h2 className="text-xl font-black flex items-center gap-2"><Sparkles size={18} className="text-orange-500" /> AI Search Settings</h2>
-          <p className="text-sm text-gray-500">Site ke andar AI search bar (Ask AI) ko yahan se control karo. Powered by Google Gemini (free tier).</p>
+          <p className="text-sm text-gray-500">Control the in-site AI search bar (Ask AI) from here. Powered by Google Gemini (free tier).</p>
         </div>
         <div className="flex items-center gap-2">
           <a href="/search" target="_blank" rel="noopener" className="text-xs font-bold text-orange-500 hover:underline px-3 py-2">Test on /search →</a>
@@ -160,7 +160,7 @@ export default function AITab() {
           )}
         </div>
         <p className="text-[11px] text-gray-400">
-          Key admin-only DB (app_secrets) me securely save hoti hai. Server function yahin se padhta hai — env variable change karne ki zaroorat nahi.
+          The key is saved securely in the admin-only DB (app_secrets). The server function reads from here — no need to change env variables.
         </p>
       </section>
 
@@ -188,7 +188,7 @@ export default function AITab() {
         <h3 className="font-black text-sm">System Prompt</h3>
         <textarea value={s.systemPrompt} onChange={e => set('systemPrompt', e.target.value)} rows={6}
           className="w-full border rounded-xl px-3 py-2.5 text-sm font-mono focus:outline-none focus:border-orange-400 resize-y" />
-        <p className="text-xs text-gray-400">Yahan AI ko batao kaisa behave kare — tone, language, kya allow hai kya nahi.</p>
+        <p className="text-xs text-gray-400">Tell the AI how to behave here — tone, language, what is and isn't allowed.</p>
       </section>
 
       <section className="bg-white rounded-2xl border border-gray-100 p-5 space-y-4">
@@ -226,7 +226,7 @@ export default function AITab() {
             disabled={s.useFaqs === false}
             className="w-full sm:w-1/2 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-orange-400 disabled:bg-gray-50 disabled:opacity-60" />
         </div>
-        <p className="text-xs text-gray-400">Tip: FAQs admin → FAQ tab se manage karo. Jo FAQ enabled hain wahi AI ko milte hain.</p>
+        <p className="text-xs text-gray-400">Tip: manage FAQs from admin → FAQ tab. Only enabled FAQs are passed to the AI.</p>
       </section>
 
       <section className="bg-white rounded-2xl border border-gray-100 p-5 space-y-4">

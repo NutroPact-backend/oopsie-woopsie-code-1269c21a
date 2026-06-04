@@ -96,9 +96,9 @@ export default function AppSecretsPanel() {
             <Key size={18} className="text-orange-500" /> API Keys / Secrets
           </h3>
           <p className="text-xs text-gray-500 mt-1 max-w-2xl">
-            Yahan provider ke tokens add kar (Twilio, Resend, MSG91 etc.). Endpoint/Headers/Body me 
+            Add provider tokens here (Twilio, Resend, MSG91 etc.). Inside Endpoint/Headers/Body the 
             <code className="bg-gray-100 px-1 mx-1 rounded">${"{KEY_NAME}"}</code> likhne par yeh values 
-            wahan inject ho jayengi. Backend me securely store hote hain — kabhi bhi yahan se change/delete kar sakte ho.
+            placeholders will be injected. They are stored securely on the backend — you can change/delete them any time from here.
           </p>
         </div>
       </div>
@@ -108,7 +108,7 @@ export default function AppSecretsPanel() {
         <div className="text-sm text-gray-400">Loading…</div>
       ) : items.length === 0 ? (
         <div className="text-xs text-gray-500 italic bg-gray-50 border rounded-lg p-3">
-          Koi key add nahi hui abhi. Niche se add kar.
+          No keys added yet. Add one below.
         </div>
       ) : (
         <div className="space-y-2">
