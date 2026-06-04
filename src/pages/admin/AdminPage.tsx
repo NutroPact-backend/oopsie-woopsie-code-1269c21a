@@ -87,7 +87,7 @@ import GrowthBoostersTab from './tabs/GrowthBoostersTab';
 import VideoSectionsTab from './tabs/VideoSectionsTab';
 
 import VariantsManager, { syncVariantsToDb, variantsToJson, type VariantRow } from './components/VariantsManager';
-import { useCategoryNames } from '@/hooks/useCategories';
+import { useCategoryNames, useCategories } from '@/hooks/useCategories';
 import { useAuthStore } from '@/store/authStore';
 import { useAdminPermissions } from '@/hooks/useAdminPermissions';
 import { TAB_PERMISSIONS, TAB_PERMISSION_META } from './tab-permissions';
@@ -893,6 +893,24 @@ function ProductModal({ product, onClose, onSave, onReviewsChanged }: { product:
   const [selSizeIds, setSelSizeIds] = useState<string[]>([]);
   const catNames = useCategoryNames();
   const CATEGORIES = catNames.length ? catNames : FALLBACK_CATEGORIES;
+  const { data: allCats } = useCategories(true);
+  // ancestors of currently selected category (parent → super-parent → …)
+  const catAncestors = (() => {
+    if (!allCats?.length || !form.category) return [] as { id: string; name: string }[];
+    const byName = new Map(allCats.map((c: any) => [c.name, c]));
+    const byId = new Map(allCats.map((c: any) => [c.id, c]));
+    const out: any[] = [];
+    let cur: any = byName.get(form.category);
+    const seen = new Set<string>();
+    while (cur?.parent_id && !seen.has(cur.parent_id)) {
+      seen.add(cur.parent_id);
+      const p: any = byId.get(cur.parent_id);
+      if (!p) break;
+      out.push({ id: p.id, name: p.name });
+      cur = p;
+    }
+    return out;
+  })();
   const set = (k: string, v: any) => setForm((f: any) => ({ ...f, [k]: v }));
   const setNested = (parent: string, k: string, v: any) => setForm((f: any) => ({ ...f, [parent]: { ...(f[parent] || {}), [k]: v } }));
 
@@ -906,8 +924,15 @@ function ProductModal({ product, onClose, onSave, onReviewsChanged }: { product:
       // Mirror variants into legacy jsonb shape for backward-compat with PDP
       const flavorNames = Array.from(new Set(variantRows.map(v => v.flavor_name).filter(Boolean)));
       const sizeNames = Array.from(new Set(variantRows.map(v => v.size_name).filter(Boolean)));
+      // Merge primary category + extra (ancestor) categories into tags so
+      // listings filtered by category name also surface this product.
+      const extraCats: string[] = Array.isArray(form.extraCategories) ? form.extraCategories : [];
+      const baseTags: string[] = Array.isArray(form.tags) ? form.tags : [];
+      const mergedTags = Array.from(new Set([...baseTags, form.category, ...extraCats].filter(Boolean)));
       const payload = {
         ...form,
+        tags: mergedTags,
+        extraCategories: extraCats,
         certifications: typeof form.certifications === 'string'
           ? form.certifications.split(',').map((s: string) => s.trim()).filter(Boolean)
           : form.certifications,
@@ -1006,6 +1031,28 @@ function ProductModal({ product, onClose, onSave, onReviewsChanged }: { product:
                     <select value={form.category || 'Protein'} onChange={e => set('category', e.target.value)} className="w-full border rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:border-orange-400">
                       {CATEGORIES.map(c => <option key={c}>{c}</option>)}
                     </select>
+                    {catAncestors.length > 0 && (
+                      <div className="mt-2 p-2.5 rounded-xl bg-orange-50/60 border border-orange-100">
+                        <p className="text-[11px] font-bold text-gray-600 mb-1.5">Also show this product in parent categories?</p>
+                        <div className="space-y-1">
+                          {catAncestors.map((a: any, idx: number) => {
+                            const extras: string[] = Array.isArray(form.extraCategories) ? form.extraCategories : [];
+                            const checked = extras.includes(a.name);
+                            return (
+                              <label key={a.id} className="flex items-center gap-2 text-xs font-semibold text-gray-700 cursor-pointer">
+                                <input type="checkbox" checked={checked} onChange={e => {
+                                  const cur = new Set(extras);
+                                  if (e.target.checked) cur.add(a.name); else cur.delete(a.name);
+                                  set('extraCategories', Array.from(cur));
+                                }} />
+                                <span className="text-gray-400">{idx === 0 ? '↳ Parent:' : `↳ ${'Super '.repeat(idx)}Parent:`}</span>
+                                <span>{a.name}</span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label className="text-xs font-bold text-gray-500 block mb-1">Price (₹) *</label>
