@@ -1864,11 +1864,13 @@ export default function AdminPage() {
 
   const saveProduct = async (form: any) => {
     if (form._id) {
-      await AdminAPI.put(`/admin/products/${form._id}`, form);
-      setProducts(ps => ps.map(p => p._id === form._id ? { ...p, ...form } : p));
+      const { data } = await AdminAPI.put(`/admin/products/${form._id}`, form);
+      setProducts(ps => ps.map(p => p._id === form._id ? data : p));
+      return data;
     } else {
       const { data } = await AdminAPI.post('/admin/products', form);
       setProducts(ps => [...ps, data]);
+      return data;
     }
   };
 

@@ -1,8 +1,6 @@
 // @ts-nocheck
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
-import crypto from 'crypto';
-const { createHmac, randomBytes, createHash, timingSafeEqual } = crypto;
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 import { supabaseAdmin } from '@/integrations/supabase/client.server';
 import { getRequest, getRequestHeader } from '@tanstack/react-start/server';
@@ -42,7 +40,13 @@ async function loadSecrets(): Promise<{ current: string; previous?: string }> {
 
 export function invalidateSecretCache() { _secretCache = null; }
 
+async function getCrypto() {
+  const crypto = await import('crypto');
+  return crypto.default || crypto;
+}
+
 async function signWith(payload: string, secret: string) {
+  const { createHmac } = await getCrypto();
   return createHmac('sha256', secret).update(payload).digest('hex').slice(0, 12).toUpperCase();
 }
 
@@ -64,17 +68,20 @@ async function verifySignature(payload: string, sig: string): Promise<boolean> {
 
 async function hashHidden(code: string) {
   const { current } = await loadSecrets();
+  const { createHash } = await getCrypto();
   return createHash('sha256').update(code + ':' + current).digest('hex');
 }
 
 async function hashHiddenAny(code: string): Promise<string[]> {
   const { current, previous } = await loadSecrets();
+  const { createHash } = await getCrypto();
   const out = [createHash('sha256').update(code + ':' + current).digest('hex')];
   if (previous) out.push(createHash('sha256').update(code + ':' + previous).digest('hex'));
   return out;
 }
 
-function rand(n: number, alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789') {
+async function rand(n: number, alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789') {
+  const { randomBytes } = await getCrypto();
   const buf = randomBytes(n);
   let out = '';
   for (let i = 0; i < n; i++) out += alphabet[buf[i] % alphabet.length];
@@ -102,8 +109,8 @@ export const generateAuthCodes = createServerFn({ method: 'POST' })
       ? new Date(Date.now() + data.expiryDays * 86400000).toISOString()
       : null;
     for (let i = 0; i < data.quantity; i++) {
-      const nonce = rand(6);
-      const hidden = rand(6);
+      const nonce = await rand(6);
+      const hidden = await rand(6);
       const code = `${data.batchCode.toUpperCase()}-${nonce}`;
       const hmac = await sign(`${code}|${hidden}`);
       const hiddenHash = await hashHidden(hidden);
@@ -239,8 +246,9 @@ export const verifyAuthCode = createServerFn({ method: 'POST' })
     }
 
     // Verify HMAC by comparing against stored signature (sig was generated with whichever secret was active at code-gen time)
-    const storedSigMatches = (() => {
+    const storedSigMatches = await (async () => {
       try {
+        const { timingSafeEqual } = await getCrypto();
         const a = Buffer.from(row.hmac_signature, 'utf8');
         const b = Buffer.from(providedHmac, 'utf8');
         return a.length === b.length && timingSafeEqual(a, b);
@@ -557,6 +565,7 @@ export const claimAuthCode = createServerFn({ method: 'POST' })
     if (!row) throw new Error('Code not found');
     // verify HMAC
     try {
+      const { timingSafeEqual } = await getCrypto();
       const a = Buffer.from(row.hmac_signature, 'utf8');
       const b = Buffer.from(providedHmac, 'utf8');
       if (a.length !== b.length || !timingSafeEqual(a, b)) throw new Error('Bad signature');
@@ -765,6 +774,7 @@ export const getCertificate = createServerFn({ method: 'POST' })
     const { data: row } = await supabaseAdmin.from('product_auth_codes').select('*').eq('code', code).maybeSingle();
     if (!row) return { ok: false as const, reason: 'NOT_FOUND' };
     try {
+      const { timingSafeEqual } = await getCrypto();
       const a = Buffer.from(row.hmac_signature, 'utf8');
       const b = Buffer.from(providedHmac, 'utf8');
       if (a.length !== b.length || !timingSafeEqual(a, b)) return { ok: false as const, reason: 'BAD_SIGNATURE' };

@@ -368,8 +368,7 @@ export async function syncVariantsToDb(productId: string, rows: VariantRow[]) {
   // Roll product-level stock = sum of active variant stock → keeps listing page variant-aware
   const totalStock = rows.filter(r => r.active).reduce((s, r) => s + (Number(r.stock) || 0), 0);
   await supabase.from('products').update({
-    stock_count: totalStock,
-    in_stock: totalStock > 0,
+    stock: totalStock,
   }).eq('id', productId);
 }
 

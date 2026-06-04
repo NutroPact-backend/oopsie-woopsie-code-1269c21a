@@ -47,21 +47,170 @@ function parsePath(url: string): { path: string; params: URLSearchParams } {
   return { path: p.replace(/\/+$/, "") || "/", params: new URLSearchParams(q) };
 }
 
+async function getCategoryMaps() {
+  const { data } = await supabase.from("categories").select("id,name,parent_id,active");
+  const rows = data ?? [];
+  const byId = new Map(rows.map((c: any) => [c.id, c]));
+  const byName = new Map(rows.map((c: any) => [c.name, c]));
+  return { rows, byId, byName };
+}
+
+function buildCategoryAncestry(categoryId: string | null | undefined, byId: Map<string, any>) {
+  const names: string[] = [];
+  let current = categoryId ? byId.get(categoryId) : null;
+  const seen = new Set<string>();
+  while (current?.id && !seen.has(current.id)) {
+    seen.add(current.id);
+    if (current.name) names.unshift(current.name);
+    current = current.parent_id ? byId.get(current.parent_id) : null;
+  }
+  return names;
+}
+
+function normalizeImages(images: any): string[] {
+  if (Array.isArray(images)) {
+    return images
+      .map((img: any) => typeof img === "string" ? img : img?.url || img?.src || "")
+      .filter(Boolean);
+  }
+  return [];
+}
+
+function parseProductData(row: any) {
+  return row?.data && typeof row.data === "object" ? row.data : {};
+}
+
+function shapeVariantRow(row: any) {
+  const data = row?.data && typeof row.data === "object" ? row.data : {};
+  const images = Array.isArray(data.gallery_images) && data.gallery_images.length
+    ? data.gallery_images.filter(Boolean)
+    : (row.image_url ? [row.image_url] : []);
+  return {
+    id: row.id,
+    sku: row.sku || "",
+    flavor: row.flavor_name || "",
+    size: row.size_name || "",
+    price: Number(row.price || 0),
+    comparePrice: Number(row.compare_price || 0),
+    stock: Number(row.stock || 0),
+    image: row.image_url || images[0] || "",
+    images,
+    description: data.description || "",
+    highlights: Array.isArray(data.highlights) ? data.highlights : [],
+    isDefault: !!row.is_default,
+    active: row.active !== false,
+    weightGrams: Number(row.weight_grams || 0),
+  };
+}
+
+function shapeProductRow(row: any, extras: { categoryName?: string | null; variants?: any[] } = {}) {
+  const data = parseProductData(row);
+  const rawVariants = Array.isArray(extras.variants) ? extras.variants : (Array.isArray(row?.variants) ? row.variants : []);
+  const variants = rawVariants.filter((v: any) => v && v.active !== false);
+  const defaultVariant = variants.find((v: any) => v.isDefault) || variants[0] || null;
+  const flavors = Array.from(new Set(variants.map((v: any) => v.flavor).filter(Boolean)));
+  const sizes = Array.from(new Set(variants.map((v: any) => v.size).filter(Boolean)));
+  const images = normalizeImages(row.images);
+  return camelize({
+    ...row,
+    images,
+    category: extras.categoryName || data.category || row.category || "",
+    compare_price: Number(row.compare_price || 0),
+    ratings: Number(row.rating || 0),
+    num_reviews: Number(row.review_count || 0),
+    stock: Number(row.stock || 0),
+    short_description: row.short_description || data.short_description || "",
+    description: row.description || data.description || "",
+    ingredients: row.ingredients || data.ingredients || "",
+    warnings: row.warnings || data.warnings || "",
+    usage_instructions: row.usage_instructions || data.how_to_use || "",
+    video_url: row.video_url || data.video || "",
+    variants,
+    flavors: flavors.length ? flavors : (Array.isArray(data.flavors) ? data.flavors : []),
+    sizes: sizes.length ? sizes : (Array.isArray(data.sizes) ? data.sizes : []),
+    key_benefits: Array.isArray(data.key_benefits) ? data.key_benefits : [],
+    nutrition_highlights: Array.isArray(data.nutrition_highlights) ? data.nutrition_highlights : [],
+    nutrition_facts: Array.isArray(data.nutrition_facts) ? data.nutrition_facts : [],
+    q_and_a: Array.isArray(data.q_and_a) ? data.q_and_a : [],
+    banners: Array.isArray(data.banners) ? data.banners : [],
+    pixels: data.pixels || {},
+    seo: data.seo || {},
+    conversion: data.conversion || {},
+    extra_categories: Array.isArray(data.extra_categories) ? data.extra_categories : [],
+    combo_widget_enabled: data.combo_widget_enabled !== false,
+    variants_pro_config: data.variants_pro_config || row.variants_pro_config || {},
+    display_variant: defaultVariant,
+  });
+}
+
+function buildProductWriteRow(body: any, existing?: any) {
+  const data = {
+    ...(existing?.data && typeof existing.data === "object" ? existing.data : {}),
+    short_description: body.shortDescription ?? body.short_description ?? existing?.data?.short_description ?? null,
+    description: body.description ?? existing?.data?.description ?? null,
+    ingredients: body.ingredients ?? existing?.data?.ingredients ?? null,
+    how_to_use: body.howToUse ?? body.how_to_use ?? existing?.data?.how_to_use ?? null,
+    certifications: body.certifications ?? existing?.data?.certifications ?? [],
+    key_benefits: body.keyBenefits ?? body.key_benefits ?? existing?.data?.key_benefits ?? [],
+    nutrition_highlights: body.nutritionHighlights ?? body.nutrition_highlights ?? existing?.data?.nutrition_highlights ?? [],
+    nutrition_facts: body.nutritionFacts ?? body.nutrition_facts ?? existing?.data?.nutrition_facts ?? [],
+    q_and_a: body.qAndA ?? body.q_and_a ?? existing?.data?.q_and_a ?? [],
+    banners: body.banners ?? existing?.data?.banners ?? [],
+    video: body.video ?? body.video_url ?? existing?.data?.video ?? "",
+    pixels: body.pixels ?? existing?.data?.pixels ?? {},
+    seo: body.seo ?? existing?.data?.seo ?? {},
+    conversion: body.conversion ?? existing?.data?.conversion ?? {},
+    extra_categories: body.extraCategories ?? body.extra_categories ?? existing?.data?.extra_categories ?? [],
+    flavors: body.flavors ?? existing?.data?.flavors ?? [],
+    sizes: body.sizes ?? existing?.data?.sizes ?? [],
+    variants: body.variants ?? existing?.data?.variants ?? [],
+    category: body.category ?? existing?.data?.category ?? "",
+    combo_widget_enabled: body.comboWidgetEnabled ?? body.combo_widget_enabled ?? existing?.data?.combo_widget_enabled ?? true,
+    variants_pro_config: body.variantsProConfig ?? body.variants_pro_config ?? existing?.data?.variants_pro_config ?? existing?.variants_pro_config ?? {},
+  };
+  return {
+    id: body.id || body._id || existing?.id || crypto.randomUUID(),
+    name: body.name,
+    slug: body.slug,
+    description: body.description ?? existing?.description ?? null,
+    short_description: body.shortDescription ?? body.short_description ?? existing?.short_description ?? null,
+    sku: body.sku ?? existing?.sku ?? null,
+    price: Number(body.price || 0),
+    compare_price: Number(body.comparePrice ?? body.compare_price ?? 0),
+    stock: Number(body.stock ?? existing?.stock ?? 0),
+    weight: Number(body.weight ?? existing?.weight ?? 0),
+    images: normalizeImages(body.images ?? existing?.images ?? []),
+    tags: Array.isArray(body.tags) ? body.tags : (existing?.tags ?? []),
+    ingredients: body.ingredients ?? existing?.ingredients ?? null,
+    usage_instructions: body.howToUse ?? body.how_to_use ?? existing?.usage_instructions ?? null,
+    warnings: body.warnings ?? existing?.warnings ?? null,
+    meta_title: body.seo?.metaTitle ?? body.meta_title ?? existing?.meta_title ?? null,
+    meta_description: body.seo?.metaDescription ?? body.meta_description ?? existing?.meta_description ?? null,
+    is_active: body.isActive ?? body.is_active ?? existing?.is_active ?? true,
+    rating: Number(body.ratings ?? body.rating ?? existing?.rating ?? 0),
+    review_count: Number(body.numReviews ?? body.review_count ?? existing?.review_count ?? 0),
+    hsn_code: body.hsnCode ?? body.hsn_code ?? existing?.hsn_code ?? null,
+    gst_rate: Number(body.gstRate ?? body.gst_rate ?? existing?.gst_rate ?? 0),
+    video_url: body.video ?? body.video_url ?? existing?.video_url ?? null,
+    data,
+  };
+}
+
 // ---------- route handlers ----------
 type Handler = (path: string, params: URLSearchParams, body?: any) => Promise<any>;
 
 // GET
 const GET: Record<string, Handler> = {
   "/products": async (_p, params) => {
+    const { byId, byName } = await getCategoryMaps();
     let q = supabase.from("products").select("*").eq("is_active", true);
     const category = params.get("category");
     const search = params.get("search");
     if (category) {
-      // Match either the primary category column OR an ancestor category
-      // saved into the `tags` array (set via the product form's
-      // "Also show in parent categories" checkboxes).
       const safe = category.replace(/[",{}\\]/g, "");
-      q = q.or(`category.eq.${safe},tags.cs.{${safe}}`);
+      const matched = byName.get(safe);
+      if (matched?.id) q = q.eq("category_id", matched.id);
+      else q = q.contains("tags", [safe]);
     }
     if (search) {
       const s = search.trim().replace(/[%,]/g, " ");
@@ -70,11 +219,24 @@ const GET: Record<string, Handler> = {
     const sort = params.get("sort");
     if (sort === "price_asc") q = q.order("price", { ascending: true });
     else if (sort === "price_desc") q = q.order("price", { ascending: false });
-    else if (sort === "rating") q = q.order("ratings", { ascending: false });
+    else if (sort === "rating") q = q.order("rating", { ascending: false });
     else q = q.order("created_at", { ascending: false });
     const { data, error } = await q.limit(200);
     if (error) fail(500, error.message);
-    return camelize(data ?? []);
+    const productIds = (data ?? []).map((r: any) => r.id);
+    const { data: variantRows } = productIds.length
+      ? await supabase.from("product_variants").select("*").in("product_id", productIds).eq("active", true)
+      : { data: [] as any[] };
+    const variantsByProduct = new Map<string, any[]>();
+    (variantRows ?? []).forEach((row: any) => {
+      const list = variantsByProduct.get(row.product_id) || [];
+      list.push(shapeVariantRow(row));
+      variantsByProduct.set(row.product_id, list);
+    });
+    return (data ?? []).map((row: any) => shapeProductRow(row, {
+      categoryName: byId.get(row.category_id)?.name || parseProductData(row).category || "",
+      variants: variantsByProduct.get(row.id) || parseProductData(row).variants || [],
+    }));
   },
   "/homepage": async () => {
     const { data } = await supabase
@@ -245,12 +407,29 @@ async function dynamicGet(path: string): Promise<any> {
   // /products/:slug
   let m = path.match(/^\/products\/([^/]+)$/);
   if (m) {
+    const { byId } = await getCategoryMaps();
     const { data, error } = await supabase.from("products").select("*").eq("slug", m[1]).maybeSingle();
     if (error || !data) fail(404, "Product not found");
+    const { data: variants } = await supabase.from("product_variants").select("*").eq("product_id", data.id).eq("active", true).order("is_default", { ascending: false }).order("sort_order");
     // attach reviews
     const { data: reviews } = await supabase.from("product_reviews").select("*").eq("product_id", data!.id).order("created_at", { ascending: false });
-    const result = { ...data!, reviews: reviews ?? [] };
-    return camelize(result);
+    const result = shapeProductRow(data, {
+      categoryName: buildCategoryAncestry(data.category_id, byId).join(" > ") || parseProductData(data).category || "",
+      variants: (variants ?? []).map(shapeVariantRow),
+    });
+    return {
+      ...result,
+      reviews: camelize((reviews ?? []).map((r: any) => ({
+        ...r,
+        name: r.user_name,
+        avatar: r.user_avatar,
+        verified: r.is_verified,
+        helpful: r.helpful_count,
+        variant: r.data?.variant || "",
+        video: r.data?.video || "",
+        pinned: !!r.data?.pinned,
+      }))),
+    };
   }
   // /orders/track/:orderNumber — public lookup via server fn (returns redacted address)
   m = path.match(/^\/orders\/track\/([^/]+)$/);
@@ -316,6 +495,20 @@ async function dynamicGet(path: string): Promise<any> {
     if (path === "/admin/settings") {
       const { data } = await supabase.from("site_settings").select("settings").eq("key", "default").maybeSingle();
       return camelize(data?.settings ?? {});
+    }
+    const productReviews = path.match(/^\/admin\/products\/([^/]+)\/reviews$/);
+    if (productReviews) {
+      const { data } = await supabase.from("product_reviews").select("*").eq("product_id", productReviews[1]).order("created_at", { ascending: false });
+      return camelize((data ?? []).map((r: any) => ({
+        ...r,
+        name: r.user_name,
+        avatar: r.user_avatar,
+        verified: r.is_verified,
+        helpful: r.helpful_count,
+        variant: r.data?.variant || "",
+        video: r.data?.video || "",
+        pinned: !!r.data?.pinned,
+      })));
     }
   }
   fail(404, `GET ${path} not implemented`);
@@ -753,19 +946,26 @@ async function adminUpsert(path: string, body: any): Promise<any> {
   };
   const table = tableMap[path];
   if (!table) fail(404, `Admin endpoint ${path} not mapped`);
-  const row = { id: body.id || body._id || crypto.randomUUID(), ...snakeify(body) };
-  delete (row as any)._id;
+  let row: any;
+  if (path === "/admin/products") {
+    row = buildProductWriteRow(body);
+  } else {
+    row = { id: body.id || body._id || crypto.randomUUID(), ...snakeify(body) };
+    delete (row as any)._id;
+  }
   const { data, error } = await supabase.from(table as any).upsert(row).select().single();
   if (error) fail(500, error.message);
-  return camelize(data);
+  return path === "/admin/products" ? shapeProductRow(data, { categoryName: parseProductData(data).category || body.category || "" }) : camelize(data);
 }
 
 function snakeify(obj: any): any {
-  if (obj == null || typeof obj !== "object" || Array.isArray(obj)) return obj;
+  if (obj == null) return obj;
+  if (Array.isArray(obj)) return obj.map(snakeify);
+  if (typeof obj !== "object") return obj;
   const out: any = {};
   for (const k of Object.keys(obj)) {
     const sk = k.replace(/[A-Z]/g, (c) => "_" + c.toLowerCase());
-    out[sk] = obj[k];
+    out[sk] = snakeify(obj[k]);
   }
   return out;
 }
@@ -792,6 +992,30 @@ async function dynamicPut(path: string, body: any): Promise<any> {
   // /admin/<table>/<id>  → upsert row by id (camelCase body is snakeified)
   const m = path.match(/^\/admin\/([^/]+)\/([^/]+)$/);
   if (m) {
+    if (m[1] === "products" && m[2] && path.includes("/reviews/")) {
+      const reviewMatch = path.match(/^\/admin\/products\/([^/]+)\/reviews\/([^/]+)$/);
+      if (reviewMatch) {
+        const patch = {
+          user_name: body.name,
+          user_avatar: body.avatar || '',
+          rating: Number(body.rating ?? 5),
+          title: body.title || '',
+          comment: body.comment,
+          images: Array.isArray(body.images) ? body.images : [],
+          is_verified: body.verified !== false,
+          data: {
+            ...(typeof body.data === 'object' && body.data ? body.data : {}),
+            variant: body.variant || '',
+            video: body.video || '',
+            pinned: !!body.pinned,
+          },
+          created_at: body.createdAt || undefined,
+        };
+        const { data, error } = await supabase.from('product_reviews').update(patch).eq('id', reviewMatch[2]).eq('product_id', reviewMatch[1]).select().single();
+        if (error) fail(500, error.message);
+        return camelize(data);
+      }
+    }
     const tableMap: Record<string, string> = {
       products: "products",
       blog: "blog_posts",
@@ -803,11 +1027,13 @@ async function dynamicPut(path: string, body: any): Promise<any> {
     };
     const table = tableMap[m[1]];
     if (table) {
-      const row = { ...snakeify(body), id: m[2] };
+      const row = table === 'products'
+        ? buildProductWriteRow(body, await supabase.from('products').select('*').eq('id', m[2]).maybeSingle().then(r => r.data))
+        : { ...snakeify(body), id: m[2] };
       delete (row as any)._id;
       const { data, error } = await supabase.from(table as any).upsert(row).select().single();
       if (error) fail(500, error.message);
-      return camelize(data);
+      return table === 'products' ? shapeProductRow(data, { categoryName: parseProductData(data).category || body.category || "" }) : camelize(data);
     }
   }
   fail(404, `PUT ${path} not implemented`);
