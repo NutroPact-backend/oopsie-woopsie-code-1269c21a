@@ -16,10 +16,12 @@ export function useSimpleUpload(opts: { onSuccess?: (url: string) => void; onErr
       const { error } = await supabase.storage.from(bucket).upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type });
       if (error) throw error;
       setProgress(80);
-      const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+      // Bucket is private — use long-lived signed URL (10 years)
+      const { data: signed, error: signErr } = await supabase.storage.from(bucket).createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
+      if (signErr) throw signErr;
       setProgress(100);
-      opts.onSuccess?.(data.publicUrl);
-      return data.publicUrl;
+      opts.onSuccess?.(signed.signedUrl);
+      return signed.signedUrl;
     } catch (e) {
       const err = e instanceof Error ? e : new Error("Upload failed");
       opts.onError?.(err);
