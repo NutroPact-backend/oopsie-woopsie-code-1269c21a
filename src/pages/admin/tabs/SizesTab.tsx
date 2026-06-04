@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { fetchSizes, invalidateSizesCache, type Size } from '@/hooks/useMasterData';
 import { useBulkSelection, BulkActionBar, SelectCheckbox, runForEach } from '@/pages/admin/components/BulkSelect';
 import { TabHelp } from './_TabHelp';
+import { formatSizeDisplay, parseWeightGrams, gramsToLbsLabel } from '@/lib/sizeFormat';
 
 const toSlug = (s: string) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const EMPTY: Omit<Size, 'id'> = { name: '', slug: '', value_grams: 0, sort_order: 0, active: true };
@@ -63,7 +64,7 @@ export default function SizesTab() {
               {rows.map(s => (
                 <tr key={s.id} className={`border-t hover:bg-orange-50/30 ${sel.isSelected(s.id) ? 'bg-orange-50' : ''}`}>
                   <td className="px-3 py-3"><SelectCheckbox checked={sel.isSelected(s.id)} onChange={() => sel.toggleOne(s.id)} /></td>
-                  <td className="px-4 py-3 font-bold">{s.name}</td>
+                  <td className="px-4 py-3 font-bold">{formatSizeDisplay(s.name)}</td>
                   <td className="px-4 py-3 text-xs font-mono text-gray-500">{s.slug}</td>
                   <td className="px-4 py-3 text-right text-sm tabular-nums">{s.value_grams || '—'}</td>
                   <td className="px-4 py-3 text-center"><button onClick={() => toggle(s)}>{s.active ? <Eye size={16} className="text-green-600" /> : <EyeOff size={16} className="text-gray-300" />}</button></td>
@@ -84,6 +85,17 @@ export default function SizesTab() {
               <Field label="Name * (e.g. 1 kg, 500 g, 60 caps)"><input className="np-in" value={editing.name} onChange={e => setEditing({ ...editing, name: e.target.value, slug: toSlug(e.target.value) })} /></Field>
               <Field label="Slug"><input className="np-in font-mono" value={editing.slug} onChange={e => setEditing({ ...editing, slug: toSlug(e.target.value) })} /></Field>
               <Field label="Weight in grams (used for shipping calc)"><input type="number" className="np-in" value={editing.value_grams} onChange={e => setEditing({ ...editing, value_grams: Number(e.target.value) })} /></Field>
+              {(() => {
+                const grams = parseWeightGrams(editing.name) ?? (Number(editing.value_grams) > 0 ? Number(editing.value_grams) : null);
+                const isVolume = /\b(ml|l|lt|ltr|liter|litre)\b/i.test(editing.name || '');
+                if (isVolume) {
+                  return <div className="text-xs text-gray-500 bg-gray-50 border rounded-lg px-3 py-2">Volume unit (ml/L) — lbs conversion skipped.</div>;
+                }
+                if (grams && grams > 0) {
+                  return <div className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">Frontend will display: <b>{editing.name || '—'} ({gramsToLbsLabel(grams)})</b></div>;
+                }
+                return <div className="text-[11px] text-gray-400">Auto kg→lbs preview appears when name contains kg/g.</div>;
+              })()}
               <div className="grid grid-cols-2 gap-3">
                 <Field label="Sort order"><input type="number" className="np-in" value={editing.sort_order} onChange={e => setEditing({ ...editing, sort_order: Number(e.target.value) })} /></Field>
                 <label className="flex items-center gap-2 text-sm font-semibold mt-7"><input type="checkbox" checked={editing.active} onChange={e => setEditing({ ...editing, active: e.target.checked })} /> Active</label>

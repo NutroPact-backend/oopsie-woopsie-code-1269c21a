@@ -8,6 +8,7 @@ import {
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 import { formatPrice, calculateDiscount } from '@/lib/utils';
+import { formatSizeDisplay } from '@/lib/sizeFormat';
 import { useSEO } from '@/lib/useSEO';
 import { supabase } from '@/integrations/supabase/client';
 import API from '@/lib/api';
@@ -408,7 +409,7 @@ export default function CartPage() {
                 <div className="flex-1 min-w-0 flex flex-col">
                   <h3 className="font-bold text-sm sm:text-base line-clamp-2 leading-snug">{item.name}</h3>
                   {(item.flavor || item.size) && (
-                    <p className="text-gray-500 text-xs mt-0.5">{[item.flavor, item.size].filter(Boolean).join(' • ')}</p>
+                    <p className="text-gray-500 text-xs mt-0.5">{[item.flavor, formatSizeDisplay(item.size)].filter(Boolean).join(' • ')}</p>
                   )}
                   <p className="font-black text-sm sm:text-base mt-1">{formatPrice(item.price)} <span className="text-xs text-gray-500 font-normal">each</span></p>
 
