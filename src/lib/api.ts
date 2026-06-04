@@ -143,7 +143,14 @@ function shapeProductRow(row: any, extras: { categoryName?: string | null; varia
   });
 }
 
-function buildProductWriteRow(body: any, existing?: any) {
+async function buildProductWriteRow(body: any, existing?: any) {
+  const requestedCategory = (body.category ?? existing?.data?.category ?? "")
+    ?.split(">")
+    ?.map((part: string) => part.trim())
+    ?.filter(Boolean)
+    ?.at(-1) || "";
+  const { byName } = await getCategoryMaps();
+  const matchedCategory = requestedCategory ? byName.get(requestedCategory) : null;
   const data = {
     ...(existing?.data && typeof existing.data === "object" ? existing.data : {}),
     short_description: body.shortDescription ?? body.short_description ?? existing?.data?.short_description ?? null,
@@ -172,6 +179,7 @@ function buildProductWriteRow(body: any, existing?: any) {
     id: body.id || body._id || existing?.id || crypto.randomUUID(),
     name: body.name,
     slug: body.slug,
+    category_id: matchedCategory?.id ?? existing?.category_id ?? null,
     description: body.description ?? existing?.description ?? null,
     short_description: body.shortDescription ?? body.short_description ?? existing?.short_description ?? null,
     sku: body.sku ?? existing?.sku ?? null,
@@ -478,6 +486,28 @@ async function dynamicGet(path: string): Promise<any> {
   // /admin/*
   if (path.startsWith("/admin/")) {
     if (!(await isCurrentUserAdmin())) fail(403, "Admin only");
+    if (path === "/admin/products") {
+      const [{ byId }, { data, error }] = await Promise.all([
+        getCategoryMaps(),
+        supabase.from("products").select("*").order("created_at", { ascending: false }),
+      ]);
+      if (error) fail(500, error.message);
+      const productIds = (data ?? []).map((row: any) => row.id);
+      const { data: variantRows, error: variantError } = productIds.length
+        ? await supabase.from("product_variants").select("*").in("product_id", productIds).order("is_default", { ascending: false }).order("sort_order")
+        : { data: [] as any[], error: null as any };
+      if (variantError) fail(500, variantError.message);
+      const variantsByProduct = new Map<string, any[]>();
+      (variantRows ?? []).forEach((row: any) => {
+        const list = variantsByProduct.get(row.product_id) || [];
+        list.push(shapeVariantRow(row));
+        variantsByProduct.set(row.product_id, list);
+      });
+      return (data ?? []).map((row: any) => shapeProductRow(row, {
+        categoryName: byId.get(row.category_id)?.name || parseProductData(row).category || "",
+        variants: variantsByProduct.get(row.id) || parseProductData(row).variants || [],
+      }));
+    }
     const table = adminGetTableMap[path];
     if (table) {
       const { data } = await supabase.from(table as any).select("*").order("created_at", { ascending: false });
@@ -948,7 +978,7 @@ async function adminUpsert(path: string, body: any): Promise<any> {
   if (!table) fail(404, `Admin endpoint ${path} not mapped`);
   let row: any;
   if (path === "/admin/products") {
-    row = buildProductWriteRow(body);
+    row = await buildProductWriteRow(body);
   } else {
     row = { id: body.id || body._id || crypto.randomUUID(), ...snakeify(body) };
     delete (row as any)._id;
@@ -1028,7 +1058,7 @@ async function dynamicPut(path: string, body: any): Promise<any> {
     const table = tableMap[m[1]];
     if (table) {
       const row = table === 'products'
-        ? buildProductWriteRow(body, await supabase.from('products').select('*').eq('id', m[2]).maybeSingle().then(r => r.data))
+        ? await buildProductWriteRow(body, await supabase.from('products').select('*').eq('id', m[2]).maybeSingle().then(r => r.data))
         : { ...snakeify(body), id: m[2] };
       delete (row as any)._id;
       const { data, error } = await supabase.from(table as any).upsert(row).select().single();
