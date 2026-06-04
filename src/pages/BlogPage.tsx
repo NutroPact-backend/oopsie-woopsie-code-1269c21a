@@ -50,7 +50,7 @@ function PostCard({ post, featured = false }: { post: any; featured?: boolean })
   }
   return (
     <Link href={`${base}/blog/${post.slug}`}>
-      <div className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col h-full">
+      <div className="group tilt-3d bg-white rounded-2xl border border-gray-100 overflow-hidden cursor-pointer flex flex-col h-full">
         {post.image ? (
           <div className="h-48 overflow-hidden bg-gray-100">
             <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"  loading="lazy" decoding="async"/>
