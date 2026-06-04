@@ -272,50 +272,55 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   return <div><label className="text-xs font-bold text-gray-500 block mb-1">{label}</label>{children}</div>;
 }
 
-function RowGroup({ parent, sel, onEdit, onDelete, onToggle, onFeature, onMove, onAddChild }: {
-  parent: Category & { children: Category[] };
+function RowGroup({ node, depth, sel, onEdit, onDelete, onToggle, onFeature, onMove, onAddChild }: {
+  node: Category & { children: (Category & { children: any[] })[] };
+  depth: number;
   sel: { isSelected: (id: string) => boolean; toggleOne: (id: string) => void };
   onEdit: (c: Category) => void; onDelete: (c: Category) => void;
   onToggle: (c: Category) => void; onFeature: (c: Category) => void;
   onMove: (c: Category, d: -1 | 1) => void;
   onAddChild: (p: Category) => void;
 }) {
-  const RowUI = (c: Category, indent = false, isParent = false) => {
-    const pages = c.visible_on_pages || [];
-    return (
-    <tr key={c.id} className={`border-t hover:bg-orange-50/30 ${sel.isSelected(c.id) ? 'bg-orange-50/40' : ''}`}>
-      <td className="px-3 py-3"><SelectCheckbox checked={sel.isSelected(c.id)} onChange={() => sel.toggleOne(c.id)} /></td>
-      <td className="px-4 py-3">
-        <div className={`flex items-center gap-2 ${indent ? 'pl-6' : ''}`}>
-          {indent && <span className="text-gray-300">↳</span>}
-          {c.icon && <span className="text-lg">{c.icon}</span>}
-          <div>
-            <p className="font-bold text-gray-900">{c.name}</p>
-            {c.description && <p className="text-xs text-gray-500 line-clamp-1 max-w-xs">{c.description}</p>}
+  const c = node;
+  const pages = c.visible_on_pages || [];
+  return (
+    <>
+      <tr className={`border-t hover:bg-orange-50/30 ${sel.isSelected(c.id) ? 'bg-orange-50/40' : ''}`}>
+        <td className="px-3 py-3"><SelectCheckbox checked={sel.isSelected(c.id)} onChange={() => sel.toggleOne(c.id)} /></td>
+        <td className="px-4 py-3">
+          <div className="flex items-center gap-2" style={{ paddingLeft: depth * 24 }}>
+            {depth > 0 && <span className="text-gray-300">↳</span>}
+            {c.icon && <span className="text-lg">{c.icon}</span>}
+            <div>
+              <p className="font-bold text-gray-900">{c.name}</p>
+              {c.description && <p className="text-xs text-gray-500 line-clamp-1 max-w-xs">{c.description}</p>}
+            </div>
           </div>
-        </div>
-      </td>
-      <td className="px-4 py-3 text-xs font-mono text-gray-500">{c.slug}</td>
-      <td className="px-4 py-3 text-center text-xs text-gray-400">{(c as any).children?.length ?? '—'}</td>
-      <td className="px-4 py-3 text-center text-xs">
-        {pages.length === 0
-          ? <span className="text-gray-300">none</span>
-          : pages.includes('global')
-            ? <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 font-bold">Global</span>
-            : <span className="px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-bold" title={pages.join(', ')}>{pages.length} page{pages.length > 1 ? 's' : ''}</span>}
-      </td>
-      <td className="px-4 py-3 text-center"><button onClick={() => onToggle(c)} title={c.active ? 'Hide' : 'Show'}>{c.active ? <Eye size={16} className="text-green-600" /> : <EyeOff size={16} className="text-gray-300" />}</button></td>
-      <td className="px-4 py-3 text-center"><button onClick={() => onFeature(c)} title="Toggle featured"><Star size={16} className={c.featured ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'} /></button></td>
-      <td className="px-4 py-3">
-        <div className="flex items-center justify-end gap-1">
-          {isParent && <button onClick={() => onAddChild(c)} className="p-1.5 hover:bg-green-50 text-green-600 rounded" title="Add sub-category"><Plus size={14} /></button>}
-          <button onClick={() => onMove(c, -1)} className="p-1.5 hover:bg-gray-100 rounded" title="Move up"><ArrowUp size={14} /></button>
-          <button onClick={() => onMove(c, 1)} className="p-1.5 hover:bg-gray-100 rounded" title="Move down"><ArrowDown size={14} /></button>
-          <button onClick={() => onEdit(c)} className="p-1.5 hover:bg-gray-100 rounded" title="Edit"><Edit2 size={14} /></button>
-          <button onClick={() => onDelete(c)} className="p-1.5 hover:bg-red-50 text-red-500 rounded" title="Delete"><Trash2 size={14} /></button>
-        </div>
-      </td>
-    </tr>
-  );};
-  return <>{RowUI(parent, false, true)}{parent.children.map(c => RowUI(c, true, false))}</>;
+        </td>
+        <td className="px-4 py-3 text-xs font-mono text-gray-500">{c.slug}</td>
+        <td className="px-4 py-3 text-center text-xs text-gray-400">{node.children?.length || '—'}</td>
+        <td className="px-4 py-3 text-center text-xs">
+          {pages.length === 0
+            ? <span className="text-gray-300">none</span>
+            : pages.includes('global')
+              ? <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 font-bold">Global</span>
+              : <span className="px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-bold" title={pages.join(', ')}>{pages.length} page{pages.length > 1 ? 's' : ''}</span>}
+        </td>
+        <td className="px-4 py-3 text-center"><button onClick={() => onToggle(c)} title={c.active ? 'Hide' : 'Show'}>{c.active ? <Eye size={16} className="text-green-600" /> : <EyeOff size={16} className="text-gray-300" />}</button></td>
+        <td className="px-4 py-3 text-center"><button onClick={() => onFeature(c)} title="Toggle featured"><Star size={16} className={c.featured ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'} /></button></td>
+        <td className="px-4 py-3">
+          <div className="flex items-center justify-end gap-1">
+            <button onClick={() => onAddChild(c)} className="p-1.5 hover:bg-green-50 text-green-600 rounded" title="Add sub-category"><Plus size={14} /></button>
+            <button onClick={() => onMove(c, -1)} className="p-1.5 hover:bg-gray-100 rounded" title="Move up"><ArrowUp size={14} /></button>
+            <button onClick={() => onMove(c, 1)} className="p-1.5 hover:bg-gray-100 rounded" title="Move down"><ArrowDown size={14} /></button>
+            <button onClick={() => onEdit(c)} className="p-1.5 hover:bg-gray-100 rounded" title="Edit"><Edit2 size={14} /></button>
+            <button onClick={() => onDelete(c)} className="p-1.5 hover:bg-red-50 text-red-500 rounded" title="Delete"><Trash2 size={14} /></button>
+          </div>
+        </td>
+      </tr>
+      {(node.children || []).map((child: any) => (
+        <RowGroup key={child.id} node={child} depth={depth + 1} sel={sel} onEdit={onEdit} onDelete={onDelete} onToggle={onToggle} onFeature={onFeature} onMove={onMove} onAddChild={onAddChild} />
+      ))}
+    </>
+  );
 }
