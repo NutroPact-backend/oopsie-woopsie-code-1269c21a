@@ -6,12 +6,6 @@ import { TabHelp } from "./_TabHelp";
 
 import API from '@/lib/api';
 const AdminAPI = API;
-AdminAPI.interceptors.request.use(c => {
-  const t = sessionStorage.getItem('np_admin_token');
-  if (t) c.headers['x-admin-token'] = t;
-  return c;
-});
-
 type RewardCfg = {
   type?: 'percent' | 'fixed';
   value?: number;
