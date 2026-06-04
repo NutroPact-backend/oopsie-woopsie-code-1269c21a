@@ -1075,7 +1075,23 @@ export default function ProductPage() {
           </div>
         </div>
         <div className="py-7 max-w-4xl">
-          {infoTab === 'description' && <p className="text-gray-600 leading-relaxed whitespace-pre-line text-sm sm:text-base">{product.description}</p>}
+          {infoTab === 'description' && (
+            <div className="space-y-4">
+              {currentVariant?.highlights?.length > 0 && (
+                <ul className="grid sm:grid-cols-2 gap-x-6 gap-y-1.5 text-sm text-gray-700">
+                  {currentVariant.highlights.map((h: string, i: number) => (
+                    <li key={i} className="flex items-start gap-2"><span className="text-orange-500 mt-0.5">✓</span><span>{h}</span></li>
+                  ))}
+                </ul>
+              )}
+              <p className="text-gray-600 leading-relaxed whitespace-pre-line text-sm sm:text-base">
+                {currentVariant?.description || product.description}
+              </p>
+              {currentVariant?.description && (
+                <p className="text-[11px] text-gray-400 italic">Showing details for selected variant{[currentVariant.flavor, currentVariant.size].filter(Boolean).length ? `: ${[currentVariant.flavor, currentVariant.size].filter(Boolean).join(' · ')}` : ''}.</p>
+              )}
+            </div>
+          )}
           {infoTab === 'howtouse' && <p className="text-gray-600 leading-relaxed whitespace-pre-line text-sm sm:text-base">{product.howToUse}</p>}
           {infoTab === 'ingredients' && <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{product.ingredients}</p>}
           {infoTab === 'nutrition' && product.nutritionFacts?.length > 0 && (
