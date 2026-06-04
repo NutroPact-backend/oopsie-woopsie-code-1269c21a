@@ -1094,7 +1094,6 @@ function ProductModal({ product, onClose, onSave, onReviewsChanged }: { product:
                     <input type="number" value={form.gstRate ?? 5} onChange={e => set('gstRate', Number(e.target.value))} placeholder="5" className="w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-orange-400" />
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-gray-500 block mb-1">Flavors (comma-separated)</label>
                     <label className="text-xs font-bold text-gray-500 block mb-1">Flavors</label>
                     {allFlavors.length === 0 ? (
                       <p className="text-xs text-gray-400 px-3 py-2 border rounded-xl bg-gray-50">No flavors in master list. Add some in the Flavors tab.</p>
@@ -1119,7 +1118,6 @@ function ProductModal({ product, onClose, onSave, onReviewsChanged }: { product:
                     )}
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-gray-500 block mb-1">Sizes (comma-separated)</label>
                     <label className="text-xs font-bold text-gray-500 block mb-1">Sizes</label>
                     {allSizes.length === 0 ? (
                       <p className="text-xs text-gray-400 px-3 py-2 border rounded-xl bg-gray-50">No sizes in master list. Add some in the Sizes tab.</p>
