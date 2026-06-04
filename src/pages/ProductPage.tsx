@@ -567,17 +567,21 @@ export default function ProductPage() {
 
   // When variant changes and has its own image, jump gallery to it
   useEffect(() => {
-    if (currentVariant?.image) setSelectedImage(0);
+    if (currentVariant?.image || currentVariant?.images?.length) setSelectedImage(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentVariant?.image]);
+  }, [currentVariant?.image, currentVariant?.images?.length]);
 
   const price = currentVariant?.price ?? product?.price ?? 0;
   const stock = currentVariant?.stock ?? product?.stock ?? 0;
   const discount = product?.comparePrice > price ? calculateDiscount(price, product.comparePrice) : 0;
   // Variant image (if any) leads the gallery — falls back to product images
   const baseImages: string[] = product?.images?.length ? product.images : [];
-  const images = currentVariant?.image && !baseImages.includes(currentVariant.image)
-    ? [currentVariant.image, ...baseImages]
+  // Variant gallery (multi-image) leads, then product images, deduped.
+  const variantImages: string[] = Array.isArray(currentVariant?.images) && currentVariant.images.length
+    ? currentVariant.images
+    : (currentVariant?.image ? [currentVariant.image] : []);
+  const images = variantImages.length
+    ? Array.from(new Set([...variantImages, ...baseImages]))
     : baseImages;
   const productVideo = product?.video || '';
   const [showVideo, setShowVideo] = useState(false);
