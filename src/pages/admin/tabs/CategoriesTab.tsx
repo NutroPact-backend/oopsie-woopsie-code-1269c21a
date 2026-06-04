@@ -65,16 +65,26 @@ export default function CategoriesTab() {
       if (typeof v === 'string') return v.split(',').map((s) => s.trim()).filter(Boolean);
       return [];
     };
-    const payload: any = {
-      ...editing,
-      slug: editing.slug?.trim() || toSlug(editing.name),
-      seo_keywords: toArr((editing as any).seo_keywords),
-      visible_on_pages: Array.isArray(editing.visible_on_pages) ? editing.visible_on_pages : [],
+    const toNullableText = (v: any) => {
+      if (typeof v !== 'string') return v ?? null;
+      const next = v.trim();
+      return next ? next : null;
     };
-    // Convert empty strings to null for nullable text columns to avoid type coercion issues
-    ['description', 'image_url', 'icon', 'seo_title', 'seo_description'].forEach((k) => {
-      if (payload[k] === '') payload[k] = null;
-    });
+    const payload: any = {
+      name: editing.name.trim(),
+      slug: editing.slug?.trim() || toSlug(editing.name),
+      description: toNullableText(editing.description),
+      icon: toNullableText(editing.icon),
+      image_url: toNullableText(editing.image_url),
+      parent_id: editing.parent_id || null,
+      sort_order: Number.isFinite(Number(editing.sort_order)) ? Number(editing.sort_order) : 0,
+      active: !!editing.active,
+      featured: !!editing.featured,
+      seo_title: toNullableText((editing as any).seo_title),
+      seo_description: toNullableText((editing as any).seo_description),
+      seo_keywords: toArr((editing as any).seo_keywords),
+      visible_on_pages: toArr(editing.visible_on_pages),
+    };
     if ('id' in editing && editing.id) {
       const { error } = await supabase.from('categories').update(payload).eq('id', editing.id);
       if (error) { setSaving(false); return alert(error.message); }
