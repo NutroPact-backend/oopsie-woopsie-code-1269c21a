@@ -11,6 +11,7 @@ import {
 import { useSimpleUpload } from '@/lib/useSimpleUpload';
 import { calculateDiscount, formatPrice } from '@/lib/utils';
 import { formatSizeDisplay } from '@/lib/sizeFormat';
+import SizeGuideButton from '@/components/product/SizeGuideButton';
 import { useCartStore } from '@/store/cartStore';
 import { useAuthStore } from '@/store/authStore';
 import { useSEO, useBreadcrumbSEO } from '@/lib/useSEO';
@@ -887,9 +888,12 @@ export default function ProductPage() {
                   )}
                   {product.sizes?.filter((s: string) => s).length > 0 && (
                     <div>
-                      <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">
-                        Size — <span className="text-gray-900 normal-case tracking-normal font-bold">{formatSizeDisplay(selectedSize)}</span>
-                      </p>
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="text-xs font-black text-gray-500 uppercase tracking-widest">
+                          Size — <span className="text-gray-900 normal-case tracking-normal font-bold">{formatSizeDisplay(selectedSize)}</span>
+                        </p>
+                        <SizeGuideButton product={product} selectedSizeName={selectedSize} />
+                      </div>
                       <div className="flex flex-wrap gap-2">
                         {product.sizes.filter((s: string) => s).map((s: string) => {
                           const matches = (product.variants || []).filter((v: any) => v.size === s && (!selectedFlavor || v.flavor === selectedFlavor));
