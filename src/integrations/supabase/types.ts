@@ -2975,7 +2975,7 @@ export type Database = {
           image_url: string | null
           name: string
           price_adjustment: number | null
-          product_id: string
+          product_id: string | null
           slug: string | null
           sort_order: number | null
           stock: number | null
@@ -2991,7 +2991,7 @@ export type Database = {
           image_url?: string | null
           name: string
           price_adjustment?: number | null
-          product_id: string
+          product_id?: string | null
           slug?: string | null
           sort_order?: number | null
           stock?: number | null
@@ -3007,7 +3007,7 @@ export type Database = {
           image_url?: string | null
           name?: string
           price_adjustment?: number | null
-          product_id?: string
+          product_id?: string | null
           slug?: string | null
           sort_order?: number | null
           stock?: number | null
@@ -3129,7 +3129,7 @@ export type Database = {
           id: string
           name: string
           price: number | null
-          product_id: string
+          product_id: string | null
           size_value: string | null
           slug: string | null
           sort_order: number | null
@@ -3146,7 +3146,7 @@ export type Database = {
           id?: string
           name: string
           price?: number | null
-          product_id: string
+          product_id?: string | null
           size_value?: string | null
           slug?: string | null
           sort_order?: number | null
@@ -3163,7 +3163,7 @@ export type Database = {
           id?: string
           name?: string
           price?: number | null
-          product_id?: string
+          product_id?: string | null
           size_value?: string | null
           slug?: string | null
           sort_order?: number | null
