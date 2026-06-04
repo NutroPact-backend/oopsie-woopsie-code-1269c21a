@@ -15,6 +15,7 @@ export default function BrandsTab() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<(Brand | typeof EMPTY) | null>(null);
   const [saving, setSaving] = useState(false);
+  const [slugTouched, setSlugTouched] = useState(false);
   const { uploadFile, isUploading } = useSimpleUpload();
   const sel = useBulkSelection(rows, (b) => b.id);
 
@@ -104,8 +105,8 @@ export default function BrandsTab() {
             <div className="border-b px-6 py-4 flex items-center justify-between"><h3 className="text-xl font-black">{'id' in editing ? 'Edit' : 'New'} Brand</h3><button onClick={() => setEditing(null)}><X size={20} /></button></div>
             <div className="p-6 space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <Field label="Name *"><input className="np-in" value={editing.name} onChange={e => setEditing({ ...editing, name: e.target.value, slug: editing.slug || toSlug(e.target.value) })} /></Field>
-                <Field label="Slug"><input className="np-in font-mono" value={editing.slug} onChange={e => setEditing({ ...editing, slug: toSlug(e.target.value) })} /></Field>
+                <Field label="Name *"><input className="np-in" value={editing.name} onChange={e => setEditing({ ...editing, name: e.target.value, slug: slugTouched ? editing.slug : toSlug(e.target.value) })} /></Field>
+                <Field label="Slug"><input className="np-in font-mono" value={editing.slug} onChange={e => { setSlugTouched(true); setEditing({ ...editing, slug: toSlug(e.target.value) }); }} /></Field>
               </div>
               <Field label="Description"><textarea className="np-in min-h-[60px]" value={editing.description} onChange={e => setEditing({ ...editing, description: e.target.value })} /></Field>
               <Field label="Logo">
