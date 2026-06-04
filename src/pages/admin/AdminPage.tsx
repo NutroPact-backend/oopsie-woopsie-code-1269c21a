@@ -65,6 +65,7 @@ import CategoriesTab from './tabs/CategoriesTab';
 import BrandsTab from './tabs/BrandsTab';
 import FlavorsTab from './tabs/FlavorsTab';
 import SizesTab from './tabs/SizesTab';
+import SizeChartsTab from './tabs/SizeChartsTab';
 import SecurityTab from './tabs/SecurityTab';
 import ProductAuthTab from './tabs/ProductAuthTab';
 import SeoDebugTab from './tabs/SeoDebugTab';
@@ -1794,6 +1795,7 @@ export default function AdminPage() {
         { id: 'brands', icon: <Award size={16} />, label: 'Brands', desc: 'Brand master — logo, description, sort' },
         { id: 'flavors', icon: <Sparkles size={16} />, label: 'Flavors', desc: 'Global flavor master with color swatches' },
         { id: 'sizes', icon: <Ruler size={16} />, label: 'Sizes', desc: 'Global size master — grams used in shipping' },
+        { id: 'sizecharts', icon: <Ruler size={16} />, label: 'Size Charts', desc: 'Reusable charts for apparel & accessories (wrist band, lifting belt, t-shirt…)' },
         { id: 'dimensions', icon: <Ruler size={16} />, label: 'Dimensions', desc: 'Shipping sizes' },
         { id: 'bulkimport', icon: <Upload size={16} />, label: 'Bulk Import', desc: 'CSV / Excel — 100s of products at once' },
         { id: 'inventory', icon: <Package size={16} />, label: 'Inventory', desc: 'Stock levels, low-stock alerts, manual adjustments' },
@@ -1971,6 +1973,7 @@ export default function AdminPage() {
             {tab === 'brands'       && <BrandsTab />}
             {tab === 'flavors'      && <FlavorsTab />}
             {tab === 'sizes'        && <SizesTab />}
+            {tab === 'sizecharts'   && <SizeChartsTab />}
             {tab === 'bulkimport'   && <BulkImportTab />}
             {tab === 'inventory'    && <InventoryTab />}
             {tab === 'accounting'   && <AccountingTab />}
