@@ -284,7 +284,7 @@ function KBView() {
   }, [items, query, catFilter, statusFilter]);
 
   async function save() {
-    if (!editing?.title || !editing?.body) { alert("Title aur body chahiye"); return; }
+    if (!editing?.title || !editing?.body) { alert("Title and body are required"); return; }
     setSaving(true);
     try {
       await upsertFn({ data: {
@@ -605,7 +605,7 @@ function SettingsView() {
         <div>
           <h3 className="text-sm font-bold text-gray-800">Auto-escalation rules</h3>
           <p className="text-[11px] text-gray-500 mt-0.5">
-            AI khud decide karega kab human agent ko bhejna h. Aap rules tune kar sakte ho.
+            The AI decides on its own when to hand off to a human agent. You can tune the rules.
           </p>
         </div>
 
@@ -616,10 +616,10 @@ function SettingsView() {
             className="w-full" />
           <div className="flex justify-between text-[10px] text-gray-500">
             <span>0 — AI har baat khud handle kare</span>
-            <span>1 — sirf 100% sure replies, warna escalate</span>
+            <span>1 — only 100% confident replies, otherwise escalate</span>
           </div>
           <p className="text-[11px] text-gray-600 mt-1">
-            Recommended: <b>0.55–0.65</b>. AI har reply ke saath 0–1 confidence return karta h; isse niche hone par auto-escalate.
+            Recommended: <b>0.55–0.65</b>. The AI returns a 0–1 confidence with every reply; below this threshold it auto-escalates.
           </p>
         </Field>
 
@@ -640,7 +640,7 @@ function SettingsView() {
               onChange={e => setS({ ...s, escalate_on_no_kb: e.target.checked })} />
             <span>
               <b className="block text-xs">KB match na milne par escalate</b>
-              <span className="text-[11px] text-gray-500">Strict mode — agar koi article match nahi hua to seedha human.</span>
+              <span className="text-[11px] text-gray-500">Strict mode — if no article matches, escalate straight to a human.</span>
             </span>
           </label>
 
@@ -659,7 +659,7 @@ function SettingsView() {
               className="w-full border rounded px-2 py-1.5 text-sm"
               value={s.max_failed_turns ?? 3}
               onChange={e => setS({ ...s, max_failed_turns: Number(e.target.value) })} />
-            <p className="text-[10px] text-gray-500 mt-1">Kitne negative replies ke baad handoff trigger ho.</p>
+            <p className="text-[10px] text-gray-500 mt-1">How many negative replies trigger a handoff.</p>
           </Field>
         </div>
 
@@ -669,7 +669,7 @@ function SettingsView() {
             onChange={e => setKw(e.target.value)}
             placeholder="refund, complaint, manager, lawsuit, legal, fraud" />
           <p className="text-[10px] text-gray-500 mt-1">
-            User message me ye words milte hi bina AI ki try ke handoff. {(s.escalate_keywords || []).length}/30.
+            When any of these words appear in the user message, escalate without calling the AI. {(s.escalate_keywords || []).length}/30.
           </p>
         </Field>
       </div>

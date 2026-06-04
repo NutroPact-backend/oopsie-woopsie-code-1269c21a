@@ -156,9 +156,9 @@ export default function DashboardTab() {
       {/* Today live strip */}
       {data.today && (
         <div className="grid sm:grid-cols-3 gap-4">
-          <LiveCard icon={<Activity size={18} />} label="Aaj k orders" value={data.today.orders.toLocaleString('en-IN')} accent="from-orange-500 to-rose-500" />
-          <LiveCard icon={<IndianRupee size={18} />} label="Aaj ki revenue" value={fmtINR(data.today.revenue)} accent="from-green-500 to-emerald-500" />
-          <LiveCard icon={<Users size={18} />} label="Aaj k visitors" value={data.today.sessions.toLocaleString('en-IN')} accent="from-blue-500 to-cyan-500" />
+          <LiveCard icon={<Activity size={18} />} label="Today's orders" value={data.today.orders.toLocaleString('en-IN')} accent="from-orange-500 to-rose-500" />
+          <LiveCard icon={<IndianRupee size={18} />} label="Today's revenue" value={fmtINR(data.today.revenue)} accent="from-green-500 to-emerald-500" />
+          <LiveCard icon={<Users size={18} />} label="Today's visitors" value={data.today.sessions.toLocaleString('en-IN')} accent="from-blue-500 to-cyan-500" />
         </div>
       )}
 
@@ -179,7 +179,7 @@ export default function DashboardTab() {
             <div className="flex-1 min-w-[260px]">
               <p className="text-xs uppercase tracking-wider opacity-90 mb-1">Top pages right now</p>
               {live.live.paths.length === 0 ? (
-                <p className="text-xs opacity-80">Koi active visitor nahi.</p>
+                <p className="text-xs opacity-80">No active visitors.</p>
               ) : (
                 <ul className="space-y-0.5 text-xs">
                   {live.live.paths.slice(0, 5).map((p) => (
@@ -484,7 +484,7 @@ export default function DashboardTab() {
               </thead>
               <tbody>
                 {filteredEvents.length === 0 ? (
-                  <tr><td colSpan={6} className="text-center text-gray-400 py-6">Koi events nahi.</td></tr>
+                  <tr><td colSpan={6} className="text-center text-gray-400 py-6">No events.</td></tr>
                 ) : filteredEvents.map((e) => (
                   <tr key={e.id} className="border-t hover:bg-gray-50">
                     <td className="px-3 py-1.5 whitespace-nowrap text-gray-500">{new Date(e.created_at).toLocaleTimeString('en-IN')}</td>

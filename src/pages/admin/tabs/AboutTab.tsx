@@ -114,7 +114,7 @@ export default function AboutTab() {
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
           <h2 className="text-xl font-black flex items-center gap-2"><FileText size={18} className="text-orange-500" /> About Page Editor</h2>
-          <p className="text-sm text-gray-500">Sab kuch yahan se edit hota hai. Khaali chhodne par sensible defaults dikhte hain.</p>
+          <p className="text-sm text-gray-500">Everything is edited from here. Sensible defaults are used when fields are left empty.</p>
         </div>
         <div className="flex items-center gap-2">
           <a href="/about" target="_blank" rel="noopener" className="text-xs font-bold text-orange-500 hover:underline px-3 py-2">View page →</a>

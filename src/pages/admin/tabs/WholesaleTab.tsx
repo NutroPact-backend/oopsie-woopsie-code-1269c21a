@@ -91,7 +91,7 @@ export default function WholesaleTab() {
           <h2 className="font-black text-lg">Wholesale / B2B</h2>
         </div>
         <p className="text-xs text-gray-600">
-          Mark customers as wholesale. Unka discount % checkout par auto-apply hoga (subtotal ≥ min order par). GSTIN / company info <b>Notes</b> me likh sakte ho.
+          Mark customers as wholesale. Their discount % is auto-applied at checkout (when subtotal ≥ min order). You can put GSTIN / company info under <b>Notes</b>.
         </p>
         <p className="text-[11px] text-sky-700 font-bold mt-2">{enabledCount} wholesale customer(s) active</p>
       </div>

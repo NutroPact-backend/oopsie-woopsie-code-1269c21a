@@ -183,7 +183,7 @@ export default function SiteTab() {
       {/* Inventory */}
       <section className="bg-white rounded-2xl p-5 border border-gray-100 space-y-4">
         <h3 className="font-black text-gray-800 flex items-center gap-2"><Zap size={16} className="text-yellow-500" />Inventory</h3>
-        <p className="text-xs text-gray-500 -mt-2">Stock auto-decrements jab bhi order place hota hai. Out-of-stock products ka Add-to-cart hide ho jata hai.</p>
+        <p className="text-xs text-gray-500 -mt-2">Stock auto-decrements whenever an order is placed. The Add-to-cart button is hidden for out-of-stock products.</p>
         <Field label="Low Stock Alert Threshold" help="Jab kisi product ka stock is number ke barabar ya kam ho jaye, admin ko notification milega.">
           <Input type="number" value={String(s.inventory?.lowStockThreshold ?? 5)} onChange={v => set('inventory', { ...(s.inventory || {}), lowStockThreshold: Math.max(0, Math.min(1000, Number(v) || 0)) })} placeholder="5" />
         </Field>
@@ -199,7 +199,7 @@ export default function SiteTab() {
           </label>
         </div>
 
-        <Field label="Announcement Messages" help="Add multiple messages — wo auto-slide honge thodi-thodi der ruk kar.">
+        <Field label="Announcement Messages" help="Add multiple messages — they auto-slide with a short pause.">
           {(() => {
             const msgs: string[] = Array.isArray(s.announcementMessages) && s.announcementMessages.length
               ? s.announcementMessages

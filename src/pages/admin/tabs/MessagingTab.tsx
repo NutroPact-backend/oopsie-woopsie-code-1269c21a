@@ -213,7 +213,7 @@ const PRESETS: Record<Channel, { label: string; cfg: Partial<ChannelConfig> }[]>
   ],
   email: [
     {
-      label: "📧 Gmail SMTP (apna Gmail — free, app password chahiye)",
+      label: "📧 Gmail SMTP (your own Gmail — free, requires app password)",
       cfg: {
         label: "Gmail SMTP",
         endpoint: "smtps://smtp.gmail.com:465",

@@ -53,7 +53,7 @@ export default function CampaignsTab() {
       <TabHelp topic="campaigns" />
       <div>
         <h2 className="text-xl font-black flex items-center gap-2"><Users size={20} className="text-orange-500" /> Segments & Campaigns</h2>
-        <p className="text-sm text-gray-500">Audiences banao, fir email / WhatsApp / SMS / push blast karo.</p>
+        <p className="text-sm text-gray-500">Build audiences, then blast email / WhatsApp / SMS / push.</p>
       </div>
 
       {/* Segments */}

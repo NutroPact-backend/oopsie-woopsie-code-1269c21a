@@ -95,12 +95,12 @@ export default function ReviewsModerationTab() {
       <TabHelp topic="reviews" />
       <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4 text-sm text-orange-900">
         <p className="font-bold mb-1">📝 Customer Reviews Moderation</p>
-        <p>Yaha customer-submitted product reviews moderate kar.</p>
+        <p>Moderate customer-submitted product reviews here.</p>
         <ul className="list-disc ml-5 mt-1 space-y-0.5 text-xs">
-          <li><b>Pending</b> tab me naye reviews — read karke <b>Verify</b> kar (verified badge lagega).</li>
+          <li><b>Pending</b> tab — review them and click <b>Verify</b> (adds the verified badge).</li>
           <li><b>Pin</b> karne se review product page ke top par dikhega.</li>
-          <li>Spam ya inappropriate hai to <b>Delete</b> kar.</li>
-          <li>Photo thumbnail par click karke full size dekh.</li>
+          <li>If it is spam or inappropriate, click <b>Delete</b> .</li>
+          <li>Click the photo thumbnail to view full size.</li>
         </ul>
       </div>
 

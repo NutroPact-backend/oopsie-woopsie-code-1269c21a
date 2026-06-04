@@ -54,7 +54,7 @@ export default function ProductQATab() {
 
   const submitAnswer = async (id: string, publish: boolean) => {
     const answer = (drafts[id] || "").trim();
-    if (!answer) return alert("Answer likho pehle");
+    if (!answer) return alert("Write an answer first");
     await answerFn({ data: { id, answer, answeredByName: "NutroPact Team", publish } });
     setDrafts(d => { const c = { ...d }; delete c[id]; return c; });
     load();

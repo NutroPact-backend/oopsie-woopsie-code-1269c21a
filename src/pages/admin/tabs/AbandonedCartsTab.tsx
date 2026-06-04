@@ -57,13 +57,13 @@ export default function AbandonedCartsTab() {
       const link = `${window.location.origin}/cart?recover=${encodeURIComponent(c.recovery_token)}`;
       const itemsLabel = c.items?.slice(0, 3).map((i: any) => i.name).join(', ') || 'your selection';
       const more = (c.items?.length ?? 0) > 3 ? ` +${c.items.length - 3} more` : '';
-      const body = `Aapne ${itemsLabel}${more} cart me chhoda tha. Wapas aaiye — abhi complete kijiye!`;
+      const body = `You left ${itemsLabel}${more} in your cart. Come back and complete your order!`;
       const payload = { cartId: c.id, customerName: c.customer_name, itemCount: c.item_count, subtotal: c.subtotal, items: itemsLabel, link };
 
       if (c.user_id) {
         await supabase.from('user_notifications').insert({
           user_id: c.user_id,
-          title: '🛒 Aapka cart wait kar raha hai',
+          title: '🛒 Your cart is waiting',
           body, type: 'info', link: '/cart',
         });
       }
@@ -118,15 +118,15 @@ export default function AbandonedCartsTab() {
     <div className="space-y-4">
       <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4 text-sm text-orange-900">
         <p className="font-bold mb-1">🛒 Abandoned Cart Recovery</p>
-        <p>Jab customer checkout tak pahuche but order place na kare, cart yaha save ho jaata hai.</p>
+        <p>When a customer reaches checkout but doesn't place the order, the cart is saved here.</p>
         <ul className="list-disc ml-5 mt-1 space-y-0.5 text-xs">
-          <li><b>Auto cron</b>: har 15 min me 2+ ghante purane carts ko notify karta hai (in-app + email + whatsapp queue).</li>
-          <li>Manually <b>Notify Now</b> button se bhej sakte ho.</li>
+          <li><b>Auto cron</b>: every 15 min it notifies carts older than 2 hours (in-app + email + whatsapp queue).</li>
+          <li>You can send manually via the <b>Notify Now</b> button.</li>
           <li>Customer order place kare to status auto <b>recovered</b> ho jata hai.</li>
-          <li>72 ghante baad inactive cart auto <b>expired</b>.</li>
+          <li>Inactive carts are auto-marked <b>expired</b> after 72 hours.</li>
         </ul>
         <p className="text-xs mt-2 text-orange-800">
-          ⚙️ Cron schedule karne ke liye: Database SQL me <code>cron.schedule</code> chala — endpoint: <code>/api/public/hooks/recover-carts</code>.
+          ⚙️ To schedule the cron: Database SQL me <code>cron.schedule</code> with endpoint: <code>/api/public/hooks/recover-carts</code>.
         </p>
       </div>
 

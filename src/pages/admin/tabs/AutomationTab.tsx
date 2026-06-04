@@ -171,7 +171,7 @@ export default function AutomationTab() {
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
             <h2 className="text-xl font-black flex items-center gap-2"><Zap size={20} /> Shipment Automation Hub</h2>
-            <p className="text-xs opacity-90 mt-1">Order confirm hone ke baad pack → rate-compare → cheapest courier book → admin notify. Sab automatic.</p>
+            <p className="text-xs opacity-90 mt-1">After an order is confirmed: pack → rate-compare → book cheapest courier → notify admin. Fully automatic.</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <button onClick={load} className="bg-white/20 hover:bg-white/30 rounded-xl px-3 py-2 text-xs font-bold flex items-center gap-1.5">

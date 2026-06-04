@@ -98,7 +98,7 @@ export default function ReconciliationTab() {
       <TabHelp topic="reconciliation" />
       <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-5 text-white">
         <h2 className="text-xl font-black flex items-center gap-2"><FileText size={20} /> Shipping Reconciliation</h2>
-        <p className="text-xs opacity-90 mt-1">Expected (rate-engine quote) vs actual carrier invoice. Variance flag karta hai over/under-charge.</p>
+        <p className="text-xs opacity-90 mt-1">Expected (rate-engine quote) vs actual carrier invoice. Flags variance as over/under-charge.</p>
       </div>
 
       {/* Stats */}
@@ -316,7 +316,7 @@ function ImportModal({ onClose, onImport }: { onClose: () => void; onImport: (ro
         <div className="p-6 space-y-3">
           <p className="text-xs text-gray-600">
             CSV format: <code className="bg-gray-100 px-1.5 py-0.5 rounded text-[11px]">order_number,actual_charge,actual_weight_g,notes</code>
-            <br />Pehli row header honi chahiye. Weight & notes optional hain.
+            <br />First row must be the header. Weight & notes are optional.
           </p>
           <textarea value={text} onChange={(e) => setText(e.target.value)} rows={10}
             placeholder={"order_number,actual_charge,actual_weight_g,notes\nORD-1234,85.50,520,Pickup delayed"}
