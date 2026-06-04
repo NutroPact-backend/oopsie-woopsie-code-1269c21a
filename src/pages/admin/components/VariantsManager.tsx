@@ -343,7 +343,8 @@ export async function syncVariantsToDb(productId: string, rows: VariantRow[]) {
   const keepIds = rows.map(r => r.id).filter(Boolean) as string[];
   if (keepIds.length > 0) {
     await supabase.from('product_variants').delete().eq('product_id', productId).not('id', 'in', `(${keepIds.join(',')})`);
-  } else {
+  } else if (rows.length === 0) {
+    // Only wipe all variants when caller explicitly passes an empty list (intent to clear)
     await supabase.from('product_variants').delete().eq('product_id', productId);
   }
   // Upsert each
