@@ -12,6 +12,7 @@ export const TAB_PERMISSIONS: Record<string, string> = {
   dashboard: "dashboard.view",
   analytics: "analytics.view",
   products: "products.view",
+  product_groups: "products.view",
   productauth: "productauth.view",
   categories: "products.view",
   brands: "products.view",
