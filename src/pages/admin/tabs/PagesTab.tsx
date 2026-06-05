@@ -64,6 +64,7 @@ export default function PagesTab() {
   const [products, setProducts] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string>('');
   const perms = useAdminPermissions();
@@ -78,19 +79,28 @@ export default function PagesTab() {
       setSettings(s.data || {});
       setPages(Array.isArray(s.data?.customPages) ? s.data.customPages : []);
       setProducts(p.data || []);
+      setLoaded(true);
     })();
   }, []);
 
   const save = async () => {
+    if (!loaded) {
+      alert('Still loading settings — please wait a moment and try again.');
+      return;
+    }
     setSaving(true);
     try {
-      const next = { ...(settings || {}), customPages: pages };
+      // strip the camelize-injected `_id` alias before persisting
+      const cleanPages = pages.map(({ _id, ...rest }: any) => rest);
+      const next = { ...(settings || {}), customPages: cleanPages };
       await API.put('/admin/settings', next);
       setSettings(next);
       setSaved(true);
       setTimeout(() => setSaved(false), 2200);
-    } catch {
-      alert('Save failed');
+    } catch (e: any) {
+      const msg = e?.response?.data?.message || e?.message || 'Unknown error';
+      alert(`Save failed: ${msg}`);
+      console.error('[PagesTab] save failed', e);
     }
     setSaving(false);
   };
