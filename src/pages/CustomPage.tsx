@@ -109,8 +109,8 @@ function ProductCard({ product }: { product: any }) {
 }
 
 export default function CustomPageView() {
-  const params = useParams({ from: '/p/$slug' }) as { slug: string };
-  const slug = params.slug;
+  const params = useParams({ strict: false }) as { slug?: string };
+  const slug = params.slug || '';
   const { settings } = useSettings();
   const navigate = useNavigate();
   const [products, setProducts] = useState<any[]>([]);
@@ -178,7 +178,7 @@ export default function CustomPageView() {
         <p className="text-6xl mb-4">🔍</p>
         <h1 className="text-3xl font-black mb-2">Page not found</h1>
         <p className="text-gray-500 mb-6">
-          The page <code className="bg-gray-100 px-2 py-0.5 rounded">/p/{slug}</code> doesn't exist or has been
+          The page <code className="bg-gray-100 px-2 py-0.5 rounded">/{slug}</code> doesn't exist or has been
           disabled.
         </p>
         <Link
