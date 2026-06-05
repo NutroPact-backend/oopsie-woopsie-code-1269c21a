@@ -123,7 +123,7 @@ export default function PagesTab() {
   const bulk = useBulkSelection(pages, (p) => p.id);
 
   const copyLink = (slug: string, id: string) => {
-    const url = `${window.location.origin}/p/${slug}`;
+    const url = `${window.location.origin}/${slug}`;
     navigator.clipboard.writeText(url);
     setCopiedId(id);
     setTimeout(() => setCopiedId(''), 1500);
@@ -137,7 +137,7 @@ export default function PagesTab() {
           <h2 className="text-xl font-black">Pages</h2>
           <p className="text-sm text-gray-500">
             Create custom pages for navigation dropdowns. Each page gets its own URL like
-            <code className="mx-1 bg-gray-100 px-1.5 rounded text-orange-600">/p/your-slug</code>
+            <code className="mx-1 bg-gray-100 px-1.5 rounded text-orange-600">/your-slug</code>
             that you can paste in Header → Navigation.
           </p>
         </div>
@@ -219,7 +219,7 @@ export default function PagesTab() {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-gray-400 mt-0.5 font-mono truncate">/p/{page.slug}</p>
+                  <p className="text-xs text-gray-400 mt-0.5 font-mono truncate">/{page.slug}</p>
                 </div>
                 <button
                   onClick={() => copyLink(page.slug, page.id)}
@@ -229,7 +229,7 @@ export default function PagesTab() {
                   <Copy size={12} /> {copiedId === page.id ? 'Copied!' : 'Copy link'}
                 </button>
                 <a
-                  href={`/p/${page.slug}`}
+                  href={`/${page.slug}`}
                   target="_blank"
                   rel="noreferrer"
                   className="shrink-0 p-2 text-gray-400 hover:text-orange-500"
@@ -272,7 +272,7 @@ export default function PagesTab() {
                     </div>
                     <div>
                       <label className="text-xs font-bold text-gray-500 block mb-1">
-                        Slug (URL) — final URL: <span className="text-orange-600">/p/{page.slug || '...'}</span>
+                        Slug (URL) — final URL: <span className="text-orange-600">/{page.slug || '...'}</span>
                       </label>
                       <input
                         value={page.slug}
