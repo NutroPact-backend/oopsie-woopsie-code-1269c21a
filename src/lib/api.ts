@@ -1076,7 +1076,10 @@ async function dynamicPut(path: string, body: any): Promise<any> {
       .eq("key", "default")
       .maybeSingle();
     const merged = { ...((current?.settings as any) ?? {}), ...(body ?? {}) };
-    await supabase.from("site_settings").upsert({ key: "default", settings: merged });
+    const { error: upsertErr } = await supabase
+      .from("site_settings")
+      .upsert({ key: "default", settings: merged }, { onConflict: "key" });
+    if (upsertErr) fail(500, upsertErr.message);
     try {
       if (typeof window !== "undefined") {
         window.dispatchEvent(new CustomEvent("site-settings-updated", { detail: merged }));
