@@ -276,6 +276,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         // every host. Overridden above when admin sets cfg.og_default_image.
         { property: "og:image", content: DEFAULT_OG_IMAGE },
         { name: "twitter:image", content: DEFAULT_OG_IMAGE },
+        { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7999bc2b-c562-44bc-8e83-b3b3bf3b5b97/id-preview-ecacfc6b--7f1c3718-72f7-4329-a3db-26d099a317dc.lovable.app-1780650287585.png" },
+        { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7999bc2b-c562-44bc-8e83-b3b3bf3b5b97/id-preview-ecacfc6b--7f1c3718-72f7-4329-a3db-26d099a317dc.lovable.app-1780650287585.png" },
       ],
       links: [
         { rel: "stylesheet", href: appCss },
