@@ -1,124 +1,92 @@
 
-# Plan: AI SEO Domination — Option A + Option B
+## What's in the ZIP
 
-Goal: Maximize real AI-search visibility (ChatGPT, Perplexity, Google AI Overviews, Gemini, Claude) by (A) adding missing on-site schema/entity signals and (B) building a 5-vector AI SEO Command Center inside admin to monitor + roadmap progress.
+`Testings.zip` contains:
+- **`audit_report.js`** — the master report generator. Inside it are ~110 findings grouped into 11 sections: Executive Summary, Security, Backend↔Frontend Wiring, SEO, GEO, LLMO, AEO, Marketing/Analytics, Page-by-Page Functional, Code Quality, Priority Actions.
+- **15 Playwright/Vitest test files** (`auth`, `authz`, `crud`, `security`, `seo-audit`, `wiring-audit`, `analytics`, `performance`, `ui-interactions`, `route-discovery`, `network-audit`, `form-testing`, `business-logic`) + `setup-admin.ts`, `setup-customer.ts`, `run-full-audit.js`, `generate-coverage.js`.
 
----
-
-## PART A — On-site signal upgrades (real ranking impact)
-
-### A1. Schema enrichments
-- **`src/routes/__root.tsx`** — extend Organization JSON-LD:
-  - Add `sameAs: [...]` (Instagram, YouTube, Facebook, Twitter/X, LinkedIn) — pulled from `marketing_settings.social_links` (already in DB).
-  - Add separate `Brand` schema node.
-  - Add `ContactPoint` (customerService phone + email) from settings.
-- **`src/routes/testimonials.tsx`** — add brand-level `AggregateRating` + array of `Review` schema from real testimonials table.
-- **`src/routes/products.$slug.tsx`** — add:
-  - `HowTo` schema ("How to use {product}") generated from product.usage_instructions (fallback: omit).
-  - `Product → brand` reference + `Product → review[]` (top 5 product reviews if exist).
-  - `Question`/`Answer` schema from existing product Q&A table (top 3).
-- **`src/routes/blog.$slug.tsx`** — already strong; add `BreadcrumbList`.
-- **Auto `BreadcrumbList`** helper in `src/lib/seo-schema.ts` — used by all leaf routes (about, faq, contact, products list, category, blog list, answers).
-
-### A2. Entity hooks (Entity SEO)
-- New component `src/components/seo/EntityFooter.tsx` rendered on home/about: structured "About {Brand}" block with `<dl>` of key facts (founded, founder, HQ, categories, certifications) — both visible to humans and wrapped in `Speakable` selector. Pull from marketing_settings AI fields.
-
-### A3. Conversational SEO
-- Existing `/answers` is good. Add **"People also ask"** accordion block (auto from FAQs by category) on every product, category, and blog page footer with `FAQPage` JSON-LD (deduplicated, top 4 per page).
-
-### A4. Internal linking (entity graph)
-- New component `RelatedEntities` on product/blog/category pages: auto-renders 4–6 related links (same category / shared tags) with descriptive anchor text.
-
-### A5. AI-friendly metadata sync
-- Update `/llms-full.txt` to dynamically include top 50 products with name+1-line description+price+URL (helps LLM retrieval).
-- Update `/api/public/ai-context` to include FAQ list, testimonials snippets, latest 10 blog titles.
+Many items are **already partially done** in the codebase (CSP/security headers in `src/server.ts`, Turnstile, RLS, llms.txt route, Razorpay/PhonePe, push, i18n). The plan focuses on what is actually broken or missing.
 
 ---
 
-## PART B — AI SEO Command Center (admin dashboard)
+## Repair phases
 
-### B1. Database (single migration)
-Three new tables (project-scoped to support future multi-site, but defaults to single project for now):
+### Phase 1 — CRITICAL blockers (revenue + legal)
+1. **Products page "Loading…" forever** — debug `/products` query (RLS, anon SELECT grant, empty-state UI, error boundary, timeout fallback).
+2. **Privacy Policy & Terms** — replace placeholder content on `/privacy` and `/terms` with full DPDP-2023 + GDPR-aligned text (data collected, purpose, retention, user rights, wallet/PCI note, contact).
+3. **Cookie consent banner** — wire existing `CookieConsent.tsx` to actually gate analytics/marketing pixel firing (consent-mode v2 pattern).
+4. **Placeholder contact data** — replace `+91 9999999999` and `support@nutropact.com` with the verified footer values (`+91-8955590350`, `info@nutropact.com`); fix WhatsApp `#` href to `https://wa.me/...`.
+5. **Rotate admin credentials notice** — add admin-side warning + force password reset flow; ensure MFA gate (`Admin2FAGate`) is enforced.
 
-```text
-ai_seo_projects(id, project_name, target_url, created_at)
-ai_seo_audits(id, project_id, score_aeo, score_geo, score_entity,
-              score_reputation, score_conversational, alerts jsonb,
-              checks jsonb, last_scanned_at)
-ai_seo_roadmap_tasks(id, project_id, phase, category, title,
-                     description, is_completed, sort_order,
-                     is_auto_injected, created_at)
-```
-RLS: admin-only (uses `has_role(auth.uid(),'admin')`). GRANTs for `authenticated` + `service_role`. Seed one default project on first load.
+### Phase 2 — Security hardening
+- Add account-lockout / progressive delay on login (extend `login_lockouts` table use).
+- Sanitize/whitelist the `?redirect=` param on `/login`.
+- Add rate-limit (using existing `rate-limit.ts`) to login, contact, track-order, OTP endpoints.
+- Confirm CSP/X-Frame/Referrer/Permissions headers (already in `server.ts`) — add automated test from `security.test.ts`.
+- Server-side admin route guard verification (JWT role check inside server functions, not just client gate).
+- CSRF token / origin check on state-changing public endpoints.
+- Generic error responses in production (strip stack traces).
 
-### B2. Server functions (`src/lib/aiSeoCenter.functions.ts`)
-- `runAiSeoAudit({ projectId })` — admin-only, fetches:
-  - `/robots.txt` → parses for `GPTBot, ChatGPT-User, Google-Extended, PerplexityBot, ClaudeBot, anthropic-ai, CCBot` Disallow rules → `score_geo`
-  - `/sitemap.xml`, `/llms.txt`, `/ai.txt`, `/rss.xml` reachability
-  - DB counts: # of FAQs (AEO), # of testimonials w/ reviews (Reputation), avg blog speakable coverage (Conversational), Organization+Brand+sameAs presence (Entity)
-  - Computes 5 scores 0–100 with documented rules
-  - Writes row to `ai_seo_audits`; triggers roadmap auto-injection per Rule 2 of spec
-- `getAiSeoOverview({ projectId })` — latest audit + alerts + score history (last 30 days)
-- `listRoadmapTasks` / `toggleRoadmapTask` / `addRoadmapTask` / `seedDefaultRoadmap`
-- `generateSchemaSnippet({ type, payload })` — returns FAQ/Article/Entity JSON-LD strings
+### Phase 3 — Backend↔Frontend wiring fixes
+- Category filter buttons on `/products` → wire to Supabase `.eq('category', …)`.
+- Sort dropdown → wire to `.order()`.
+- Contact form → success/error toast + Supabase insert validation.
+- Track-order form → real Supabase lookup + "not found" state.
+- Language switcher → ensure `i18n` dict loads + persists selection.
+- `/account#wallet` → verify NutroPay balance, top-up, txn history render.
+- Missing `/coa` route referenced from QR — either create or remove reference.
+- Add error boundary + skeleton loaders to products / list pages.
 
-### B3. Admin UI — new tab `src/pages/admin/tabs/AiSeoCenterTab.tsx`
-Sub-tabs:
-1. **Overview** — circular Global Health Score (avg of 5), Critical Alerts banner, 5 metric cards (AEO/GEO/Entity/Reputation/Conversational), "Run Audit Now" button + last-scanned timestamp.
-2. **Audit Engine** — Technical panel (robots/sitemap/llms.txt/ai.txt/rss status with green/red), Schema Generator (form → JSON-LD output + copy button for FAQ, Article, Entity, HowTo), URL status table (from sitemap with detected issues).
-3. **90-Day Roadmap** — 3-column kanban (Phase 1/2/3), each task = checkbox card with title + collapsible description, auto-injected tasks highlighted with badge, "Add custom task" button per column.
+### Phase 4 — SEO (technical + on-page)
+- Absolute `og:url` per route (currently relative).
+- Per-page unique Twitter card title/description; set `og:type=product` on PDP.
+- Add `og:locale=en_IN`, `hreflang=en-IN`.
+- Verify `sitemap.xml` (route exists) lists all public pages incl. blog/products; submit to GSC.
+- Distinct H1 vs title; rewrite `ALL SUPPLEMENTS` H1 to keyword-rich.
+- Add FAQPage / Product / Organization / BreadcrumbList JSON-LD on relevant routes.
+- Preload hero image; request WebP from Unsplash; lazy-load below-fold images.
 
-Register in admin tab nav + tab-permissions.ts.
+### Phase 5 — GEO / LLMO / AEO
+- Add/verify `/llms.txt` and `/llms-full.txt` (routes exist — populate with key pages, citation format).
+- Add `ai.txt` (route exists — confirm content).
+- Add TL;DR summary blocks on About, FAQ, policy pages.
+- Add JSON-LD for certifications (Organization → hasCredential), FAQPage on `/faq`, HowTo on usage guides.
+- Bold 1–2 sentence direct answer at top of each long FAQ answer.
+- Add "People Also Ask" Q&A sections on PDPs.
 
-### B4. Cron (optional, weekly)
-Add `src/routes/api/public/hooks/ai-seo-audit.ts` — calls audit runner; secured via `CRON_SECRET` header (existing pattern). Doc only — user can wire pg_cron later.
+### Phase 6 — Marketing & Analytics
+- GA4 + GTM container (consent-mode v2, gated by Phase 1 banner).
+- Meta Pixel, Google Ads conversion tag, LinkedIn Insight (via GTM).
+- Capture UTM params into `utm_campaigns` + persist to orders.
+- Newsletter signup (footer + exit-intent using existing `ExitIntent.tsx`).
+- Real social links in footer (Instagram, YouTube, WhatsApp Business).
+- Microsoft Clarity (free) for session recordings.
+
+### Phase 7 — Content authenticity & polish
+- Replace stock Unsplash founder photo + verify "Rohan Mehta" identity / real bio.
+- Replace dynamically dated lab certificate with real NABL/Eurofins PDF + verifiable link.
+- Substantiate "50K+ Athletes", "5+ Years" stats (or soften copy).
+- Unique category icons (not all 🥛).
+- Best Sellers section on homepage.
+- Standardize support hours and phone formatting (E.164) across all pages.
+- Replace "Loading…" text with skeleton components project-wide.
 
 ---
 
-## Files
+## Verification
 
-**New:**
-- `supabase/migrations/<ts>_ai_seo_center.sql`
-- `src/lib/aiSeoCenter.functions.ts`
-- `src/lib/seo-schema.ts` (breadcrumb + helpers)
-- `src/components/seo/EntityFooter.tsx`
-- `src/components/seo/PeopleAlsoAsk.tsx`
-- `src/components/seo/RelatedEntities.tsx`
-- `src/pages/admin/tabs/AiSeoCenterTab.tsx`
-- `src/pages/admin/tabs/ai-seo/OverviewPanel.tsx`
-- `src/pages/admin/tabs/ai-seo/AuditEnginePanel.tsx`
-- `src/pages/admin/tabs/ai-seo/RoadmapPanel.tsx`
-- `src/pages/admin/tabs/ai-seo/SchemaGenerator.tsx`
-- `src/routes/api/public/hooks/ai-seo-audit.ts`
+After each phase, run the matching test files from the ZIP against the preview:
+- Phase 1 → `wiring-audit`, `crud`, page-specific
+- Phase 2 → `security`, `auth`, `authz`
+- Phase 3 → `ui-interactions`, `form-testing`, `business-logic`
+- Phase 4–5 → `seo-audit`, `route-discovery`
+- Phase 6 → `analytics`, `network-audit`
+- Final → `run-full-audit.js`
 
-**Edited:**
-- `src/routes/__root.tsx` (Organization+Brand+sameAs+ContactPoint)
-- `src/routes/testimonials.tsx` (Review+AggregateRating schema)
-- `src/routes/products.$slug.tsx` (HowTo + brand link + reviews + Q&A schema + PeopleAlsoAsk + RelatedEntities)
-- `src/routes/blog.$slug.tsx` (BreadcrumbList + PeopleAlsoAsk)
-- `src/routes/category.$slug.tsx` (BreadcrumbList + RelatedEntities)
-- `src/routes/answers.tsx` (BreadcrumbList)
-- `src/routes/about.tsx` (EntityFooter)
-- `src/routes/index.tsx` (EntityFooter)
-- `src/routes/llms-full[.]txt.ts` (top-50 product manifest)
-- `src/routes/api/public/ai-context.ts` (FAQs+testimonials+blogs)
-- `src/pages/admin/AdminPage.tsx` + `tab-permissions.ts` (register new tab)
+I'll copy the test files into `tests/audit/` once we move to build mode so they can be executed locally.
 
-## Scoring rules (documented in code)
-- `score_geo`: -25 per blocked major AI bot; +20 if llms.txt & ai.txt reachable; min 0
-- `score_aeo`: floor(faq_count*5) capped at 100; +20 if FAQPage schema present on >3 pages
-- `score_entity`: 40 if Org schema; +15 sameAs≥3; +15 Brand schema; +15 Founder Person; +15 GeoCoordinates
-- `score_reputation`: floor(reviews*2) + 20 if AggregateRating present; cap 100
-- `score_conversational`: 30 if /answers exists; +20 Speakable on blog; +20 AI search enabled; +30 product Q&A active
+---
 
-## Auto-roadmap injection
-- aeo<60 → Phase 1 task "Deploy FAQ Block Schema Accordions to key commercial pages"
-- reputation<50 → Phase 2 task "Establish Off-Page Trust Footprint"
-- geo<40 → Phase 1 critical "Unblock AI crawlers in robots.txt"
-- entity<60 → Phase 2 "Complete Organization+Brand+sameAs schema"
-- conversational<60 → Phase 3 "Add conversational Q&A blocks to top 10 pages"
+## Confirm before I start
 
-## Out of scope
-- Real external API integrations (Semrush, GSC) — per project memory, no Lovable connectors.
-- Multi-site project switcher UI (table supports it; UI ships single-project).
-- Live AI rank tracking (no public API exists for ChatGPT/Perplexity citations).
+Reply with which phase to begin (or "all in order"). Phase 1 is the highest-impact and I recommend starting there — it unblocks revenue (products page) and legal exposure (privacy/terms/consent).
