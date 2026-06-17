@@ -647,10 +647,15 @@ async function ensureInvoice(orderNumber: string) {
 // POST
 const POST: Record<string, Handler> = {
   "/contact": async (_p, _q, body) => {
+    const parsed = contactSchema.safeParse(body || {});
+    if (!parsed.success) {
+      fail(400, parsed.error.issues[0]?.message || "Invalid contact submission");
+    }
+    const v = parsed.data!;
     const id = crypto.randomUUID();
     const { error } = await supabase.from("contact_submissions").insert({
-      id, name: body.name, email: body.email, phone: body.phone ?? "",
-      subject: body.subject ?? "General Inquiry", message: body.message,
+      id, name: v.name, email: v.email, phone: v.phone,
+      subject: v.subject, message: v.message,
     });
     if (error) fail(500, error.message);
     return { success: true };
