@@ -6,7 +6,7 @@ export default function PrivacyPage() {
   const { settings } = useSettings();
   const page = settings?.privacyPage;
   const title = page?.title || 'PRIVACY POLICY';
-  const content = page?.content || 'Privacy policy content will be added soon.';
+  const content = page?.content || DEFAULT_PRIVACY;
   const tContent = useContentT('page_block', 'privacy', 'content', content);
   return (
     <div className="max-w-4xl mx-auto px-4 py-16">
