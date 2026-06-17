@@ -31,7 +31,12 @@ export default function LoginPage() {
   const { refresh } = useAuthStore();
   const navigate = useNavigate();
   const search = useSearch({ strict: false }) as { redirect?: string; ref?: string };
-  const redirectTo = search.redirect?.startsWith("/") ? search.redirect : "/account";
+  // Sanitize redirect: must be a same-origin path (single leading slash, no protocol-relative
+  // "//evil.com", no backslash trick, no whitespace). Otherwise fall back to /account.
+  const rawRedirect = typeof search.redirect === "string" ? search.redirect : "";
+  const safeRedirect =
+    /^\/(?![\/\\])[^\s]*$/.test(rawRedirect) ? rawRedirect : "/account";
+  const redirectTo = safeRedirect;
   const refCode = (typeof search.ref === "string" ? search.ref : (typeof window !== "undefined" ? (new URLSearchParams(window.location.search).get("ref") || sessionStorage.getItem("ref_code") || "") : ""))
     .toString().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8);
   if (refCode && typeof window !== "undefined") sessionStorage.setItem("ref_code", refCode);
